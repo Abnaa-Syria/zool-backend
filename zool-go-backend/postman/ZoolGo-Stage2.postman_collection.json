@@ -1,0 +1,1496 @@
+{
+  "info": {
+    "name": "ZoolGo Stage 2 - Broker vertical",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1"
+    },
+    {
+      "key": "adminPhone",
+      "value": "+249900000001"
+    },
+    {
+      "key": "managerPhone",
+      "value": "+249900000101"
+    },
+    {
+      "key": "clerkPhone",
+      "value": "+249900000102"
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "managerToken",
+      "value": ""
+    },
+    {
+      "key": "clerkToken",
+      "value": ""
+    },
+    {
+      "key": "devOtp",
+      "value": ""
+    },
+    {
+      "key": "challengeId",
+      "value": ""
+    },
+    {
+      "key": "newAdminPhone",
+      "value": "+249900000099"
+    },
+    {
+      "key": "phoneChangeDevOtp",
+      "value": ""
+    },
+    {
+      "key": "officeId",
+      "value": ""
+    },
+    {
+      "key": "companyId",
+      "value": ""
+    },
+    {
+      "key": "tripId",
+      "value": ""
+    },
+    {
+      "key": "seatId",
+      "value": ""
+    },
+    {
+      "key": "holdId",
+      "value": ""
+    },
+    {
+      "key": "intentId",
+      "value": ""
+    },
+    {
+      "key": "bookingId",
+      "value": ""
+    },
+    {
+      "key": "ticketNumber",
+      "value": ""
+    },
+    {
+      "key": "settlementId",
+      "value": ""
+    },
+    {
+      "key": "employeeId",
+      "value": ""
+    },
+    {
+      "key": "targetAdminId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin OTP request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.devOtp;",
+                  "if (v !== undefined) pm.collectionVariables.set('devOtp', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/otp/request"
+          }
+        },
+        {
+          "name": "Admin OTP verify",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.accessToken;",
+                  "if (v !== undefined) pm.collectionVariables.set('adminToken', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\",\n  \"code\": \"{{devOtp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/otp/verify"
+          }
+        },
+        {
+          "name": "Create carrier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('companyId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"sudan_express\",\n  \"name\": \"Sudan Express\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/carriers"
+          }
+        },
+        {
+          "name": "List carriers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/carriers"
+          }
+        },
+        {
+          "name": "List carriers (search)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/carriers?q=sudan&pageSize=20"
+          }
+        },
+        {
+          "name": "Get carrier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/carriers/{{companyId}}"
+          }
+        },
+        {
+          "name": "Patch carrier (name/status)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sudan Express\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/carriers/{{companyId}}"
+          }
+        },
+        {
+          "name": "Create broker office (+manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('officeId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ZG-BRK-1\",\n  \"name\": \"Demo Office\",\n  \"settlementPeriod\": \"MONTHLY\",\n  \"manager\": {\n    \"displayName\": \"Manager\",\n    \"phone\": \"{{managerPhone}}\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/brokers"
+          }
+        },
+        {
+          "name": "List broker offices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/brokers"
+          }
+        },
+        {
+          "name": "Get broker office",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/brokers/{{officeId}}"
+          }
+        },
+        {
+          "name": "Create office staff (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('employeeId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Clerk\",\n  \"phone\": \"{{clerkPhone}}\",\n  \"canBook\": true,\n  \"canTopUp\": false,\n  \"canViewReports\": false,\n  \"canManageStaff\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/brokers/{{officeId}}/staff"
+          }
+        },
+        {
+          "name": "Patch office staff (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Clerk\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/brokers/{{officeId}}/staff/{{employeeId}}"
+          }
+        },
+        {
+          "name": "Replace carrier assignments",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"companyId\": \"{{companyId}}\",\n    \"commissionPercent\": 10\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/brokers/{{officeId}}/carriers"
+          }
+        },
+        {
+          "name": "Set office status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/brokers/{{officeId}}/status"
+          }
+        },
+        {
+          "name": "Create trip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"origin\": \"Khartoum\",\n  \"destination\": \"Port Sudan\",\n  \"departureAt\": \"2030-01-01T08:00:00.000Z\",\n  \"basePrice\": 25000,\n  \"seatLabels\": [\n    \"A1\",\n    \"A2\",\n    \"A3\",\n    \"A4\",\n    \"A5\",\n    \"A6\",\n    \"A7\",\n    \"A8\",\n    \"A9\",\n    \"A10\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/catalog/trips"
+          }
+        },
+        {
+          "name": "List trips (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/catalog/trips"
+          }
+        },
+        {
+          "name": "Get trip (admin, catalog.view)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/catalog/trips/{{tripId}}"
+          }
+        },
+        {
+          "name": "Patch trip (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"basePrice\": 26000,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/catalog/trips/{{tripId}}"
+          }
+        },
+        {
+          "name": "Append seats (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seatLabels\": [\"B1\", \"B2\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/catalog/trips/{{tripId}}/seats"
+          }
+        },
+        {
+          "name": "Admin wallet view",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/wallets/{{officeId}}"
+          }
+        },
+        {
+          "name": "Admin wallets list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/wallets?page=1&pageSize=20&sort=balanceMinor&order=desc"
+          }
+        },
+        {
+          "name": "Admin bookings search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/bookings?q={{ticketNumber}}"
+          }
+        },
+        {
+          "name": "Audit logs (filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/audit-logs?page=1&pageSize=20&resourceType=booking"
+          }
+        },
+        {
+          "name": "Patch admin profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Super Admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/admins/{{targetAdminId}}"
+          }
+        },
+        {
+          "name": "Request self-service phone OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.data && j.data.devOtp !== undefined) pm.collectionVariables.set('phoneChangeDevOtp', j.data.devOtp);",
+                  "if (j.data && j.data.challengeId !== undefined) pm.collectionVariables.set('challengeId', j.data.challengeId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{newAdminPhone}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/phone/otp/request",
+            "description": "Authenticated self-service. OTP is sent to the new number. Does not require admins.update."
+          }
+        },
+        {
+          "name": "Verify self-service phone OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{newAdminPhone}}\",\n  \"code\": \"{{phoneChangeDevOtp}}\",\n  \"challengeId\": \"{{challengeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/auth/phone/otp/verify",
+            "description": "Consumes the OTP and updates the authenticated admin's primary phone. Does not issue a new session. Mutates identity — skip unless testing this flow."
+          }
+        },
+        {
+          "name": "Revoke all sessions for admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admins/{{targetAdminId}}/sessions/revoke-all"
+          }
+        },
+        {
+          "name": "Admin ticket PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/bookings/{{bookingId}}/tickets/{{ticketNumber}}/pdf"
+          }
+        },
+        {
+          "name": "Admin commissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/commissions?officeId={{officeId}}"
+          }
+        },
+        {
+          "name": "Create commission settlement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('settlementId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"officeId\": \"{{officeId}}\",\n  \"periodFrom\": \"{{$isoTimestamp}}\",\n  \"periodTo\": \"{{$isoTimestamp}}\",\n  \"note\": \"Monthly settlement\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/admin/commissions/settlements"
+          }
+        },
+        {
+          "name": "Get commission settlement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/commissions/settlements/{{settlementId}}"
+          }
+        },
+        {
+          "name": "List settlement accruals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/commissions/settlements/{{settlementId}}/accruals?page=1&pageSize=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker auth",
+      "item": [
+        {
+          "name": "Manager OTP request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.devOtp;",
+                  "if (v !== undefined) pm.collectionVariables.set('devOtp', v);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.challengeId;",
+                  "if (v !== undefined) pm.collectionVariables.set('challengeId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{managerPhone}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/auth/otp/request"
+          }
+        },
+        {
+          "name": "Manager OTP verify",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.accessToken;",
+                  "if (v !== undefined) pm.collectionVariables.set('managerToken', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{managerPhone}}\",\n  \"code\": \"{{devOtp}}\",\n  \"challengeId\": \"{{challengeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/auth/otp/verify"
+          }
+        },
+        {
+          "name": "Clerk OTP request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.devOtp;",
+                  "if (v !== undefined) pm.collectionVariables.set('devOtp', v);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.challengeId;",
+                  "if (v !== undefined) pm.collectionVariables.set('challengeId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{clerkPhone}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/auth/otp/request"
+          }
+        },
+        {
+          "name": "Clerk OTP verify",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data.accessToken;",
+                  "if (v !== undefined) pm.collectionVariables.set('clerkToken', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{clerkPhone}}\",\n  \"code\": \"{{devOtp}}\",\n  \"challengeId\": \"{{challengeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/auth/otp/verify"
+          }
+        },
+        {
+          "name": "Broker me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/auth/me"
+          }
+        },
+        {
+          "name": "Broker refresh (cookie)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/broker/auth/refresh"
+          }
+        },
+        {
+          "name": "Broker logout (cookie)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/broker/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker staff",
+      "item": [
+        {
+          "name": "List staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/staff"
+          }
+        },
+        {
+          "name": "Create clerk",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Clerk\",\n  \"phone\": \"{{clerkPhone}}\",\n  \"canBook\": true,\n  \"canTopUp\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/staff"
+          }
+        },
+        {
+          "name": "Update staff",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"canTopUp\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/staff/:employeeId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker wallet",
+      "item": [
+        {
+          "name": "Wallet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/wallet"
+          }
+        },
+        {
+          "name": "Ledger",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/wallet/ledger?page=1"
+          }
+        },
+        {
+          "name": "Create top-up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('intentId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amountMinor\": 100000,\n  \"idempotencyKey\": \"postman-topup-{{$timestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/wallet/top-ups"
+          }
+        },
+        {
+          "name": "Mock confirm top-up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/wallet/top-ups/{{intentId}}/mock-confirm"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker catalog",
+      "item": [
+        {
+          "name": "Assigned carriers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/carriers"
+          }
+        },
+        {
+          "name": "Search trips",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data[0] && j.data[0].id;",
+                  "if (v !== undefined) pm.collectionVariables.set('tripId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/trips?origin=Khartoum&destination=Port"
+          }
+        },
+        {
+          "name": "Trip detail (seats)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.seats && j.data.seats.find(s => s.status === 'FREE').id;",
+                  "if (v !== undefined) pm.collectionVariables.set('seatId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/trips/{{tripId}}"
+          }
+        },
+        {
+          "name": "Hold seats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.holds && j.data.holds[0].id;",
+                  "if (v !== undefined) pm.collectionVariables.set('holdId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seatIds\": [\n    \"{{seatId}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/trips/{{tripId}}/holds"
+          }
+        },
+        {
+          "name": "Release hold",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/holds/{{holdId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Broker bookings",
+      "item": [
+        {
+          "name": "Quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripId\": \"{{tripId}}\",\n  \"seatIds\": [\n    \"{{seatId}}\"\n  ],\n  \"passengers\": [\n    {\n      \"fullName\": \"Passenger One\",\n      \"phone\": \"0911111111\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/bookings/quote"
+          }
+        },
+        {
+          "name": "Confirm",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const v = j.data && j.data.booking && j.data.booking.id;",
+                  "if (v !== undefined) pm.collectionVariables.set('bookingId', v);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripId\": \"{{tripId}}\",\n  \"seatIds\": [\n    \"{{seatId}}\"\n  ],\n  \"passengers\": [\n    {\n      \"fullName\": \"Passenger One\",\n      \"phone\": \"0911111111\"\n    }\n  ],\n  \"idempotencyKey\": \"postman-booking-{{$timestamp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/bookings/confirm"
+          }
+        },
+        {
+          "name": "List bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/bookings?status=CONFIRMED"
+          }
+        },
+        {
+          "name": "Get booking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/bookings/{{bookingId}}"
+          }
+        },
+        {
+          "name": "Dispatch (PDF)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"download\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/broker/bookings/{{bookingId}}/dispatch"
+          }
+        },
+        {
+          "name": "Ticket PDF (binary)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/bookings/{{bookingId}}/tickets/{{ticketNumber}}/pdf"
+          }
+        },
+        {
+          "name": "Reports summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/reports/summary"
+          }
+        },
+        {
+          "name": "Reports by employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/reports/by-employee"
+          }
+        },
+        {
+          "name": "Reports by carrier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/reports/by-carrier"
+          }
+        },
+        {
+          "name": "Reports wallet activity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/reports/wallet-activity"
+          }
+        },
+        {
+          "name": "Cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clerkToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/bookings/{{bookingId}}/cancel"
+          }
+        },
+        {
+          "name": "Broker commissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/broker/commissions"
+          }
+        }
+      ]
+    }
+  ]
+}

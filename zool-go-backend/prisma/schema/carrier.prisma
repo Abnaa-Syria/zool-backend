@@ -1,0 +1,32 @@
+enum TransportCompanyStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model TransportCompany {
+  id        String                   @id @default(cuid())
+  key       String                   @unique @db.VarChar(64)
+  name      String                   @db.VarChar(160)
+  status    TransportCompanyStatus   @default(ACTIVE)
+  createdAt DateTime                 @default(now()) @map("created_at")
+
+  brokerAssignments BrokerCarrierAssignment[]
+  trips             Trip[]
+
+  @@index([status])
+  @@map("transport_companies")
+}
+
+model BrokerCarrierAssignment {
+  id                String           @id @default(cuid())
+  officeId          String           @map("office_id")
+  companyId         String           @map("company_id")
+  commissionPercent Decimal          @map("commission_percent") @db.Decimal(5, 2)
+
+  office            BrokerOffice     @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  company           TransportCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([officeId, companyId])
+  @@index([companyId])
+  @@map("broker_carrier_assignments")
+}

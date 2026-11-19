@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;font-family:'IBM Plex Sans Arabic',sans-serif;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary-fixed": "#aaf2ca", "on-primary-fixed": "#40000e", "on-surface": "#0a1f17", "inverse-on-surface": "#def7e8", "tertiary": "#003b27", "on-primary": "#ffffff", "on-error-container": "#93000a", "surface": "#e7fff1", "error-container": "#ffdad6", "background": "#e7fff1", "surface-container-high": "#d5eee0", "surface-variant": "#d0e8da", "primary-container": "#8e1b32", "on-secondary-fixed-variant": "#005235", "secondary": "#226a4b", "inverse-surface": "#20352b", "surface-container-low": "#e1faeb", "surface-dim": "#c7e0d2", "on-background": "#0a1f17", "inverse-primary": "#ffb2b7", "on-error": "#ffffff", "on-tertiary-container": "#8cc5a7", "primary": "#6d001e", "on-primary-fixed-variant": "#8a182f", "primary-fixed": "#ffdadb", "on-secondary-container": "#286f4f", "on-primary-container": "#ff9ea6", "on-secondary-fixed": "#002113", "surface-container": "#dbf4e5", "error": "#ba1a1a", "outline-variant": "#debfc0", "surface-container-lowest": "#ffffff", "tertiary-container": "#1a533c", "outline": "#8b7172", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#99d3b4", "on-surface-variant": "#574142", "on-tertiary-fixed": "#002114", "surface-tint": "#aa3145", "on-tertiary-fixed-variant": "#165039", "secondary-fixed-dim": "#8ed5af", "surface-container-highest": "#d0e8da", "primary-fixed-dim": "#ffb2b7", "tertiary-fixed": "#b5efd0", "on-secondary": "#ffffff", "secondary-container": "#a7efc7", "surface-bright": "#e7fff1" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-desktop": "1.5rem", "gutter": "1.25rem", "space-xl": "2rem", "margin": "1.5rem", "space-md": "1rem", "margin-desktop": "2rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, "fontFamily": { "headline-md": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "body-md": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "body-lg": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "display-md": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "tabular-stat": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "label-lg": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "headline-lg": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "display-lg": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "headline-sm": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "body-sm": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ], "label-md": [ "IBM Plex Sans Arabic", "IBM Plex Sans" ] }, "fontSize": { "headline-md": [ "1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "0", "fontWeight": "600" } ], "body-md": [ "0.875rem", { "lineHeight": "1.375rem", "letterSpacing": "0", "fontWeight": "400" } ], "body-lg": [ "1rem", { "lineHeight": "1.625rem", "letterSpacing": "0", "fontWeight": "400" } ], "display-md": [ "1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "0", "fontWeight": "700" } ], "tabular-stat": [ "1.5rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "label-lg": [ "0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0", "fontWeight": "600" } ], "headline-lg": [ "1.5rem", { "lineHeight": "2rem", "letterSpacing": "0", "fontWeight": "600" } ], "display-lg": [ "2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "0", "fontWeight": "700" } ], "headline-sm": [ "1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "0", "fontWeight": "600" } ], "body-sm": [ "0.75rem", { "lineHeight": "1.125rem", "letterSpacing": "0", "fontWeight": "400" } ], "label-md": [ "0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.025em", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface min-h-screen"><aside class="fixed right-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="flex flex-col"><div class="p-space-lg flex items-center gap-3 bg-surface-container-low"><div class="w-10 h-10 rounded-xl bg-tertiary flex items-center justify-center text-on-tertiary shadow-[0_1px_3px_0_rgba(14,92,62,0.04)]"><span class="material-symbols-outlined text-[24px]">directions_bus</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-tertiary font-bold leading-tight">ZoolGo</span><span class="font-label-md text-label-md text-secondary font-medium">سفريات المدن وإدارة النقل</span><span class="font-body-sm text-body-sm text-on-surface-variant text-[10px] opacity-75">Super Admin v1.0</span></div></div><nav class="p-space-md flex flex-col gap-space-lg" data-active-classes="bg-tertiary text-on-tertiary font-bold shadow-[0_1px_3px_0_rgba(14,92,62,0.04)]"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-md text-label-md text-secondary uppercase tracking-wider mb-1">الرئيسية والعمليات</span><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">space_dashboard</span><span class="font-label-lg text-label-lg">نظرة عامة</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="live-tracking" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">fmd_good</span><span class="font-label-lg text-label-lg">التتبع المباشر</span></div><span class="px-2 py-0.5 rounded-full font-label-md text-label-md bg-secondary-fixed text-on-secondary-fixed flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>مباشر</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="bookings-and-tickets" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">confirmation_number</span><span class="font-label-lg text-label-lg">الحجوزات والتذاكر</span></div><span class="px-2 py-0.5 rounded-full font-label-md text-label-md bg-surface-container-high text-on-surface">142</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="transport-companies" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">departure_board</span><span class="font-label-lg text-label-lg">شركات النقل</span></div></a><a aria-current="page" class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-tertiary text-on-tertiary font-bold shadow-[0_1px_3px_0_rgba(14,92,62,0.04)]" data-path="agent-offices" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary-fixed">storefront</span><span class="font-label-lg text-label-lg">مكاتب الوكلاء</span></div><span class="w-2 h-2 rounded-full bg-secondary-fixed"></span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="passenger-accounts" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">groups</span><span class="font-label-lg text-label-lg">حسابات المسافرين</span></div></a></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-md text-label-md text-secondary uppercase tracking-wider mb-1">المالية والتسويات</span><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="wallets-and-transactions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">account_balance_wallet</span><span class="font-label-lg text-label-lg">المحافظ والمعاملات المالية</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="commissions-and-settlements" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">sync_alt</span><span class="font-label-lg text-label-lg">العمولات ودورات التسوية</span></div><span class="px-2 py-0.5 rounded-full font-label-md text-label-md bg-primary-fixed text-on-primary-fixed">4 معلقة</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="cancellations-and-refunds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">published_with_changes</span><span class="font-label-lg text-label-lg">الإلغاءات والاسترداد</span></div><span class="px-2 py-0.5 rounded-full font-label-md text-label-md bg-secondary-container text-on-secondary-container">2 مراجعة</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="financial-reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">bar_chart</span><span class="font-label-lg text-label-lg">التقارير المالية والإحصاءات</span></div></a></div><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-md text-label-md text-secondary uppercase tracking-wider mb-1">إدارة النظام والصلاحيات</span><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="admin-team" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">badge</span><span class="font-label-lg text-label-lg">فريق الإدارة</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="roles-and-permissions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">shield_person</span><span class="font-label-lg text-label-lg">الأدوار والصلاحيات</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="audit-and-activity-logs" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">history</span><span class="font-label-lg text-label-lg">سجل الأنشطة والتدقيق</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="general-settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px] text-secondary">settings</span><span class="font-label-lg text-label-lg">الإعدادات العامة</span></div></a></div></nav></div><div class="p-space-md m-space-sm rounded-xl bg-surface-container-low flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-tertiary flex items-center justify-center text-on-tertiary font-bold font-label-lg text-label-lg">أ</div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">أحمد السر</span><span class="font-body-sm text-body-sm text-secondary">المشرف العام</span></div></div><a class="text-outline hover:text-error transition-colors" href="#" title="تسجيل الخروج"><span class="material-symbols-outlined text-[22px]">logout</span></a></div></aside><div class="pr-72"><header class="fixed top-0 left-0 right-72 h-16 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md flex-1 max-w-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span><input class="w-full h-10 pr-10 pl-4 rounded-lg bg-surface-container text-on-surface placeholder:text-outline text-body-md font-body-md focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="بحث سريع برقم الحجز، الوكيل، أو الشركة..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span></span><span class="font-label-md text-label-md text-secondary font-medium">الأنظمة التشغيلية: متصلة 100%</span></div><div class="hidden lg:flex items-center gap-1.5 text-on-surface-variant font-label-md text-label-md"><span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span><span>اليوم: 24 أكتوبر 2024</span></div><button class="flex items-center gap-1.5 bg-primary-container hover:bg-primary text-on-primary px-space-md py-2 rounded-lg font-label-lg text-label-lg transition-colors shadow-[0_1px_3px_0_rgba(14,92,62,0.04)]"><span class="material-symbols-outlined text-[18px]">add</span><span>إجراء سريع</span></button><button class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-surface min-h-screen p-space-lg"><div class="max-w-[1440px] mx-auto"><div class="flex flex-col w-full gap-space-lg">
+<!-- Page Header -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-6 rounded-full bg-primary-container inline-block"></span>
+<h1 class="font-headline-lg text-headline-lg text-tertiary">مكاتب الوكلاء المعتمدة</h1>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">شبكة التوزيع البري</span>
+</div>
+<p class="font-body-md text-body-md text-secondary max-w-2xl">
+        إدارة شبكة مكاتب السفر المعتمدة، متابعة أرصدة المحافظ النقدية، وصلاحيات ربط شركات النقل عبر الولايات.
+      </p>
+</div>
+<div class="flex items-center flex-wrap gap-2.5">
+<button class="w-10 h-10 rounded-lg bg-surface-container-lowest hover:bg-surface-container-low text-secondary flex items-center justify-center shadow-sm transition-colors" title="تحديث البيانات" type="button">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-tertiary font-label-lg text-label-lg shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[19px] text-secondary">file_download</span>
+<span>تصدير الكشف (CSV/Excel)</span>
+</button>
+<button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">add_business</span>
+<span>+ إضافة مكتب وسيط جديد (طلب اعتماد)</span>
+</button>
+</div>
+</div>
+<!-- KPI Summary Cards (4 Grid) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Card 1: Total Offices -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-secondary">إجمالي مكاتب الوكلاء</span>
+<div class="w-9 h-9 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-tabular-stat text-tabular-stat text-tertiary">312</span>
+<span class="font-label-md text-label-md text-secondary">مكتب معتمد</span>
+</div>
+<div class="mt-2 flex items-center justify-between text-body-sm text-body-sm text-secondary">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">map</span>
+          موزعة عبر 18 ولاية
+        </span>
+<span class="font-label-md text-label-md text-secondary-container bg-tertiary-container px-2 py-0.5 rounded-full">تغطية شاملة</span>
+</div>
+</div>
+<!-- Card 2: Active Offices -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-secondary">المكاتب النشطة تشغيلياً</span>
+<div class="w-9 h-9 rounded-lg bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-tabular-stat text-tabular-stat text-tertiary">298</span>
+<span class="font-label-md text-label-md text-secondary">مكتب متصل</span>
+</div>
+<div class="mt-2 flex items-center justify-between">
+<div class="w-32 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 95.5%"></div>
+</div>
+<span class="font-label-md text-label-md text-secondary">95.5% جاهزية</span>
+</div>
+</div>
+<!-- Card 3: Today's Agent Sales -->
+<div class="bg-tertiary text-on-tertiary rounded-xl p-space-md shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-tertiary-fixed">مبيعات الوكلاء اليوم</span>
+<div class="w-9 h-9 rounded-lg bg-tertiary-container text-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline gap-1.5">
+<span class="font-tabular-stat text-tabular-stat text-on-tertiary">1,240,500</span>
+<span class="font-label-md text-label-md text-tertiary-fixed-dim">ج.س</span>
+</div>
+<div class="mt-2 flex items-center justify-between text-body-sm text-body-sm text-tertiary-fixed">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">confirmation_number</span>
+          عبر 1,420 تذكرة مصدرة
+        </span>
+<span class="text-secondary-fixed font-label-md text-label-md">+14.2%</span>
+</div>
+</div>
+<!-- Card 4: Low Balance Alert -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-outline">تنبيه الرصيد الأدنى للمحفظة</span>
+<div class="w-9 h-9 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">notification_important</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-tabular-stat text-tabular-stat text-primary">14</span>
+<span class="font-label-md text-label-md text-primary-container">مكتب يحتاج شحن</span>
+</div>
+<div class="mt-2 flex items-center gap-1.5 text-body-sm text-body-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>رصيد &lt; 500 ج.س (خطر توقف الحجز)</span>
+</div>
+</div>
+</div>
+<!-- Search & Filter Controls Panel -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+<!-- Search Input -->
+<div class="lg:col-span-5 relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+<input class="w-full h-11 pr-10 pl-4 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container focus:outline-none transition-colors" placeholder="البحث باسم المكتب، رمز الاعتماد (AG-XXX)، المدينة، أو المدير المسؤول..." type="text"/>
+</div>
+<!-- Filters Row -->
+<div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+<!-- City Filter -->
+<div class="relative">
+<select class="w-full h-11 px-3 appearance-none rounded-lg bg-surface-container text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
+<option>الولاية: ولاية الخرطوم</option>
+<option>الخرطوم</option>
+<option>أم درمان</option>
+<option>بحري</option>
+<option>بورتسودان</option>
+<option>شندي</option>
+<option>مروي</option>
+<option>كوستي</option>
+<option>دنقلا</option>
+</select>
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Status Filter -->
+<div class="relative">
+<select class="w-full h-11 px-3 appearance-none rounded-lg bg-surface-container text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
+<option>الحالة: نشط</option>
+<option>الكل</option>
+<option>تنبيه الرصيد المنخفض</option>
+<option>موقوف مؤقتاً</option>
+</select>
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Transit Company Filter -->
+<div class="relative">
+<select class="w-full h-11 px-3 appearance-none rounded-lg bg-surface-container text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
+<option>الشركات المرتبطة: الكل</option>
+<option>شركة النيل</option>
+<option>سابتكو السودان</option>
+<option>النقل السريع</option>
+<option>سفريات الشمال</option>
+</select>
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Balance Range Filter -->
+<div class="relative">
+<select class="w-full h-11 px-3 appearance-none rounded-lg bg-surface-container text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer">
+<option>رصيد المحفظة: الكل</option>
+<option>أقل من 500 ج.س</option>
+<option>500 - 10,000 ج.س</option>
+<option>أكثر من 10,000 ج.س</option>
+</select>
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Active Filters Tags Bar -->
+<div class="flex items-center flex-wrap gap-2 pt-2">
+<span class="font-label-md text-label-md text-secondary">الفلاتر المطبقة:</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span>الحالة: نشط</span>
+<button class="text-secondary hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span>الولاية: ولاية الخرطوم</span>
+<button class="text-secondary hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</span>
+<button class="font-label-md text-label-md text-primary-container hover:text-primary font-bold px-2 py-1 transition-colors" type="button">
+        مسح جميع الفلاتر
+      </button>
+<span class="mr-auto font-body-sm text-body-sm text-secondary">
+        تم العثور على <strong class="text-tertiary font-bold">142</strong> مكتب يطابق المعايير
+      </span>
+</div>
+</div>
+<!-- Main High Density RTL Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-secondary font-label-md text-label-md">
+<th class="py-3 px-4">مكتب السفر والاسم التجاري</th>
+<th class="py-3 px-3">رمز الاعتماد</th>
+<th class="py-3 px-4">المدينة ونقاط البيع</th>
+<th class="py-3 px-4">مدير المكتب والاتصال</th>
+<th class="py-3 px-4 text-left">رصيد المحفظة الفعلي</th>
+<th class="py-3 px-3 text-center">الشركات المصرحة</th>
+<th class="py-3 px-3 text-center">حجوزات الشهر</th>
+<th class="py-3 px-3 text-center">حالة المكتب</th>
+<th class="py-3 px-4 text-center">الإجراءات</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1: Al-Neel Travel -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">apartment</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-tertiary font-semibold">وكالة النيل للسفر والسياحة</span>
+<span class="font-body-sm text-body-sm text-secondary">شركة النيل المحدودة للخدمات</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="px-2 py-0.5 rounded font-tabular-stat text-body-sm text-tertiary bg-surface-container font-mono">
+                AG-882
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">الخرطوم - صالة المغادرة</span>
+<span class="font-body-sm text-body-sm text-secondary">الميناء البري | 4 نقاط POS</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">مروان الكاتب</span>
+<span class="font-body-sm text-body-sm text-secondary font-mono" dir="ltr">+249 123 249 882</span>
+</div>
+</td>
+<td class="py-3 px-4 text-left">
+<div class="flex flex-col items-end">
+<div class="font-tabular-stat text-headline-sm text-tertiary">
+                  15,150.00 <span class="font-label-md text-body-sm text-secondary">ج.س</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">محفظة مشحونة</span>
+</div>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-tertiary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+                6 شركات
+              </span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="font-tabular-stat text-body-lg text-tertiary font-bold">420</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                نشط
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-secondary-container text-tertiary font-label-md text-label-md transition-colors" type="button">
+                  عرض الملف
+                </button>
+<div class="relative group">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<div class="hidden group-hover:flex absolute left-0 top-full mt-1 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-1.5 flex-col z-30">
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+                      سجل المحفظة
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">alt_route</span>
+                      ربط شركة نقل
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+                      كشف الحساب
+                    </button>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<!-- Row 2: Al-Safa Passenger Services (Low Balance Alert) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors bg-primary-fixed/20">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">store</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-tertiary font-semibold">وكالة الصفا لخدمات الركاب</span>
+<span class="font-body-sm text-body-sm text-secondary">الصفا لخدمات النقل البري</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="px-2 py-0.5 rounded font-tabular-stat text-body-sm text-tertiary bg-surface-container font-mono">
+                AG-410
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">أم درمان - شارع العرضة</span>
+<span class="font-body-sm text-body-sm text-secondary">مقابل البنك الأهلي | 2 نقاط POS</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">طارق مصطفى</span>
+<span class="font-body-sm text-body-sm text-secondary font-mono" dir="ltr">+249 918 440 920</span>
+</div>
+</td>
+<td class="py-3 px-4 text-left">
+<div class="flex flex-col items-end">
+<div class="font-tabular-stat text-headline-sm text-primary font-bold">
+                  380.00 <span class="font-label-md text-body-sm text-primary">ج.س</span>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-body-sm text-primary">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                  تنبيه: رصيد منخفض
+                </span>
+</div>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-tertiary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+                4 شركات
+              </span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="font-tabular-stat text-body-lg text-tertiary font-bold">185</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary-fixed text-primary font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                تنبيه رصيد
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-colors" type="button">
+                  إشعار شحن
+                </button>
+<div class="relative group">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<div class="hidden group-hover:flex absolute left-0 top-full mt-1 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-1.5 flex-col z-30">
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+                      سجل المحفظة
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">alt_route</span>
+                      ربط شركة نقل
+                    </button>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<!-- Row 3: Al-Amana Tourism (Khartoum Bahri) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">corporate_fare</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-tertiary font-semibold">وكالة الأمانة للسياحة</span>
+<span class="font-body-sm text-body-sm text-secondary">الأمانة الدولية للسفريات والتوكيلات</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="px-2 py-0.5 rounded font-tabular-stat text-body-sm text-tertiary bg-surface-container font-mono">
+                AG-904
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">الخرطوم بحري - المحطة الوسطى</span>
+<span class="font-body-sm text-body-sm text-secondary">المجمع السياحي | 6 نقاط POS</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">إبراهيم سليمان</span>
+<span class="font-body-sm text-body-sm text-secondary font-mono" dir="ltr">+249 912 345 904</span>
+</div>
+</td>
+<td class="py-3 px-4 text-left">
+<div class="flex flex-col items-end">
+<div class="font-tabular-stat text-headline-sm text-tertiary">
+                  42,300.00 <span class="font-label-md text-body-sm text-secondary">ج.س</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary font-semibold">محفظة ممتازة</span>
+</div>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-tertiary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+                8 شركات
+              </span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="font-tabular-stat text-body-lg text-tertiary font-bold">650</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                نشط
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-secondary-container text-tertiary font-label-md text-label-md transition-colors" type="button">
+                  عرض الملف
+                </button>
+<div class="relative group">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<div class="hidden group-hover:flex absolute left-0 top-full mt-1 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-1.5 flex-col z-30">
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+                      سجل المحفظة
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">alt_route</span>
+                      ربط شركة نقل
+                    </button>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<!-- Row 4: Al-Nawras Passenger Office (Kosti) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">departure_board</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-tertiary font-semibold">مكتب النورس لنقل الركاب</span>
+<span class="font-body-sm text-body-sm text-secondary">مجموعة النورس للنقل والتخليص</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="px-2 py-0.5 rounded font-tabular-stat text-body-sm text-tertiary bg-surface-container font-mono">
+                AG-315
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">كوستي - مجمع السفريات</span>
+<span class="font-body-sm text-body-sm text-secondary">البوابة الجنوبية | 2 نقاط POS</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">عادل عبد الرحمن</span>
+<span class="font-body-sm text-body-sm text-secondary font-mono" dir="ltr">+249 911 223 315</span>
+</div>
+</td>
+<td class="py-3 px-4 text-left">
+<div class="flex flex-col items-end">
+<div class="font-tabular-stat text-headline-sm text-tertiary">
+                  8,650.00 <span class="font-label-md text-body-sm text-secondary">ج.س</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">محفظة مستقرة</span>
+</div>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-tertiary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+                3 شركات
+              </span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="font-tabular-stat text-body-lg text-tertiary font-bold">130</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                نشط
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-secondary-container text-tertiary font-label-md text-label-md transition-colors" type="button">
+                  عرض الملف
+                </button>
+<div class="relative group">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<div class="hidden group-hover:flex absolute left-0 top-full mt-1 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-1.5 flex-col z-30">
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+                      سجل المحفظة
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">alt_route</span>
+                      ربط شركة نقل
+                    </button>
+</div>
+</div>
+</div>
+</td>
+</tr>
+<!-- Row 5: Al-Yamama Travel (Shendi - Suspended / Critical) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors bg-surface-container-high/30">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">block</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-tertiary font-semibold">وكالة اليمامة للسفر</span>
+<span class="font-body-sm text-body-sm text-secondary">اليمامة لخدمات الركاب المحدودة</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="px-2 py-0.5 rounded font-tabular-stat text-body-sm text-secondary bg-surface-container font-mono">
+                AG-720
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">شندي - المجمع التجاري</span>
+<span class="font-body-sm text-body-sm text-secondary">طريق النيل | 1 نقطة POS</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">ياسر الفحل</span>
+<span class="font-body-sm text-body-sm text-secondary font-mono" dir="ltr">+249 915 554 720</span>
+</div>
+</td>
+<td class="py-3 px-4 text-left">
+<div class="flex flex-col items-end">
+<div class="font-tabular-stat text-headline-sm text-error font-bold">
+                  120.00 <span class="font-label-md text-body-sm text-error">ج.س</span>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-body-sm text-error font-semibold">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                  رصيد غير كافٍ للحجز
+                </span>
+</div>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-outline font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+                2 شركات
+              </span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="font-tabular-stat text-body-lg text-outline font-bold">45</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                موقوف مؤقتاً
+              </span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container text-secondary hover:bg-surface-container-high font-label-md text-label-md transition-colors" type="button">
+                  رفع الإيقاف
+                </button>
+<div class="relative group">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-secondary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+<div class="hidden group-hover:flex absolute left-0 top-full mt-1 w-44 bg-surface-container-lowest rounded-xl shadow-lg p-1.5 flex-col z-30">
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+                      سجل المحفظة
+                    </button>
+<button class="flex items-center gap-2 px-3 py-2 text-right rounded-lg hover:bg-surface-container font-label-md text-label-md text-tertiary">
+<span class="material-symbols-outlined text-[16px]">contact_phone</span>
+                      الاتصال بالمدير
+                    </button>
+</div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="bg-surface-container-low px-space-md py-3 flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<div class="flex items-center gap-3">
+<span class="font-body-md text-body-md text-secondary">
+          عرض <strong class="text-tertiary font-bold">1 - 5</strong> من أصل <strong class="text-tertiary font-bold">312</strong> مكتب معتمد
+        </span>
+<div class="h-4 w-px bg-surface-container"></div>
+<div class="flex items-center gap-1.5">
+<span class="font-body-sm text-body-sm text-secondary">الصفوف لكل صفحة:</span>
+<select class="h-8 px-2 rounded bg-surface-container-lowest text-tertiary font-body-sm text-body-sm focus:outline-none">
+<option>10</option>
+<option>25</option>
+<option>50</option>
+</select>
+</div>
+</div>
+<!-- Page Navigator Buttons -->
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-outline hover:text-tertiary flex items-center justify-center disabled:opacity-40 transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">first_page</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-outline hover:text-tertiary flex items-center justify-center disabled:opacity-40 transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+<span class="px-3 py-1 rounded bg-tertiary text-on-tertiary font-label-md text-label-md font-bold">1</span>
+<button class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container text-tertiary font-label-md text-label-md transition-colors" type="button">2</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container text-tertiary font-label-md text-label-md transition-colors" type="button">3</button>
+<span class="px-1 text-outline font-mono">...</span>
+<button class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container text-tertiary font-label-md text-label-md transition-colors" type="button">32</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container text-tertiary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest hover:bg-surface-container text-tertiary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">last_page</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Governance & Financial Audit Alert Note -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex items-start gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-tertiary font-bold">تنبيه التدقيق المالي وضوابط المحافظ الرقمية للوكلاء</span>
+<p class="font-body-md text-body-md text-secondary leading-relaxed">
+        تُخصم قيمة التذاكر لحظياً من رصيد محفظة الوكيل المودع مسبقاً، وتُحسب العمولات المكتسبة بصورة مستقلة للتسوية الأسبوعية دون خلط بين الرصيدين. يتم تعليق الحجز آلياً لأي مكتب يقل رصيده عن الحد الأدنى التشغيلي (250 ج.س) لضمان حماية التزامات شركات النقل المشغلة.
+      </p>
+</div>
+</div>
+</div></div></main></div></body></html>

@@ -1,0 +1,39 @@
+enum WalletLedgerType {
+  CREDIT_TOPUP
+  DEBIT_BOOKING
+  CREDIT_REFUND
+  DEBIT_COMMISSION_PAYOUT
+}
+
+model Wallet {
+  id             String   @id @default(cuid())
+  brokerOfficeId String   @unique @map("broker_office_id")
+  balance        Int      @default(0)
+  currency       String   @default("SDG") @db.Char(3)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  brokerOffice   BrokerOffice        @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
+  ledgerEntries  WalletLedgerEntry[]
+  topUpIntents   TopUpIntent[]
+
+  @@map("wallets")
+}
+
+model WalletLedgerEntry {
+  id             String           @id @default(cuid())
+  walletId       String           @map("wallet_id")
+  type           WalletLedgerType
+  /// Always positive; sign implied by ledger type
+  amount         Int
+  balanceAfter   Int              @map("balance_after")
+  idempotencyKey String           @unique @map("idempotency_key") @db.VarChar(128)
+  referenceType  String?          @map("reference_type") @db.VarChar(64)
+  referenceId    String?          @map("reference_id") @db.VarChar(64)
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  wallet         Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("wallet_ledger_entries")
+}

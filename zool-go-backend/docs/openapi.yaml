@@ -1,0 +1,1411 @@
+openapi: 3.0.3
+info:
+  title: ZoolGo Backend API
+  version: 0.3.2
+  description: Stage 1 + Stage 2 + Stage 2.6 + Milestone A + Milestone B P1 admin workflows + self-service admin phone change OTP — standardized envelopes
+servers:
+  - url: http://localhost:4000/api/v1
+paths:
+  /health:
+    get:
+      summary: Liveness
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /ready:
+    get:
+      summary: Readiness (MySQL + Redis)
+      responses:
+        '200':
+          description: Ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '503':
+          description: Not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /auth/otp/request:
+    post:
+      summary: Request OTP for existing admin phone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: '+249900000001' }
+      responses:
+        '200':
+          description: Challenge created (devOtp only when OTP_DEV_EXPOSE and non-production)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/otp/verify:
+    post:
+      summary: Verify OTP and create session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone: { type: string }
+                code: { type: string }
+                challengeId: { type: string }
+      responses:
+        '200':
+          description: Access token returned; refresh cookie set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/refresh:
+    post:
+      summary: Rotate refresh token cookie and issue access token
+      responses:
+        '200':
+          description: Rotated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/logout:
+    post:
+      summary: Revoke current refresh session and clear cookie
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /auth/logout-all:
+    post:
+      summary: Revoke all sessions for current admin
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Logged out all
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /auth/me:
+    get:
+      summary: Current admin + effective roles/permissions
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/phone/otp/request:
+    post:
+      summary: Request OTP to the new phone for a self-service identity change. Authenticated; no admins.update. Does not issue tokens.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [phone]
+              properties:
+                phone: { type: string, example: '+249900000099' }
+      responses:
+        '200':
+          description: Challenge created (devOtp only when OTP_DEV_EXPOSE and non-production). OTP is sent to the requested number.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/phone/otp/verify:
+    post:
+      summary: Verify OTP on the new phone and update the caller's primary PHONE identity. Does not issue tokens. Bound to the authenticated admin.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [phone, code]
+              properties:
+                phone: { type: string }
+                code: { type: string }
+                challengeId: { type: string }
+      responses:
+        '200':
+          description: Updated admin profile (same shape as GET /auth/me). No new session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /admins:
+    get:
+      summary: List admins
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: Create admin
+      security: [{ bearerAuth: [] }]
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /admins/{adminId}:
+    get:
+      summary: Get admin
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: adminId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update displayName (admins.update). Phone cannot be changed here — even with admins.update; use POST /auth/phone/otp/*. Does not change roles, status, or credentials.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: adminId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [displayName]
+              properties:
+                displayName: { type: string }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /admins/{adminId}/sessions/revoke-all:
+    post:
+      summary: Revoke all active refresh sessions for a target admin (sessions.revoke). Bumps authzVersion. Does not suspend the account.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: adminId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: '{ revokedCount }'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /admins/{adminId}/status:
+    patch:
+      summary: Suspend or reactivate admin
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: adminId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /admins/{adminId}/roles:
+    put:
+      summary: Replace admin roles
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: adminId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /roles:
+    get:
+      summary: List roles
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+    post:
+      summary: Create role
+      security: [{ bearerAuth: [] }]
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /roles/{roleId}:
+    get:
+      summary: Get role
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update role
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+    delete:
+      summary: Delete non-system role
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /roles/{roleId}/permissions:
+    put:
+      summary: Replace role permissions
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: roleId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /permissions:
+    get:
+      summary: Permission catalog
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /sessions:
+    get:
+      summary: List active refresh sessions
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /sessions/{sessionId}:
+    delete:
+      summary: Revoke session
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+  /audit-logs:
+    get:
+      summary: List audit logs (audit.view). Database filters; reads are not audited.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: actorAdminId, in: query, schema: { type: string } }
+        - { name: action, in: query, schema: { type: string } }
+        - { name: resourceType, in: query, schema: { type: string } }
+        - { name: resourceId, in: query, schema: { type: string } }
+        - { name: requestId, in: query, schema: { type: string } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  # ---------------- Stage 2: broker vertical ----------------
+  /broker/auth/otp/request:
+    post:
+      tags: [Broker Auth]
+      summary: Request OTP for a broker employee phone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: '+249900000101' }
+      responses:
+        '200': { description: Challenge created (devOtp only in non-production with OTP_DEV_EXPOSE), content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /broker/auth/otp/verify:
+    post:
+      tags: [Broker Auth]
+      summary: Verify OTP; returns broker access JWT (typ broker_access) and sets zoolgo_broker_refresh cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone: { type: string }
+                code: { type: string }
+                challengeId: { type: string }
+      responses:
+        '200': { description: Authenticated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /broker/auth/refresh:
+    post:
+      tags: [Broker Auth]
+      summary: Rotate broker refresh cookie and issue a new access token
+      responses:
+        '200': { description: Refreshed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /broker/auth/logout:
+    post:
+      tags: [Broker Auth]
+      summary: Revoke broker refresh session
+      responses:
+        '200': { description: Logged out, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/auth/me:
+    get:
+      tags: [Broker Auth]
+      summary: Current broker employee (role, office, permissions)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /brokers:
+    post:
+      tags: [Brokers (admin)]
+      summary: Create broker office + wallet(0) + optional manager (brokers.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code: { type: string, example: ZG-BRK-1 }
+                name: { type: string }
+                settlementPeriod: { type: string, enum: [WEEKLY, MONTHLY] }
+                minTopUpMinorOverride: { type: integer }
+                exposureCeilingOverride: { type: integer }
+                lowBalanceThresholdMinorOverride: { type: integer }
+                timeZone: { type: string, example: Africa/Khartoum }
+                manager:
+                  type: object
+                  required: [displayName, phone]
+                  properties:
+                    displayName: { type: string }
+                    phone: { type: string }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [Brokers (admin)]
+      summary: List broker offices (brokers.view)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /brokers/{officeId}:
+    get:
+      tags: [Brokers (admin)]
+      summary: Office detail with employees and carrier assignments (brokers.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Brokers (admin)]
+      summary: Update office policy overrides (brokers.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settlementPeriod: { type: string, enum: [WEEKLY, MONTHLY] }
+                minTopUpMinorOverride: { type: integer, nullable: true }
+                exposureCeilingOverride: { type: integer, nullable: true }
+                lowBalanceThresholdMinorOverride: { type: integer, nullable: true }
+                timeZone: { type: string, nullable: true }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /brokers/{officeId}/staff:
+    post:
+      tags: [Brokers (admin)]
+      summary: Create a clerk for the office (brokers.manage). Reuses broker staff rules; cannot create Super Admin or MANAGER.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [displayName, phone]
+              properties:
+                displayName: { type: string }
+                phone: { type: string }
+                canBook: { type: boolean }
+                canTopUp: { type: boolean }
+                canViewReports: { type: boolean }
+                canManageStaff: { type: boolean }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /brokers/{officeId}/staff/{employeeId}:
+    patch:
+      tags: [Brokers (admin)]
+      summary: Update office staff flags, name, or status (brokers.manage)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: officeId, in: path, required: true, schema: { type: string } }
+        - { name: employeeId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName: { type: string }
+                canBook: { type: boolean }
+                canTopUp: { type: boolean }
+                canViewReports: { type: boolean }
+                canManageStaff: { type: boolean }
+                status: { type: string, enum: [ACTIVE, SUSPENDED] }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /brokers/{officeId}/carriers:
+    put:
+      tags: [Brokers (admin)]
+      summary: Replace carrier assignments [{companyId, commissionPercent}] (brokers.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required: [companyId, commissionPercent]
+                properties:
+                  companyId: { type: string }
+                  commissionPercent: { type: number, minimum: 0, maximum: 100 }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /brokers/{officeId}/status:
+    patch:
+      tags: [Brokers (admin)]
+      summary: Activate or suspend an office (brokers.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [ACTIVE, SUSPENDED] }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/staff:
+    get:
+      tags: [Broker Staff]
+      summary: List office staff (broker.staff.manage)
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Broker Staff]
+      summary: Create a clerk with permission flags and phone identity (broker.staff.manage)
+      security: [{ brokerBearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [displayName, phone]
+              properties:
+                displayName: { type: string }
+                phone: { type: string }
+                canBook: { type: boolean, default: true }
+                canTopUp: { type: boolean, default: false }
+                canViewReports: { type: boolean, default: false }
+                canManageStaff: { type: boolean, default: false }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/staff/{employeeId}:
+    patch:
+      tags: [Broker Staff]
+      summary: Update clerk flags / status (broker.staff.manage); bumps authz version
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: employeeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/wallet:
+    get:
+      tags: [Broker Wallet]
+      summary: Office wallet balance
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/wallet/ledger:
+    get:
+      tags: [Broker Wallet]
+      summary: Paginated wallet ledger
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/wallet/top-ups:
+    post:
+      tags: [Broker Wallet]
+      summary: Create PENDING top-up intent (broker.wallet.topup); min = office override or MIN_TOP_UP_AMOUNT
+      security: [{ brokerBearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amountMinor, idempotencyKey]
+              properties:
+                amountMinor: { type: integer, example: 100000 }
+                idempotencyKey: { type: string }
+      responses:
+        '201': { description: Intent created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '200': { description: Idempotent replay, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /broker/wallet/top-ups/{intentId}/mock-confirm:
+    post:
+      tags: [Broker Wallet]
+      summary: Confirm a top-up via the mock provider (PAYMENT_PROVIDER=mock and NODE_ENV != production only)
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Confirmed; wallet credited once, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /broker/wallet/top-ups/{intentId}/evidence:
+    post:
+      tags: [Broker Wallet]
+      summary: Attach receipt evidence on a failed/unverified intent (broker.wallet.topup); transitions to PENDING_REVIEW
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [paymentReference, receipt]
+              properties:
+                paymentReference: { type: string }
+                note: { type: string }
+                receipt: { type: string, format: binary }
+      responses:
+        '200': { description: Pending review, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /payments/webhooks/{provider}:
+    post:
+      tags: [Payments]
+      summary: Provider webhook; HMAC of raw body; credits matching SDG intent once
+      parameters: [{ name: provider, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200': { description: Confirmed or replay, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { description: WEBHOOK_SIGNATURE_INVALID }
+  /admin/wallets/top-ups:
+    get:
+      tags: [Wallets (admin)]
+      summary: List top-up intents (wallets.topups.view or wallets.topups.review)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets/{officeId}/top-ups:
+    post:
+      tags: [Wallets (admin)]
+      summary: Initiate manual fallback on behalf of an office (wallets.topups.create_for_office)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [amountMinor, paymentReference, receipt]
+              properties:
+                amountMinor: { type: integer }
+                paymentReference: { type: string }
+                note: { type: string }
+                parentIntentId: { type: string }
+                receipt: { type: string, format: binary }
+      responses:
+        '201': { description: Pending review, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets/top-ups/{intentId}/approve:
+    post:
+      tags: [Wallets (admin)]
+      summary: Approve pending-review top-up; credits intent.amountMinor only; no amount in body (wallets.topups.approve)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Confirmed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets/top-ups/{intentId}/reject:
+    post:
+      tags: [Wallets (admin)]
+      summary: Reject pending-review top-up (wallets.topups.reject)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Rejected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets/top-ups/{intentId}/evidence:
+    get:
+      tags: [Wallets (admin)]
+      summary: Download receipt (wallets.topups.evidence.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: File bytes }
+  /admin/bookings:
+    get:
+      tags: [Bookings (admin)]
+      summary: List bookings across offices (bookings.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: officeId, in: query, schema: { type: string } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: employeeId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [CONFIRMED, CANCELLED] } }
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+        - { name: q, in: query, schema: { type: string, maxLength: 64 }, description: Match booking id, ticketNumber, passenger phone, or passenger fullName }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/bookings/{id}:
+    get:
+      tags: [Bookings (admin)]
+      summary: Inspect a booking (bookings.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/bookings/{id}/tickets/{ticketNumber}/pdf:
+    get:
+      tags: [Bookings (admin)]
+      summary: Download a ticket PDF (bookings.view). Same generator as broker GET. Binary exception to JSON envelope. Not office-scoped. Cancelled tickets follow broker policy (409).
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: ticketNumber, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: PDF bytes
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Booking or ticket not CONFIRMED }
+  /admin/bookings/{id}/cancel:
+    post:
+      tags: [Bookings (admin)]
+      summary: Cancel with required reason; refund + clawback in one txn (bookings.cancel)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        '200': { description: Cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets:
+    get:
+      tags: [Wallets (admin)]
+      summary: Cross-office wallet list (wallets.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: q, in: query, schema: { type: string }, description: Office code or name }
+        - { name: officeStatus, in: query, schema: { type: string, enum: [ACTIVE, SUSPENDED] } }
+        - { name: lowBalance, in: query, schema: { type: boolean }, description: balanceMinor < resolved office threshold }
+        - { name: sort, in: query, schema: { type: string, enum: [balanceMinor, updatedAt, officeCode, officeName] } }
+        - { name: order, in: query, schema: { type: string, enum: [asc, desc] } }
+      responses:
+        '200': { description: Paginated wallets with SDG *Minor fields, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/wallets/{officeId}:
+    get:
+      tags: [Wallets (admin)]
+      summary: Office wallet + ledger (wallets.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /carriers:
+    post:
+      tags: [Carriers (admin)]
+      summary: Create transport company (carriers.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key, name]
+              properties:
+                key: { type: string, example: sudan_express }
+                name: { type: string }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    get:
+      tags: [Carriers (admin)]
+      summary: List transport companies (carriers.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, SUSPENDED] } }
+        - { name: q, in: query, schema: { type: string }, description: Match key or name }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /carriers/{companyId}:
+    get:
+      tags: [Carriers (admin)]
+      summary: Carrier detail with assignmentCount (carriers.view). Persisted fields only.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Carriers (admin)]
+      summary: Update name and/or status (carriers.manage). Status is administrative only; no booking/trip/hold side effects.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name: { type: string }
+                status: { type: string, enum: [ACTIVE, SUSPENDED] }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /catalog/trips:
+    post:
+      tags: [Catalog (admin)]
+      summary: Create trip with seats (catalog.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [companyId, origin, destination, departureAt, basePrice, seatLabels]
+              properties:
+                companyId: { type: string }
+                origin: { type: string }
+                destination: { type: string }
+                departureAt: { type: string, format: date-time }
+                basePrice: { type: integer }
+                seatLabels: { type: array, items: { type: string }, example: [A1, A2, A3] }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    get:
+      tags: [Catalog (admin)]
+      summary: List all trips (catalog.view)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /catalog/trips/{tripId}:
+    get:
+      tags: [Catalog (admin)]
+      summary: Trip detail with seats and availability (catalog.view). Any trip; no broker-assignment scope. Hold tokens omitted. May release expired holds (same as broker GET).
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Catalog (admin)]
+      summary: Update trip fields (catalog.manage); soft-disable via isActive=false
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin: { type: string }
+                destination: { type: string }
+                departureAt: { type: string, format: date-time }
+                basePrice: { type: integer }
+                isActive: { type: boolean }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /catalog/trips/{tripId}/seats:
+    post:
+      tags: [Catalog (admin)]
+      summary: Append seat labels (skips duplicates) (catalog.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [seatLabels]
+              properties:
+                seatLabels: { type: array, items: { type: string } }
+      responses:
+        '200': { description: Seats appended, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/carriers:
+    get:
+      tags: [Broker Catalog]
+      summary: Assigned carriers with commissionPercent
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/trips:
+    get:
+      tags: [Broker Catalog]
+      summary: Search trips of assigned carriers only
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: origin, in: query, schema: { type: string } }
+        - { name: destination, in: query, schema: { type: string } }
+        - { name: date, in: query, schema: { type: string, format: date } }
+        - { name: dateFrom, in: query, schema: { type: string, format: date } }
+        - { name: dateTo, in: query, schema: { type: string, format: date } }
+      responses:
+        '200': { description: OK (includes commissionPercent, basePrice, availability), content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/trips/{tripId}:
+    get:
+      tags: [Broker Catalog]
+      summary: Trip detail with seat map, availability counts, remainingSeconds on own holds
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /broker/trips/{tripId}/holds:
+    post:
+      tags: [Broker Catalog]
+      summary: Hold seats for SEAT_HOLD_TTL_SECONDS (broker.book); expired holds are released first
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode: { type: string, enum: [MANUAL, AUTO] }
+                seatIds: { type: array, items: { type: string } }
+                seatCount: { type: integer, minimum: 1 }
+      responses:
+        '201': { description: Held, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /broker/holds/{holdId}:
+    delete:
+      tags: [Broker Catalog]
+      summary: Release a hold (owner or manager; broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: holdId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Released, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/bookings/quote:
+    post:
+      tags: [Broker Bookings]
+      summary: Quote total, expected commission and balanceAfter (broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookingLines' }
+      responses:
+        '200': { description: Quote, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/bookings/confirm:
+    post:
+      tags: [Broker Bookings]
+      summary: Atomic confirm - holds owned, exposure ceiling, wallet debit, seats SOLD, tickets, commission UNSETTLED (broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/BookingLines'
+                - type: object
+                  required: [idempotencyKey]
+                  properties:
+                    idempotencyKey: { type: string }
+      responses:
+        '201': { description: Confirmed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '200': { description: Idempotent replay, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { description: INSUFFICIENT_BALANCE / HOLD_REQUIRED / SEAT_UNAVAILABLE / EXPOSURE_CEILING_EXCEEDED, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } } }
+  /broker/bookings:
+    get:
+      tags: [Broker Bookings]
+      summary: List bookings (clerks see own; managers / reports.view see office)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: employeeId, in: query, schema: { type: string } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [CONFIRMED, CANCELLED] } }
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/bookings/{id}:
+    get:
+      tags: [Broker Bookings]
+      summary: Booking detail
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/bookings/{id}/cancel:
+    post:
+      tags: [Broker Bookings]
+      summary: Cancel - full wallet refund, commission clawback, seats freed (broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /broker/bookings/{id}/dispatch:
+    post:
+      tags: [Broker Bookings]
+      summary: Build TicketDocument + PDF (base64); channel=download only (broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel: { type: string, enum: [download], default: download }
+      responses:
+        '200':
+          description: document + pdfBase64 + status READY
+          content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } }
+        '422':
+          description: TICKET_CHANNEL_DISABLED for whatsapp/sms
+          content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } }
+  /broker/bookings/{id}/tickets/{ticketNumber}/pdf:
+    get:
+      tags: [Broker Bookings]
+      summary: Raw PDF bytes for a single ticket (broker.book)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: ticketNumber, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: application/pdf
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+  /broker/reports/summary:
+    get:
+      tags: [Broker Reports]
+      summary: Office summary for date range (default last 30 days UTC) (broker.reports.view or manager)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/reports/by-employee:
+    get:
+      tags: [Broker Reports]
+      summary: Sales and commission by employee (broker.reports.view or manager)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/reports/by-carrier:
+    get:
+      tags: [Broker Reports]
+      summary: Sales and commission by carrier (broker.reports.view or manager)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/reports/wallet-activity:
+    get:
+      tags: [Broker Reports]
+      summary: Wallet ledger totals by type (broker.reports.view or manager)
+      security: [{ brokerBearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/commissions:
+    get:
+      tags: [Broker Commissions]
+      summary: Unsettled commission accruals + total (broker.reports.view or manager)
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/commissions:
+    get:
+      tags: [Commissions (admin)]
+      summary: List commission accruals, filter by officeId/status (commissions.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: officeId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [UNSETTLED, RESERVED, SETTLED, CLAWED_BACK] } }
+      responses:
+        '200': { description: OK (meta.summary has totals), content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/commissions/settlements:
+    get:
+      tags: [Commissions (admin)]
+      summary: List commission settlements (commissions.view)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Commissions (admin)]
+      summary: Create DRAFT settlement and reserve UNSETTLED accruals in the period (commissions.payout). Does NOT debit the office wallet.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [officeId, periodFrom, periodTo]
+              properties:
+                officeId: { type: string }
+                periodFrom: { type: string, format: date-time }
+                periodTo: { type: string, format: date-time }
+                note: { type: string }
+      responses:
+        '201': { description: Draft created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { description: NOTHING_TO_SETTLE / SETTLEMENT_OVERLAP, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorEnvelope' } } } }
+  /admin/commissions/settlements/{id}:
+    get:
+      tags: [Commissions (admin)]
+      summary: Settlement summary including accrualCount and currency SDG (commissions.view). Accruals are not embedded; use the paginated accruals route.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/commissions/settlements/{id}/accruals:
+    get:
+      tags: [Commissions (admin)]
+      summary: Paginated accruals reserved/linked to a settlement (commissions.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+      responses:
+        '200': { description: Paginated accruals; sum of amountMinor equals settlement totalAmountMinor, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/commissions/settlements/{id}/finalize:
+    post:
+      tags: [Commissions (admin)]
+      summary: Finalize a DRAFT settlement (idempotent). Accruals RESERVED → SETTLED. (commissions.payout)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payoutReference: { type: string }
+                note: { type: string }
+      responses:
+        '200': { description: Finalized, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/commissions/settlements/{id}/cancel:
+    post:
+      tags: [Commissions (admin)]
+      summary: Cancel a DRAFT settlement and release reserved accruals (commissions.payout)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    brokerBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Broker employee access token (typ broker_access)
+  schemas:
+    BookingLines:
+      type: object
+      required: [tripId, seatIds, passengers]
+      properties:
+        tripId: { type: string }
+        seatIds: { type: array, items: { type: string } }
+        passengers:
+          type: array
+          items:
+            type: object
+            required: [fullName, phone]
+            properties:
+              fullName: { type: string }
+              phone: { type: string }
+              idNumber: { type: string }
+    SuccessEnvelope:
+      type: object
+      required: [success, statusCode, message, data]
+      properties:
+        success: { type: boolean, enum: [true] }
+        statusCode: { type: integer, example: 200 }
+        message: { type: string }
+        data: {}
+        meta:
+          type: object
+          additionalProperties: true
+          properties:
+            requestId: { type: string }
+            page: { type: integer }
+            pageSize: { type: integer }
+            total: { type: integer }
+            totalPages: { type: integer }
+    ErrorEnvelope:
+      type: object
+      required: [success, statusCode, code, message]
+      properties:
+        success: { type: boolean, enum: [false] }
+        statusCode: { type: integer, example: 403 }
+        code: { type: string, example: PERMISSION_DENIED }
+        message: { type: string }
+        details: {}
+        requestId: { type: string }
+  responses:
+    Unauthorized:
+      description: Authentication required or failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Forbidden:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Resource or route not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    RateLimited:
+      description: Rate limited
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    MalformedJson:
+      description: Malformed JSON body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'

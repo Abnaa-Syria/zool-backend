@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;font-family:'IBM Plex Sans Arabic',sans-serif;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container":"#dbf4e5","outline-variant":"#debfc0","on-error":"#ffffff","on-tertiary":"#ffffff","tertiary-fixed-dim":"#99d3b4","on-surface-variant":"#574142","on-secondary-fixed":"#002113","primary-fixed":"#ffdadb","primary-fixed-dim":"#ffb2b7","surface-container-high":"#d5eee0","tertiary-container":"#1a533c","on-tertiary-fixed-variant":"#165039","tertiary":"#003b27","primary":"#6d001e","on-secondary-fixed-variant":"#005235","surface":"#e7fff1","surface-container-highest":"#d0e8da","on-tertiary-fixed":"#002114","error":"#ba1a1a","surface-dim":"#c7e0d2","on-tertiary-container":"#8cc5a7","on-secondary-container":"#286f4f","surface-container-low":"#e1faeb","on-primary-fixed-variant":"#8a182f","on-surface":"#0a1f17","on-primary":"#ffffff","on-error-container":"#93000a","secondary-fixed":"#aaf2ca","on-background":"#0a1f17","surface-container-lowest":"#ffffff","surface-bright":"#e7fff1","secondary-fixed-dim":"#8ed5af","inverse-on-surface":"#def7e8","tertiary-fixed":"#b5efd0","surface-tint":"#aa3145","secondary-container":"#a7efc7","on-primary-container":"#ff9ea6","inverse-primary":"#ffb2b7","on-secondary":"#ffffff","surface-variant":"#d0e8da","outline":"#8b7172","primary-container":"#8e1b32","error-container":"#ffdad6","background":"#e7fff1","secondary":"#226a4b","inverse-surface":"#20352b","on-primary-fixed":"#40000e"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-desktop":"2rem","space-xl":"2rem","space-md":"1rem","gutter-desktop":"1.5rem","space-sm":"0.5rem","space-xs":"0.25rem","space-lg":"1.5rem","margin":"1.5rem","gutter":"1.25rem"},fontFamily:{"body-md":["IBM Plex Sans"],"headline-lg":["IBM Plex Sans"],"label-md":["IBM Plex Sans"],"display-md":["IBM Plex Sans"],"body-lg":["IBM Plex Sans"],"headline-sm":["IBM Plex Sans"],"label-lg":["IBM Plex Sans"],"tabular-stat":["IBM Plex Sans"],"display-lg":["IBM Plex Sans"],"headline-md":["IBM Plex Sans"],"body-sm":["IBM Plex Sans"]},fontSize:{"body-md":["0.875rem",{"lineHeight":"1.375rem","letterSpacing":"0","fontWeight":"400"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"0","fontWeight":"600"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.025em","fontWeight":"600"}],"display-md":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"0","fontWeight":"700"}],"body-lg":["1rem",{"lineHeight":"1.625rem","letterSpacing":"0","fontWeight":"400"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"0","fontWeight":"600"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0","fontWeight":"600"}],"tabular-stat":["1.5rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"700"}],"display-lg":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"0","fontWeight":"700"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"0","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","letterSpacing":"0","fontWeight":"400"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface min-h-screen selection:bg-secondary-container selection:text-on-secondary-container"><aside class="fixed right-0 top-0 h-screen w-[260px] bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="flex flex-col"><div class="p-space-lg flex flex-col gap-space-xs bg-surface-container"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-headline-sm">directions_bus</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md font-bold tracking-tight text-primary leading-none">ZoolGo</span><span class="font-label-md text-label-md text-secondary font-medium mt-1">سفريات المدن وإدارة النقل</span></div></div><div class="mt-space-xs inline-flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span>لوحة الإدارة المركزية (Super Admin)</span></div></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">الرئيسية والعمليات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">grid_view</span><span>نظرة عامة</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg bg-tertiary text-on-tertiary font-label-lg text-label-lg shadow-sm" data-path="bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">confirmation_number</span><span>الحجوزات والتذاكر</span></div><span class="px-2 py-0.5 rounded-full bg-secondary text-on-secondary font-label-md text-label-md font-semibold">142</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="live-fleet-tracking" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">share_location</span><span>التتبع المباشر</span></div><span class="w-2 h-2 rounded-full bg-secondary"></span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="transport-companies" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">departure_board</span><span>شركات النقل</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="brokers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">storefront</span><span>مكاتب الوكلاء</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">group</span><span>حسابات المسافرين</span></div></a></nav></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">المالية والتسويات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="wallets-and-transactions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">account_balance_wallet</span><span>المحافظ والمعاملات المالية</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="commissions-and-settlements" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">currency_exchange</span><span>العمولات ودورات التسوية</span></div><span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">4 معلقة</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="cancellations-and-refunds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">assignment_return</span><span>الإلغاءات والاسترداد</span></div><span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md">2 مراجعة</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="financial-reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">bar_chart_4_bars</span><span>التقارير المالية والإحصاءات</span></div></a></nav></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">إدارة النظام والصلاحيات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="administration-team" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">shield_person</span><span>فريق الإدارة</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="roles-and-permissions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">lock_person</span><span>الأدوار والصلاحيات</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="activity-log" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">history_toggle_off</span><span>سجل الأنشطة والتدقيق</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="system-settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">settings</span><span>الإعدادات العامة</span></div></a></nav></div></div><div class="p-space-md m-space-md rounded-xl bg-surface-container-lowest shadow-[0_1px_3px_0_rgba(14,92,62,0.04)] flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="relative"><div class="w-9 h-9 rounded-full bg-secondary-container text-secondary flex items-center justify-center font-bold text-label-lg">أس</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-surface-container-lowest"></span></div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface font-semibold">أحمد السر</span><span class="font-body-sm text-body-sm text-on-surface-variant">المشرف العام</span></div></div><button class="text-on-surface-variant hover:text-error hover:bg-error-container/40 p-1.5 rounded-lg transition-colors" title="تسجيل الخروج"><span class="material-symbols-outlined text-headline-sm">logout</span></button></div></aside><div class="pr-[260px]"><header class="fixed top-0 right-[260px] left-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg gap-space-md"><div class="flex items-center gap-space-md flex-1"><div class="relative max-w-md w-full"><span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-headline-sm">search</span><input class="w-full h-10 pr-10 pl-4 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-secondary/30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="بحث سريع برقم الحجز، الوكيل، أو الشركة..." type="text"/></div><div class="hidden xl:flex items-center gap-space-xs px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span>الأنظمة التشغيلية: متصلة 100%</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.02)] font-label-md text-label-md"><span class="material-symbols-outlined text-secondary text-headline-sm">calendar_today</span><span>اليوم: 24 أكتوبر 2024</span></div><button class="relative p-2 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><span class="material-symbols-outlined text-headline-sm">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface-container-lowest"></span></button><div class="flex items-center gap-space-sm pl-2"><img alt="Super Admin Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface-container-high" src="https://lh3.googleusercontent.com/aida/AEtjO1UfglPDvtqYfIEtSbYJMbW3_O-EEcWbcuCSRM9FUVCSguA6VYCKXVDsUdquIFA-R8kP-GPaj0ceajyh2bvwf5KXtJagEEXKWLamOkX-A6GBLx6jXarb5mXhuHZEQVtWfA6IjrREDe76xvuYgQoVRtHA10sz1igjwRZ70BtVd_VchtnWqwjir0OLLnGPfSsQYPXOiGCD3sw5x1ojureR1Dhv_opfn1ez8xdvToe7a7RFqeu4sA4qlBB-56aAmdc9IcGOTNsror0Vaw"/></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)] p-space-lg"><div class="flex flex-col w-full gap-space-lg">
+<!-- PAGE HEADER & ACTION CONTROLS -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">الحجوزات والتذاكر</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>تحديث حي مباشر</span>
+</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">متابعة الحجوزات والمدفوعات وإصدار التذاكر من جميع قنوات زولغو</p>
+</div>
+<!-- Header Controls: Date Range, Export, Refresh (No Create Button) -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Date Range Selector -->
+<div class="inline-flex p-1 rounded-xl bg-surface-container-low shadow-sm">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-label-md text-label-md text-on-surface font-semibold shadow-sm transition-colors">اليوم</button>
+<button class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">آخر 7 أيام</button>
+<button class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">آخر 30 يوماً</button>
+<button class="px-3 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+<span>مخصص</span>
+</button>
+</div>
+<!-- Action Buttons -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container-lowest text-secondary hover:bg-surface-container-high font-label-md text-label-md shadow-sm transition-all">
+<span class="material-symbols-outlined text-headline-sm">file_download</span>
+<span>تصدير كشف الحجوزات (CSV/Excel)</span>
+</button>
+<button class="flex items-center justify-center p-2 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-secondary hover:bg-surface-container-high shadow-sm transition-all" id="refreshBtn" title="تحديث فوري">
+<span class="material-symbols-outlined text-headline-sm">refresh</span>
+</button>
+</div>
+</div>
+<!-- SUMMARY CARDS ROW -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Card 1: Total Bookings (Primary Green Elevated Metric) -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-secondary-container/30 blur-2xl group-hover:scale-125 transition-transform"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface-variant">إجمالي الحجوزات</span>
+<div class="w-9 h-9 rounded-lg bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-headline-sm">confirmation_number</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<span class="font-tabular-stat text-display-md text-on-surface tracking-tight">14,820</span>
+<div class="flex items-center gap-1.5 font-label-md text-label-md text-secondary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12.4% مقارنة بالفترة السابقة</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Confirmed Bookings -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface-variant">الحجوزات المؤكدة</span>
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-headline-sm">check_circle</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<span class="font-tabular-stat text-display-md text-on-surface tracking-tight">11,240</span>
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-secondary font-medium">75.8% من الإجمالي</span>
+<span class="text-on-surface-variant">رحلات مجدولة</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Pending Payment -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface-variant">في انتظار الدفع</span>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-headline-sm">pending_actions</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<span class="font-tabular-stat text-display-md text-on-surface tracking-tight">1,180</span>
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface-variant font-medium">8.0% من الإجمالي</span>
+<span class="text-secondary">مهلة الإلغاء نشطة</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Ticket Issue Failures (Critical Warning Metric in Burgundy) -->
+<div class="p-space-lg rounded-xl bg-primary-container text-on-primary shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-primary/40 blur-2xl"></div>
+<div class="flex items-center justify-between relative z-10">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-headline-sm text-primary-fixed">error</span>
+<span class="font-label-lg text-label-lg text-primary-fixed">تعذر إصدار التذكرة</span>
+</div>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed animate-ping"></span>
+</div>
+<div class="mt-space-md flex flex-col gap-1 relative z-10">
+<div class="flex items-baseline gap-2">
+<span class="font-tabular-stat text-display-md text-on-primary font-bold">14</span>
+<span class="font-label-md text-label-md text-primary-fixed">حالة حرجة</span>
+</div>
+<p class="font-body-sm text-body-sm text-primary-fixed-dim leading-snug">تتطلب مراجعة تقنية وتكامل النظام مع شركة النقل</p>
+</div>
+</div>
+</div>
+<!-- SEARCH & ADVANCED FILTERS PANEL -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+<!-- Primary Search Input -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-headline-sm">search</span>
+<input class="w-full h-11 pr-11 pl-4 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary/30 transition-all" placeholder="البحث برقم الحجز (ZL-...)، رقم التذكرة، اسم المسافر، هاتف المسافر، اسم مكتب الوكيل، أو رقم الرحلة..." type="text"/>
+</div>
+<!-- Multi-Filter Dropdown Selectors Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-space-sm">
+<!-- 1. Source -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">مصدر الحجز</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>تطبيق العميل</option>
+<option>شبكة مكاتب الوكلاء</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 2. Booking Status -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">حالة الحجز</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>مؤكد</option>
+<option>في انتظار الدفع</option>
+<option>ملغى</option>
+<option>مكتمل</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 3. Payment Status -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">حالة الدفع</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>مدفوع</option>
+<option>غير مدفوع</option>
+<option>فشل الدفع</option>
+<option>استرداد قيد المعالجة</option>
+<option>مسترد</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 4. Ticket Status -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">حالة التذكرة</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer font-semibold text-primary">
+<option>الكل</option>
+<option>صادرة</option>
+<option>لم تصدر</option>
+<option selected="">تعذر الإصدار (14)</option>
+<option>ملغاة</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 5. Carrier -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">شركة النقل</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>سابتكو VIP</option>
+<option>شركة النيل للنقل البري</option>
+<option>إيست دلتا</option>
+<option>النقل السريع</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 6. Broker Office -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">مكتب الوكيل</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>وكالة النيل للسفر (الخرطوم)</option>
+<option>مكتب الأمانة (الدمام)</option>
+<option>مكتب الصفا</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- 7. Route -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface-variant">المسار</label>
+<div class="relative">
+<select class="w-full h-9 pr-2.5 pl-6 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm appearance-none focus:outline-none focus:ring-1 focus:ring-secondary cursor-pointer">
+<option>الكل</option>
+<option>الخرطوم ← مروي</option>
+<option>الخرطوم ← بورتسودان</option>
+<option>الرياض ← جدة</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-body-sm pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Active Filters Chips & Reset Action -->
+<div class="flex items-center justify-between pt-1 flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface-variant ml-1">الفلاتر المطبقة:</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span>مصدر الحجز: الكل</span>
+<button class="hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>
+</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-semibold">
+<span>حالة التذكرة: تعذر الإصدار (14)</span>
+<button class="hover:opacity-75 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</span>
+</div>
+<button class="text-error hover:underline font-label-md text-label-md flex items-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm">filter_alt_off</span>
+<span>مسح جميع الفلاتر</span>
+</button>
+</div>
+</div>
+<!-- BOOKINGS DATA TABLE CONTAINER -->
+<div class="rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden flex flex-col">
+<!-- Quick Bulk Operations Banner (Hidden unless selections made, presented for operational readiness) -->
+<div class="px-space-lg py-2.5 bg-surface-container-high/60 flex items-center justify-between font-label-md text-label-md text-secondary">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm">checklist</span>
+<span>تم تحديد <strong class="text-on-surface">0</strong> حجز من إجمالي الجدول</span>
+</div>
+<div class="flex items-center gap-space-sm opacity-60 pointer-events-none">
+<button class="px-2.5 py-1 rounded bg-surface-container text-on-surface">إعادة محاولة إصدار التذاكر</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-on-surface">تصدير المحدد</button>
+</div>
+</div>
+<!-- Responsive Table Wrapper -->
+<div class="overflow-x-auto min-h-[380px]">
+<table class="w-full text-right border-collapse">
+<!-- Table Header -->
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md tracking-wider">
+<th class="p-3.5 pr-4 w-10">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</th>
+<th class="p-3.5 whitespace-nowrap">رقم الحجز</th>
+<th class="p-3.5 whitespace-nowrap">المسافر الرئيسي</th>
+<th class="p-3.5 whitespace-nowrap">مصدر الحجز</th>
+<th class="p-3.5 whitespace-nowrap">شركة النقل</th>
+<th class="p-3.5 whitespace-nowrap">المسار</th>
+<th class="p-3.5 whitespace-nowrap">موعد الرحلة</th>
+<th class="p-3.5 text-left whitespace-nowrap">إجمالي الحجز</th>
+<th class="p-3.5 text-center whitespace-nowrap">حالة الدفع</th>
+<th class="p-3.5 text-center whitespace-nowrap">حالة التذكرة</th>
+<th class="p-3.5 text-center whitespace-nowrap">حالة الحجز</th>
+<th class="p-3.5 pl-4 text-center whitespace-nowrap">الإجراءات</th>
+</tr>
+</thead>
+<!-- Table Body Rows -->
+<tbody class="divide-y divide-surface-container font-body-md text-body-md text-on-surface">
+<!-- ROW 1: Customer Mobile App - Issue Failure Case (Highlighting the 14 critical cases) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors bg-error-container/10">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-854921</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقعد 14A • ذهاب فقط</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">أحمد محمد علي</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 912 345 678</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">smartphone</span>
+<span>تطبيق العميل</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">سابتكو VIP Express</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 983</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الخرطوم</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>مروي</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">اليوم</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">08:30 ص</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              350 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<!-- Separate Payment Status: Paid -->
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>مدفوع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<!-- Critical: Ticket Status Issue Failure while paid -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-bold animate-pulse">
+<span class="material-symbols-outlined text-xs">report_problem</span>
+<span>تعذر الإصدار</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<!-- Separate Booking Status -->
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">
+                مؤكد
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center relative whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="row-menu-btn p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+<!-- Open Action Dropdown Demonstration (Non-destructive operations only) -->
+<div class="absolute left-8 top-12 w-48 rounded-xl bg-surface-container-lowest shadow-lg py-1.5 z-30 text-right flex flex-col">
+<a class="px-3.5 py-2 font-label-md text-label-md text-on-surface hover:bg-surface-container flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-secondary">open_in_new</span>
+<span>عرض التفاصيل</span>
+</a>
+<a class="px-3.5 py-2 font-label-md text-label-md text-on-surface hover:bg-surface-container flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-secondary">confirmation_number</span>
+<span>عرض التذكرة</span>
+</a>
+<a class="px-3.5 py-2 font-label-md text-label-md text-on-surface hover:bg-surface-container flex items-center gap-2 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm text-secondary">route</span>
+<span>عرض الرحلة</span>
+</a>
+<button class="w-full text-right px-3.5 py-2 font-label-md text-label-md text-on-surface hover:bg-surface-container flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">content_copy</span>
+<span>نسخ رقم الحجز</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 2: Broker Office Booking - Confirmed & Issued -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-BR-19482</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقاعد 03B, 03C • ذهاب وعودة</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">عثمان الطيب البشير</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 123 998 701</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/60 text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">storefront</span>
+<span>وكالة النيل للسفر (الخرطوم)</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">شركة النيل للنقل البري</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 114</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الخرطوم</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>بورتسودان</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">غداً 25 أكتوبر</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">06:00 ص</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              1,100 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>مدفوع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>صادرة</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-secondary-container text-secondary font-label-md text-label-md font-semibold">
+                مؤكد
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 3: Customer App - Pending Payment Case -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-992014</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقعد 05D • ذهاب فقط</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">فاطمة الزهراء إدريس</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 900 112 233</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">smartphone</span>
+<span>تطبيق العميل</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">إيست دلتا</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 402</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الرياض</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>جدة</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">26 أكتوبر 2024</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">10:15 م</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              420 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+<span>غير مدفوع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">
+<span>لم تصدر</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-medium">
+                في انتظار الدفع
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 4: Broker Office Booking - مكتب الصفا -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-BR-20311</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقعد 01A (VIP) • ذهاب فقط</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">طارق مصطفى عبد الرحمن</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 918 440 920</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/60 text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">storefront</span>
+<span>مكتب الصفا</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">النقل السريع</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 705</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الخرطوم</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>عطبرة</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">27 أكتوبر 2024</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">07:00 ص</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              280 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>مدفوع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>صادرة</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-secondary-container text-secondary font-label-md text-label-md font-semibold">
+                مؤكد
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 5: Mobile App - Payment Failed Case -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-784190</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقعد 12C • ذهاب فقط</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">مروان كمال الدين</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 922 884 551</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">smartphone</span>
+<span>تطبيق العميل</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">سابتكو VIP Express</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 990</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الرياض</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>المدينة المنورة</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">28 أكتوبر 2024</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">01:30 م</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              510 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-xs">cancel</span>
+<span>فشل الدفع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">
+<span>لم تصدر</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md">
+                ملغى
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 6: Broker Office - مكتب الأمانة (الدمام) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="p-3.5 pr-4">
+<input class="rounded w-4 h-4 text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-3.5 font-label-lg whitespace-nowrap">
+<a class="text-secondary hover:underline font-semibold font-tabular-stat tracking-tight" href="#">ZL-BR-18902</a>
+<div class="font-body-sm text-body-sm text-on-surface-variant">مقعد 08B • ذهاب فقط</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-semibold text-on-surface">إبراهيم سليمان حسن</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat" dir="ltr">+249 911 023 456</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/60 text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-sm">storefront</span>
+<span>مكتب الأمانة (الدمام)</span>
+</span>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium text-on-surface">شركة النيل للنقل البري</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">حافلة رقم 208</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="flex items-center gap-1 font-medium">
+<span>الدمام</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">arrow_left_alt</span>
+<span>الرياض</span>
+</div>
+</td>
+<td class="p-3.5 whitespace-nowrap">
+<div class="font-medium">29 أكتوبر 2024</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-tabular-stat">04:45 م</div>
+</td>
+<td class="p-3.5 text-left font-tabular-stat font-semibold whitespace-nowrap">
+              190 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">ج.س</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>مدفوع</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>صادرة</span>
+</span>
+</td>
+<td class="p-3.5 text-center whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-secondary-container text-secondary font-label-md text-label-md font-semibold">
+                مؤكد
+              </span>
+</td>
+<td class="p-3.5 pl-4 text-center whitespace-nowrap">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-secondary transition-colors" title="عرض التفاصيل">
+<span class="material-symbols-outlined text-headline-sm">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="المزيد من الإجراءات">
+<span class="material-symbols-outlined text-headline-sm">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE FOOTER WITH ARABIC PAGINATION & PAGE-SIZE SELECTOR -->
+<div class="p-space-md bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-sm font-label-md text-label-md text-on-surface-variant">
+<!-- Showing Entries Count & Size Selector -->
+<div class="flex items-center gap-space-md">
+<span>عرض <strong class="text-on-surface">1-10</strong> من أصل <strong class="text-on-surface">14,820</strong> حجز</span>
+<div class="flex items-center gap-1.5">
+<span>عدد الصفوف:</span>
+<select class="h-8 px-2 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md border-0 focus:ring-1 focus:ring-secondary cursor-pointer">
+<option selected="">10</option>
+<option>25</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+</div>
+<!-- Full Arabic Pagination Controls -->
+<div class="flex items-center gap-1" dir="rtl">
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40" disabled="" title="الصفحة السابقة">
+<span class="material-symbols-outlined text-headline-sm">chevron_right</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-tertiary text-on-tertiary font-semibold shadow-sm">1</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors">2</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors">3</button>
+<span class="px-1 text-on-surface-variant">...</span>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors font-tabular-stat">1482</button>
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" title="الصفحة التالية">
+<span class="material-symbols-outlined text-headline-sm">chevron_left</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+    // Refresh micro-interaction
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        const icon = refreshBtn.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.classList.add('animate-spin');
+          setTimeout(() => icon.classList.remove('animate-spin'), 750);
+        }
+      });
+    }
+
+    // Toggle menu dropdown demo
+    document.querySelectorAll('.row-menu-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-md px-space-lg flex flex-col md:flex-row items-center justify-between text-body-sm font-body-sm text-on-surface-variant gap-space-sm"><div class="flex items-center gap-space-xs"><span>جميع الحقوق محفوظة © 2024 منصة ZoolGo لإدارة النقل وحجوزات السفر بين المدن.</span></div><div class="flex items-center gap-space-md"><span class="px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">ZoolGo Admin UI Kit v1.0</span><span>مركز العمليات الموحد</span></div></footer></div></body></html>

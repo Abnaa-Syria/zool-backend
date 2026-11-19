@@ -1,0 +1,68 @@
+enum TopUpIntentStatus {
+  PENDING
+  PENDING_REVIEW
+  CONFIRMED
+  FAILED
+}
+
+enum TopUpConfirmationPath {
+  AUTOMATIC
+  MANUAL_FALLBACK
+}
+
+model TopUpIntent {
+  id                         String                 @id @default(cuid())
+  brokerOfficeId             String                 @map("broker_office_id")
+  walletId                   String                 @map("wallet_id")
+  amount                     Int
+  status                     TopUpIntentStatus      @default(PENDING)
+  confirmationPath           TopUpConfirmationPath  @default(AUTOMATIC) @map("confirmation_path")
+  providerRef                String?                @map("provider_ref") @db.VarChar(191)
+  provider                   String                 @default("mock") @db.VarChar(64)
+  providerEventId            String?                @unique @map("provider_event_id") @db.VarChar(191)
+  paymentReferenceNormalized String?                @map("payment_reference_normalized") @db.VarChar(128)
+  parentIntentId             String?                @map("parent_intent_id")
+  idempotencyKey             String                 @unique @map("idempotency_key") @db.VarChar(128)
+  confirmedAt                DateTime?              @map("confirmed_at")
+  failedAt                   DateTime?              @map("failed_at")
+  reviewedByAdminId          String?                @map("reviewed_by_admin_id")
+  reviewNote                 String?                @map("review_note") @db.VarChar(500)
+  createdByEmployeeId        String?                @map("created_by_employee_id")
+  createdByAdminId           String?                @map("created_by_admin_id")
+  createdAt                  DateTime               @default(now()) @map("created_at")
+
+  brokerOffice               BrokerOffice           @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
+  wallet                     Wallet                 @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdByEmployee          BrokerEmployee?        @relation("TopUpCreatedBy", fields: [createdByEmployeeId], references: [id], onDelete: SetNull)
+  createdByAdmin             AdminUser?             @relation("TopUpCreatedByAdmin", fields: [createdByAdminId], references: [id], onDelete: SetNull)
+  reviewedByAdmin            AdminUser?             @relation("TopUpReviewedByAdmin", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+  parentIntent               TopUpIntent?           @relation("TopUpParent", fields: [parentIntentId], references: [id], onDelete: SetNull)
+  childIntents               TopUpIntent[]          @relation("TopUpParent")
+  evidence                   TopUpEvidence[]
+
+  @@unique([provider, paymentReferenceNormalized])
+  @@index([brokerOfficeId, status])
+  @@index([walletId, status])
+  @@index([createdByEmployeeId])
+  @@map("top_up_intents")
+}
+
+model TopUpEvidence {
+  id                  String       @id @default(cuid())
+  intentId            String       @map("intent_id")
+  storageKey          String       @map("storage_key") @db.VarChar(255)
+  originalName        String       @map("original_name") @db.VarChar(255)
+  mimeType            String       @map("mime_type") @db.VarChar(64)
+  sizeBytes           Int          @map("size_bytes")
+  checksumSha256      String       @map("checksum_sha256") @db.Char(64)
+  uploadedByAdminId   String?      @map("uploaded_by_admin_id")
+  uploadedByEmployeeId String?     @map("uploaded_by_employee_id")
+  createdAt           DateTime     @default(now()) @map("created_at")
+
+  intent              TopUpIntent  @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  uploadedByAdmin     AdminUser?   @relation("TopUpEvidenceAdmin", fields: [uploadedByAdminId], references: [id], onDelete: SetNull)
+  uploadedByEmployee  BrokerEmployee? @relation("TopUpEvidenceEmployee", fields: [uploadedByEmployeeId], references: [id], onDelete: SetNull)
+
+  @@index([intentId])
+  @@map("top_up_evidence")
+}

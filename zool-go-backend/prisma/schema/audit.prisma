@@ -1,0 +1,21 @@
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorAdminId String?  @map("actor_admin_id")
+  action       String   @db.VarChar(96)
+  resourceType String   @map("resource_type") @db.VarChar(64)
+  resourceId   String?  @map("resource_id") @db.VarChar(64)
+  requestId    String?  @map("request_id") @db.VarChar(64)
+  ipAddress    String?  @map("ip_address") @db.VarChar(64)
+  userAgent    String?  @map("user_agent") @db.VarChar(512)
+  /// JSON string of safe metadata (no secrets)
+  metadataJson String?  @map("metadata_json") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  actor        AdminUser? @relation("AuditActor", fields: [actorAdminId], references: [id], onDelete: SetNull)
+
+  @@index([actorAdminId, createdAt])
+  @@index([resourceType, resourceId])
+  @@index([action, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

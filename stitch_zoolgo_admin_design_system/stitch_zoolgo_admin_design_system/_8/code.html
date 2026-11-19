@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;font-family:'IBM Plex Sans Arabic',sans-serif;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container":"#dbf4e5","outline-variant":"#debfc0","on-error":"#ffffff","on-tertiary":"#ffffff","tertiary-fixed-dim":"#99d3b4","on-surface-variant":"#574142","on-secondary-fixed":"#002113","primary-fixed":"#ffdadb","primary-fixed-dim":"#ffb2b7","surface-container-high":"#d5eee0","tertiary-container":"#1a533c","on-tertiary-fixed-variant":"#165039","tertiary":"#003b27","primary":"#6d001e","on-secondary-fixed-variant":"#005235","surface":"#e7fff1","surface-container-highest":"#d0e8da","on-tertiary-fixed":"#002114","error":"#ba1a1a","surface-dim":"#c7e0d2","on-tertiary-container":"#8cc5a7","on-secondary-container":"#286f4f","surface-container-low":"#e1faeb","on-primary-fixed-variant":"#8a182f","on-surface":"#0a1f17","on-primary":"#ffffff","on-error-container":"#93000a","secondary-fixed":"#aaf2ca","on-background":"#0a1f17","surface-container-lowest":"#ffffff","surface-bright":"#e7fff1","secondary-fixed-dim":"#8ed5af","inverse-on-surface":"#def7e8","tertiary-fixed":"#b5efd0","surface-tint":"#aa3145","secondary-container":"#a7efc7","on-primary-container":"#ff9ea6","inverse-primary":"#ffb2b7","on-secondary":"#ffffff","surface-variant":"#d0e8da","outline":"#8b7172","primary-container":"#8e1b32","error-container":"#ffdad6","background":"#e7fff1","secondary":"#226a4b","inverse-surface":"#20352b","on-primary-fixed":"#40000e"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-desktop":"2rem","space-xl":"2rem","space-md":"1rem","gutter-desktop":"1.5rem","space-sm":"0.5rem","space-xs":"0.25rem","space-lg":"1.5rem","margin":"1.5rem","gutter":"1.25rem"},fontFamily:{"body-md":["IBM Plex Sans"],"headline-lg":["IBM Plex Sans"],"label-md":["IBM Plex Sans"],"display-md":["IBM Plex Sans"],"body-lg":["IBM Plex Sans"],"headline-sm":["IBM Plex Sans"],"label-lg":["IBM Plex Sans"],"tabular-stat":["IBM Plex Sans"],"display-lg":["IBM Plex Sans"],"headline-md":["IBM Plex Sans"],"body-sm":["IBM Plex Sans"]},fontSize:{"body-md":["0.875rem",{"lineHeight":"1.375rem","letterSpacing":"0","fontWeight":"400"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"0","fontWeight":"600"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.025em","fontWeight":"600"}],"display-md":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"0","fontWeight":"700"}],"body-lg":["1rem",{"lineHeight":"1.625rem","letterSpacing":"0","fontWeight":"400"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"0","fontWeight":"600"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0","fontWeight":"600"}],"tabular-stat":["1.5rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"700"}],"display-lg":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"0","fontWeight":"700"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"0","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","letterSpacing":"0","fontWeight":"400"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface min-h-screen selection:bg-secondary-container selection:text-on-secondary-container"><aside class="fixed right-0 top-0 h-screen w-[260px] bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="flex flex-col"><div class="p-space-lg flex flex-col gap-space-xs bg-surface-container"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-headline-sm">directions_bus</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md font-bold tracking-tight text-primary leading-none">ZoolGo</span><span class="font-label-md text-label-md text-secondary font-medium mt-1">سفريات المدن وإدارة النقل</span></div></div><div class="mt-space-xs inline-flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span>لوحة الإدارة المركزية (Super Admin)</span></div></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">الرئيسية والعمليات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">grid_view</span><span>نظرة عامة</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg bg-tertiary text-on-tertiary font-label-lg text-label-lg shadow-sm" data-path="bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">confirmation_number</span><span>الحجوزات والتذاكر</span></div><span class="px-2 py-0.5 rounded-full bg-secondary text-on-secondary font-label-md text-label-md font-semibold">142</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="live-fleet-tracking" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">share_location</span><span>التتبع المباشر</span></div><span class="w-2 h-2 rounded-full bg-secondary"></span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="transport-companies" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">departure_board</span><span>شركات النقل</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="brokers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">storefront</span><span>مكاتب الوكلاء</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">group</span><span>حسابات المسافرين</span></div></a></nav></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">المالية والتسويات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="wallets-and-transactions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">account_balance_wallet</span><span>المحافظ والمعاملات المالية</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="commissions-and-settlements" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">currency_exchange</span><span>العمولات ودورات التسوية</span></div><span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">4 معلقة</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="cancellations-and-refunds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">assignment_return</span><span>الإلغاءات والاسترداد</span></div><span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md">2 مراجعة</span></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="financial-reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">bar_chart_4_bars</span><span>التقارير المالية والإحصاءات</span></div></a></nav></div><div class="px-space-md py-space-sm"><div class="text-label-md font-label-md text-on-surface-variant px-space-sm py-space-xs uppercase tracking-wider">إدارة النظام والصلاحيات</div><nav class="flex flex-col gap-1" data-active-classes="bg-tertiary text-on-tertiary font-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="administration-team" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">shield_person</span><span>فريق الإدارة</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="roles-and-permissions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">lock_person</span><span>الأدوار والصلاحيات</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="activity-log" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">history_toggle_off</span><span>سجل الأنشطة والتدقيق</span></div></a><a class="flex items-center justify-between px-space-sm py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-label-lg text-label-lg" data-path="system-settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-headline-sm">settings</span><span>الإعدادات العامة</span></div></a></nav></div></div><div class="p-space-md m-space-md rounded-xl bg-surface-container-lowest shadow-[0_1px_3px_0_rgba(14,92,62,0.04)] flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="relative"><div class="w-9 h-9 rounded-full bg-secondary-container text-secondary flex items-center justify-center font-bold text-label-lg">أس</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-surface-container-lowest"></span></div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface font-semibold">أحمد السر</span><span class="font-body-sm text-body-sm text-on-surface-variant">المشرف العام</span></div></div><button class="text-on-surface-variant hover:text-error hover:bg-error-container/40 p-1.5 rounded-lg transition-colors" title="تسجيل الخروج"><span class="material-symbols-outlined text-headline-sm">logout</span></button></div></aside><div class="pr-[260px]"><header class="fixed top-0 right-[260px] left-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg gap-space-md"><div class="flex items-center gap-space-md flex-1"><div class="relative max-w-md w-full"><span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-headline-sm">search</span><input class="w-full h-10 pr-10 pl-4 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-secondary/30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="بحث سريع برقم الحجز، الوكيل، أو الشركة..." type="text"/></div><div class="hidden xl:flex items-center gap-space-xs px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span>الأنظمة التشغيلية: متصلة 100%</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.02)] font-label-md text-label-md"><span class="material-symbols-outlined text-secondary text-headline-sm">calendar_today</span><span>اليوم: 24 أكتوبر 2024</span></div><button class="relative p-2 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><span class="material-symbols-outlined text-headline-sm">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface-container-lowest"></span></button><div class="flex items-center gap-space-sm pl-2"><img alt="Super Admin Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface-container-high" src="https://lh3.googleusercontent.com/aida/AEtjO1UfglPDvtqYfIEtSbYJMbW3_O-EEcWbcuCSRM9FUVCSguA6VYCKXVDsUdquIFA-R8kP-GPaj0ceajyh2bvwf5KXtJagEEXKWLamOkX-A6GBLx6jXarb5mXhuHZEQVtWfA6IjrREDe76xvuYgQoVRtHA10sz1igjwRZ70BtVd_VchtnWqwjir0OLLnGPfSsQYPXOiGCD3sw5x1ojureR1Dhv_opfn1ez8xdvToe7a7RFqeu4sA4qlBB-56aAmdc9IcGOTNsror0Vaw"/></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)] p-space-lg"><div class="flex flex-col w-full">
+<!-- BREADCRUMB & CONTEXT HEADER -->
+<div class="flex flex-col gap-space-sm mb-space-lg">
+<!-- Breadcrumb line -->
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<a class="hover:text-primary transition-colors" href="#">الحجوزات والتذاكر</a>
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+<a class="hover:text-primary transition-colors" href="#">تفاصيل الحجز ZL-BR-19482</a>
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+<span class="text-secondary font-semibold">سجل النشاط والتدقيق المالي</span>
+</div>
+<!-- Main Title + Quick Stats Ribbon -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md mt-space-xs">
+<div class="flex flex-col gap-1">
+<div class="flex flex-wrap items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">سجل الحجز والتدقيق المالي</h1>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-bold tracking-wider">ZL-BR-19482</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-secondary-container font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">storefront</span>
+<span>المصدر: مكتب وسيط (وكالة النيل للسفر)</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+          التتبع الزمني التراكمي لجميع العمليات الإدارية وحركات المحفظة والتسويات المرتبطة بالحجز ZL-BR-19482
+        </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-space-sm self-start lg:self-center shrink-0">
+<a class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-surface-container-lowest text-secondary font-label-lg text-label-lg shadow-sm hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+<span>العودة إلى تفاصيل الحجز</span>
+</a>
+<button class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-sm hover:opacity-95 transition-all" onclick="window.print()">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+<span>تصدير تقرير التدقيق (PDF)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- OVERVIEW STATS BENTO -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-lg">
+<!-- Card 1: Ticket Face Value -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>قيمة التذكرة المخصومة</span>
+<span class="material-symbols-outlined text-[20px] text-primary">receipt_long</span>
+</div>
+<div class="mt-space-sm">
+<div class="font-tabular-stat text-tabular-stat text-on-surface font-bold tracking-tight">350.00 <span class="font-label-md text-label-md font-normal text-on-surface-variant">ج.س</span></div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md mt-1">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>حركة محفظة قطعية ومثبتة</span>
+</div>
+</div>
+<div class="absolute -left-3 -bottom-3 w-16 h-16 rounded-full bg-primary-fixed/30 pointer-events-none"></div>
+</div>
+<!-- Card 2: Broker Accrual -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>عمولة الوكالة المستحقة</span>
+<span class="material-symbols-outlined text-[20px] text-secondary">payments</span>
+</div>
+<div class="mt-space-sm">
+<div class="font-tabular-stat text-tabular-stat text-secondary font-bold tracking-tight">+35.00 <span class="font-label-md text-label-md font-normal text-on-surface-variant">ج.س</span></div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-md text-label-md mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>دورة التسوية التراكمية #W-44</span>
+</div>
+</div>
+<div class="absolute -left-3 -bottom-3 w-16 h-16 rounded-full bg-secondary-fixed/40 pointer-events-none"></div>
+</div>
+<!-- Card 3: Audit Health -->
+<div class="p-space-md rounded-xl bg-tertiary text-on-tertiary shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between font-label-md text-label-md text-on-tertiary-container">
+<span>حالة التدقيق الآلي</span>
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">policy</span>
+</div>
+<div class="mt-space-sm">
+<div class="font-display-md text-display-md font-bold text-on-tertiary leading-none">100% متطابق</div>
+<div class="flex items-center gap-1.5 text-on-tertiary-container font-label-md text-label-md mt-2">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed">lock_clock</span>
+<span>لا توجد أي فروقات حسابية</span>
+</div>
+</div>
+<div class="absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-tertiary-container/50 pointer-events-none"></div>
+</div>
+<!-- Card 4: Ledger Chain Hash -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant font-label-md text-label-md">
+<span>المعرف المشفر المرجعي</span>
+<span class="material-symbols-outlined text-[20px] text-outline">fingerprint</span>
+</div>
+<div class="mt-space-sm">
+<div class="font-mono text-body-sm font-semibold text-on-surface truncate tracking-wider" dir="ltr">ZL-AUD-982109482-TX</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-md text-label-md mt-1">
+<span class="material-symbols-outlined text-[15px] text-secondary">encrypted</span>
+<span>سجل مشفر غير قابل للتعديل</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MAIN DUAL-PANEL CONTENT: TIMELINE & FINANCIAL TRACE -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg mb-space-lg">
+<!-- SECTION 1: Chronological Activity Timeline (7 Cols) -->
+<div class="xl:col-span-7 flex flex-col gap-space-md">
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-headline-sm">route</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">المسار الزمني التراكمي للعمليات</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">توثيق تسلسلي لحظي لجميع الإجراءات الصادرة من الوكيل والأنظمة المركزية</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-semibold">6 عمليات موثقة</span>
+</div>
+<!-- Vertical Timeline Track -->
+<div class="relative pr-4 flex flex-col gap-space-lg">
+<!-- Continuous Track Line -->
+<div class="absolute right-[27px] top-4 bottom-6 w-0.5 bg-surface-container-high"></div>
+<!-- EVENT 1: Booking & Seat -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">event_seat</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">إنشاء طلب الحجز وتحديد المقعد</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  ناجح (Ref: REQ-99120)
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                حجز المقعد <strong class="text-primary font-bold">B04</strong> على الرحلة <strong class="text-on-surface font-semibold">TRIP-983</strong> للمسافر حسن عبد الله البدري.
+              </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:20:05 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">badge</span>
+<span>موظف الوسيط: <span class="text-on-surface font-medium">مروان الكاتب (وكالة النيل)</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- EVENT 2: Wallet Deduction -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-on-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">خصم قيمة التذكرة من محفظة الوكيل</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+                  حركة مكتملة ونهائية (Ref: WLT-TXN-449102)
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                خصم مبلغ <span class="font-bold text-primary font-tabular-stat">350.00 ج.س</span> من المحفظة <span class="font-mono text-body-sm font-semibold">WLT-AG-882</span>. 
+                <span class="text-on-surface-variant block mt-1">الرصيد قبل العملية: <span class="font-tabular-stat text-body-sm">15,500.00 ج.س</span> | الرصيد بعد العملية: <span class="font-tabular-stat text-body-sm text-secondary font-bold">15,150.00 ج.س</span>.</span>
+</p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:20:14 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">smart_toy</span>
+<span>الفاعل: <span class="text-on-surface font-medium">النظام (محرك المحافظ المركزي)</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- EVENT 3: Commission Accrual -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">paid</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">قيد استحقاق عمولة الوكالة التراكمية</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+                  قيد معلق للتسوية (Ref: COMM-REC-88210)
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                تسجيل استحقاق عمولة بمبلغ <span class="font-bold text-secondary font-tabular-stat">+35.00 ج.س</span> قيد التجميع لدورة التسوية الأسبوعية <span class="font-semibold text-on-surface">#W-44</span> (غير مدفوعة وغير مخصومة من أصل الحجز الحالي).
+              </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:20:15 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">hub</span>
+<span>الفاعل: <span class="text-on-surface font-medium">النظام (نظام تسويات المنصة)</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- EVENT 4: Ticket Issuance -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">إصدار التذكرة الرقمية وتوليد الباركود</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                  صادرة ومؤكدة (Ref: TKT-GEN-019)
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                تم بنجاح توليد التذكرة <span class="font-mono font-semibold text-primary">ZL-TKT-19482-B04</span> ومزامنة بيانات الراكب لحظياً مع مانيفست الحافلة <span class="font-semibold text-on-surface">ZG-BUS-018</span>.
+              </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:20:30 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">sync_alt</span>
+<span>الفاعل: <span class="text-on-surface font-medium">النظام المركزي بالربط مع شركة النقل</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- EVENT 5: Ticket Delivery -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">طباعة التذكرة وتسليم الإشعار للمسافر</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                  تم التسليم للمسافر
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                طباعة إيصال الصعود عبر طابعة المكتب الحرارية وإرسال رسالة SMS برابط التذكرة الرقمية إلى هاتف المسافر المعتمد.
+              </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:21:02 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">badge</span>
+<span>موظف الوسيط: <span class="text-on-surface font-medium">مروان الكاتب</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- EVENT 6: Administrative Review -->
+<div class="relative flex items-start gap-space-md group">
+<div class="relative z-10 w-9 h-9 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+<div class="flex-1 p-space-md rounded-xl bg-surface-container-high transition-all">
+<div class="flex flex-wrap items-center justify-between gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">مراجعة تدقيق النظام الآلي</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  تدقيق مكتمل 100%
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-xs">
+                التحقق الآلي من تطابق المبالغ المخصومة وتذكرة المقعد المحجوز، لا توجد فروقات مالية أو تعارض في سجل الحركات.
+              </p>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>24 أكتوبر 2024 — 09:25:00 ص</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">security</span>
+<span>الفاعل: <span class="text-on-surface font-medium">مسؤول الإدارة / التدقيق التلقائي</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Financial Trace Table & Integrity Ledger (5 Cols) -->
+<div class="xl:col-span-5 flex flex-col gap-space-md">
+<!-- Interactive Ledger Inspector Card -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-headline-sm">account_balance</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">جدول التدقيق المالي للحركات</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">القيود المحاسبية الدائنة والمدينة المباشرة</p>
+</div>
+</div>
+<span class="text-body-sm font-body-sm text-outline">عملة: ج.س</span>
+</div>
+<!-- Financial Trace Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-right">
+<thead>
+<tr class="bg-surface-container-low rounded-lg text-on-surface-variant font-label-md text-label-md">
+<th class="py-2.5 px-3 font-semibold rounded-r-lg">نوع الحركة</th>
+<th class="py-2.5 px-2 font-semibold text-center">الرقم المرجعي</th>
+<th class="py-2.5 px-2 font-semibold text-left">الاتجاه والمبلغ</th>
+<th class="py-2.5 px-3 font-semibold text-center rounded-l-lg">الحالة</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-sm text-body-sm">
+<!-- Trace Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3 px-3">
+<div class="font-semibold text-on-surface">خصم محفظة الوكيل</div>
+<div class="text-on-surface-variant font-body-sm">WLT-AG-882 (وكالة النيل)</div>
+</td>
+<td class="py-3 px-2 text-center">
+<span class="font-mono text-body-sm font-semibold text-on-surface">WLT-TXN-449102</span>
+</td>
+<td class="py-3 px-2 text-left" dir="ltr">
+<span class="font-tabular-stat text-tabular-stat text-primary font-bold">-350.00</span>
+<span class="text-on-surface-variant text-[11px] block">مدين (خصم قطعي)</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-semibold">
+                      مكتملة
+                    </span>
+</td>
+</tr>
+<!-- Trace Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3 px-3">
+<div class="font-semibold text-on-surface">قيد عمولة وكالة مستحقة</div>
+<div class="text-on-surface-variant font-body-sm">دورة التسوية BATCH #W-44</div>
+</td>
+<td class="py-3 px-2 text-center">
+<span class="font-mono text-body-sm font-semibold text-on-surface">COMM-REC-88210</span>
+</td>
+<td class="py-3 px-2 text-left" dir="ltr">
+<span class="font-tabular-stat text-tabular-stat text-secondary font-bold">+35.00</span>
+<span class="text-on-surface-variant text-[11px] block">دائن (تجميع استحقاق)</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-secondary font-label-md text-label-md font-semibold">
+                      قيد التجميع
+                    </span>
+</td>
+</tr>
+<!-- Trace Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3 px-3">
+<div class="font-semibold text-on-surface">رسوم المنصة وتكلفة البوابة</div>
+<div class="text-on-surface-variant font-body-sm">حساب المنصة الوسيط</div>
+</td>
+<td class="py-3 px-2 text-center">
+<span class="font-mono text-body-sm font-semibold text-on-surface">PLT-FEE-0012</span>
+</td>
+<td class="py-3 px-2 text-left" dir="ltr">
+<span class="font-tabular-stat text-tabular-stat text-on-surface font-semibold">0.00</span>
+<span class="text-on-surface-variant text-[11px] block">معفاة للمكاتب</span>
+</td>
+<td class="py-3 px-3 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">
+                      معتمدة
+                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Micro Settlement Breakdown Matrix -->
+<div class="mt-space-lg p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-sm">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">ملخص تسوية الرحلة الصافية</span>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">إجمالي ما سدده المسافر نقداً للمكتب:</span>
+<span class="font-tabular-stat font-semibold text-on-surface">350.00 ج.س</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الخصم الفعلي من محفظة الوكيل الإلكترونية:</span>
+<span class="font-tabular-stat font-semibold text-primary">350.00 ج.س</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">صافي نصيب شركة النقل من المقعد:</span>
+<span class="font-tabular-stat font-semibold text-on-surface">315.00 ج.س</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">استحقاق الوكيل المؤجل للدورة الأسبوعية:</span>
+<span class="font-tabular-stat font-semibold text-secondary">+35.00 ج.س (10%)</span>
+</div>
+</div>
+</div>
+<!-- Verification Snapshot Seal -->
+<div class="mt-space-md p-space-md rounded-xl bg-surface-container flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">التوثيق المحاسبي الموحد</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">تم توقيع السجل رقمياً عبر مفتاح المنصة المركزي عند الساعة 09:25:00 ص.</span>
+</div>
+</div>
+</div>
+<!-- Quick Operational Action Box -->
+<div class="p-space-md rounded-2xl bg-surface-container-high flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[24px]">contact_support</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">هل تحتاج لمراجعة نزاع مالي؟</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">يمكن فتح تذكرة تسوية استثنائية لمراجعة حركة المحفظة</span>
+</div>
+</div>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors shrink-0 shadow-sm">
+          طلب تدقيق يدوي
+        </button>
+</div>
+</div>
+</div>
+<!-- AUDIT GUARANTEES NOTICE -->
+<div class="w-full p-space-md rounded-xl bg-surface-container flex items-start gap-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary shrink-0 text-[20px] mt-0.5">verified_user</span>
+<p class="font-body-sm text-body-sm leading-relaxed text-on-surface">
+<strong class="font-semibold text-secondary">إقرار الحوكمة:</strong> سجل التدقيق المالي والزمني غير قابل للتعديل أو الحذف، ويخضع للتوثيق المحاسبي الآلي وفق معايير الحوكمة المالية لمنصة ZoolGo لإدارة النقل البري وسفريات المدن.
+    </p>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-space-md px-space-lg flex flex-col md:flex-row items-center justify-between text-body-sm font-body-sm text-on-surface-variant gap-space-sm"><div class="flex items-center gap-space-xs"><span>جميع الحقوق محفوظة © 2024 منصة ZoolGo لإدارة النقل وحجوزات السفر بين المدن.</span></div><div class="flex items-center gap-space-md"><span class="px-2.5 py-0.5 rounded-full bg-surface-container text-secondary font-label-md text-label-md font-medium">ZoolGo Admin UI Kit v1.0</span><span>مركز العمليات الموحد</span></div></footer></div></body></html>

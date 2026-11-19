@@ -1,0 +1,40 @@
+import { loadEnv, env } from './config/env';
+import { createApp } from './app';
+import { connectPrisma, disconnectPrisma } from './infrastructure/database/prisma';
+import { connectRedis, disconnectRedis } from './infrastructure/redis/redis';
+import { logger } from './infrastructure/observability/logger';
+
+async function main() {
+  loadEnv();
+  const config = env();
+
+  await connectPrisma();
+  await connectRedis();
+
+  const app = createApp();
+  const server = app.listen(config.PORT, () => {
+    logger.info({ port: config.PORT }, `${config.APP_NAME} listening`);
+  });
+
+  const shutdown = async (signal: string) => {
+    logger.info({ signal }, 'Shutting down');
+    server.close(async () => {
+      try {
+        await disconnectPrisma();
+        await disconnectRedis();
+        process.exit(0);
+      } catch (error) {
+        logger.error({ err: error }, 'Error during shutdown');
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGINT', () => void shutdown('SIGINT'));
+  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

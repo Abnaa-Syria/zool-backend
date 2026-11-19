@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-highest":"#d0e8da","outline-variant":"#debfc0","surface-bright":"#e7fff1","outline":"#8b7172","primary-container":"#8e1b32","secondary-fixed-dim":"#8ed5af","on-secondary-fixed-variant":"#005235","on-secondary-fixed":"#002113","on-primary-fixed-variant":"#8a182f","on-background":"#0a1f17","inverse-on-surface":"#def7e8","inverse-primary":"#ffb2b7","error-container":"#ffdad6","inverse-surface":"#20352b","on-tertiary":"#ffffff","background":"#e7fff1","on-secondary":"#ffffff","tertiary-container":"#1a533c","surface-container-low":"#e1faeb","surface-container":"#dbf4e5","tertiary":"#003b27","on-tertiary-fixed":"#002114","primary":"#6d001e","on-secondary-container":"#286f4f","on-primary-container":"#ff9ea6","surface-variant":"#d0e8da","on-surface-variant":"#574142","tertiary-fixed":"#b5efd0","secondary-fixed":"#aaf2ca","on-primary-fixed":"#40000e","surface-dim":"#c7e0d2","on-surface":"#0a1f17","surface-tint":"#aa3145","error":"#ba1a1a","on-tertiary-container":"#8cc5a7","secondary":"#226a4b","on-primary":"#ffffff","primary-fixed":"#ffdadb","surface-container-high":"#d5eee0","primary-fixed-dim":"#ffb2b7","on-error":"#ffffff","on-error-container":"#93000a","surface":"#e7fff1","on-tertiary-fixed-variant":"#165039","tertiary-fixed-dim":"#99d3b4","surface-container-lowest":"#ffffff","secondary-container":"#a7efc7"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin-desktop":"2rem","space-sm":"0.5rem","space-md":"1rem","space-xl":"2rem","gutter-desktop":"1.5rem","gutter":"1.25rem","space-xs":"0.25rem","space-lg":"1.5rem","margin":"1.5rem"},fontFamily:{"label-lg":["IBM Plex Sans"],"headline-sm":["IBM Plex Sans"],"body-lg":["IBM Plex Sans"],"tabular-stat":["IBM Plex Sans"],"label-md":["IBM Plex Sans"],"body-sm":["IBM Plex Sans"],"headline-md":["IBM Plex Sans"],"display-md":["IBM Plex Sans"],"body-md":["IBM Plex Sans"],"display-lg":["IBM Plex Sans"],"headline-lg":["IBM Plex Sans"]},fontSize:{"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0","fontWeight":"600"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"0","fontWeight":"600"}],"body-lg":["1rem",{"lineHeight":"1.625rem","letterSpacing":"0","fontWeight":"400"}],"tabular-stat":["1.5rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"700"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.025em","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","letterSpacing":"0","fontWeight":"400"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"0","fontWeight":"600"}],"display-md":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"0","fontWeight":"700"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","letterSpacing":"0","fontWeight":"400"}],"display-lg":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"0","fontWeight":"700"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"0","fontWeight":"600"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(14,92,62,0.06)]"><div class="h-20 w-full px-gutter-desktop mx-auto flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-lg bg-tertiary flex items-center justify-center text-on-tertiary shadow-[0_2px_6px_rgba(0,59,39,0.25)]"><span class="material-symbols-outlined text-[24px]">directions_bus</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-tertiary tracking-tight">ZoolGo Admin</span><span class="px-space-xs py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md">v1.0</span></div><span class="font-body-sm text-body-sm text-on-surface-variant">نظام إدارة حافلات النقل البري</span></div></div><div class="h-6 w-px bg-surface-container-highest hidden lg:block"></div><div class="hidden xl:flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">home</span><span>الرئيسية</span><span class="material-symbols-outlined text-[14px]">chevron_left</span><span class="text-tertiary font-label-md text-label-md">مكتبة المكونات والتصميم</span></div></div><nav class="hidden md:flex items-center p-space-xs bg-surface-container rounded-lg" data-active-classes="bg-surface-container-lowest text-tertiary shadow-[0_1px_4px_rgba(14,92,62,0.08)]"><a class="px-space-md py-space-xs rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="foundations" href="#">الأساسيات</a><a class="px-space-md py-space-xs rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="buttons-and-forms" href="#">الأزرار وحقول الإدخال</a><a class="px-space-md py-space-xs rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="navigation-and-tables" href="#">الجداول والتنقل</a><a class="px-space-md py-space-xs rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="cards-and-feedback" href="#">البطاقات والتنبيهات</a><a aria-current="page" class="px-space-md py-space-xs rounded-DEFAULT font-label-md transition-colors bg-surface-container-lowest text-tertiary shadow-[0_1px_4px_rgba(14,92,62,0.08)]" data-path="dialogs-and-drawers" href="#">النوافذ والأدراج</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-sm px-space-md py-space-xs bg-surface-container-lowest rounded-lg shadow-[0_1px_3px_rgba(14,92,62,0.04)]"><span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">بحث سريع...</span><kbd class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">⌘K</kbd></div><button aria-label="Notifications" class="w-9 h-9 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors shadow-[0_1px_3px_rgba(14,92,62,0.04)]" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background"><div class="flex flex-col w-full">
+<!-- Interactive Modal & Drawer Layer (Off-screen / Simulated Triggers) -->
+<div class="fixed inset-0 z-50 bg-[#162b22]/40 backdrop-blur-sm hidden items-center justify-center p-space-md transition-opacity duration-200" id="backdropOverlay">
+<!-- Populated by JS for active preview if needed -->
+</div>
+<!-- Page Container -->
+<div class="w-full max-w-[1520px] mx-auto px-gutter-desktop py-space-xl flex flex-col gap-space-xl">
+<!-- 1. HEADER TITLE BANNER -->
+<header class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs max-w-4xl">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md tracking-wider">
+            DESIGN SYSTEM • MODULE 05
+          </span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-highest text-tertiary font-label-md text-label-md">
+            RTL DRAWER: LEFT-ANCHORED (يسار الشاشة)
+          </span>
+</div>
+<h1 class="font-display-md text-display-md text-tertiary">
+          الصفحة 5 — النوافذ المنبثقة، الأدراج الجانبية والأنماط المشتركة (Dialogs, Drawers &amp; Shared Patterns)
+        </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+          منظومة متكاملة لنوافذ التأكيد القياسية، الإجراءات الحرجة والتدميرية، نماذج الإدخال المنبثقة، أدراج العرض والتعديل والتصفية (المنبثقة من اليسار)، وحالات التدفق والإرسال والخطأ لبيئات التشغيل الحية.
+        </p>
+</div>
+<!-- Quick Metrics Pill -->
+<div class="flex items-center gap-space-md self-start md:self-auto bg-surface-container-low p-space-md rounded-lg">
+<div class="flex flex-col items-center px-space-md border-l border-surface-container-highest last:border-0">
+<span class="font-label-md text-label-md text-on-surface-variant">الأنماط النمطية</span>
+<span class="font-tabular-stat text-tabular-stat text-tertiary">10+</span>
+</div>
+<div class="flex flex-col items-center px-space-md border-l border-surface-container-highest last:border-0">
+<span class="font-label-md text-label-md text-on-surface-variant">الجهة التفاعلية</span>
+<span class="font-headline-sm text-headline-sm text-primary">يسار (End)</span>
+</div>
+<div class="flex flex-col items-center px-space-md">
+<span class="font-label-md text-label-md text-on-surface-variant">المحاذاة المرجعية</span>
+<span class="font-headline-sm text-headline-sm text-secondary">RTL Native</span>
+</div>
+</div>
+</header>
+<!-- 2. SECTION 01 — MODAL DIALOGS -->
+<section class="flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">web_asset</span>
+<span>نظام الحوارات المركزية</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-tertiary">
+            01. النوافذ المنبثقة القياسية (Modal Dialogs)
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            نوافذ مركزية للقرارات المصيرية والتأكيدات اللحظية مع عزل التركيز وتثبيت البعد البصري.
+          </p>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span>تطابق تام مع إرشادات الوصول والتنقل بلوحة المفاتيح</span>
+</div>
+</div>
+<!-- Specimen Grid (3 Side-by-Side Modals) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg items-start">
+<!-- Specimen A: Standard Confirmation Dialog -->
+<article class="bg-surface-container-lowest rounded-xl shadow-md p-space-lg flex flex-col gap-space-md relative overflow-hidden transition-all hover:shadow-lg">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">send_time_extension</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-secondary">تأكيد تشغيلي</span>
+<h3 class="font-headline-sm text-headline-sm text-tertiary">إرسال مانيفست الرحلة #983</h3>
+</div>
+</div>
+<button aria-label="إغلاق" class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+            أنت على وشك إرسال المانيفست النهائي لحافلة سابتكو المتجهة إلى <strong class="text-tertiary font-semibold">مروي</strong> (25 راكباً مؤكداً) إلى نظام محطة الانطلاق المركزية. لن يمكن إضافة ركاب جدد بعد الإرسال.
+          </p>
+<!-- Summary Box -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">مسار الرحلة:</span>
+<span class="font-semibold text-on-surface">الخرطوم ← مروي (سريع)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">رقم اللوحة / الحافلة:</span>
+<span class="font-mono text-tertiary font-semibold">ب س ق - 4829</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">وقت المغادرة المقدر:</span>
+<span class="font-semibold text-primary">07:30 صباحاً (بعد 45 دقيقة)</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container-low text-tertiary font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+              إلغاء الأمر
+            </button>
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-all flex items-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+<span>تأكيد وإرسال المانيفست</span>
+</button>
+</div>
+</article>
+<!-- Specimen B: Destructive Confirmation Dialog -->
+<article class="bg-surface-container-lowest rounded-xl shadow-md p-space-lg flex flex-col gap-space-md relative overflow-hidden transition-all hover:shadow-lg">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[22px]">warning</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-error">إجراء خطير غير قابل للعكس</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">إلغاء حجز التذكرة واسترداد</h3>
+</div>
+</div>
+<button aria-label="إغلاق" class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Warning callout -->
+<div class="bg-error-container/40 p-space-md rounded-lg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-error text-[20px] shrink-0 mt-0.5">report_problem</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-error">تحذير حرج:</span>
+<p class="font-body-sm text-body-sm text-on-error-container leading-normal">
+                سيتم إلغاء التذكرة رقم <span class="font-mono font-semibold">ZL-854921</span> نهائياً وتحرير المقعد <strong class="font-semibold">A12</strong> فوراً في نظام الحجوزات المركزي.
+              </p>
+</div>
+</div>
+<!-- Reason selector -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface">سبب طلب الإلغاء والتحرير</label>
+<div class="relative w-full">
+<select class="w-full h-10 px-space-md py-1 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:bg-surface-container-lowest">
+<option>طلب المسافر الشخصي (مع تطبيق رسوم الاسترداد)</option>
+<option>تأخير أو إلغاء في جدول الحافلة (استرداد كامل 100%)</option>
+<option>ظرف صحي أو طارئ معتمد</option>
+<option>عدم حضور الراكب قبل الرحلة بـ 30 دقيقة (No Show)</option>
+</select>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Explicit Actions -->
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+              الاحتفاظ بالحجز
+            </button>
+<button class="px-space-md py-space-sm rounded-lg bg-error text-on-error font-label-md text-label-md hover:opacity-90 transition-all flex items-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">delete_forever</span>
+<span>تأكيد إلغاء الحجز وتحرير المقعد</span>
+</button>
+</div>
+</article>
+<!-- Specimen C: Quick Form Dialog with Validation -->
+<article class="bg-surface-container-lowest rounded-xl shadow-md p-space-lg flex flex-col gap-space-md relative overflow-hidden transition-all hover:shadow-lg">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[22px]">confirmation_number</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-secondary">إصدار مكتبي عاجل</span>
+<h3 class="font-headline-sm text-headline-sm text-tertiary">إصدار تذكرة فورية جديدة</h3>
+</div>
+</div>
+<button aria-label="إغلاق" class="w-8 h-8 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Form Fields -->
+<div class="flex flex-col gap-space-sm">
+<!-- Name (Valid) -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface flex justify-between">
+<span>اسم المسافر رباعي</span>
+<span class="text-secondary flex items-center gap-0.5 text-body-sm"><span class="material-symbols-outlined text-[14px]">check_circle</span> صالح</span>
+</label>
+<div class="relative">
+<input class="w-full h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest pr-space-md pl-9" type="text" value="محمد عثمان بابكر إدريس"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-secondary text-[18px]">check</span>
+</div>
+</div>
+<!-- National ID (Invalid with inline error) -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">رقم الهوية الوطنية / جواز السفر</label>
+<div class="relative">
+<input class="w-full h-10 px-space-md bg-error-container/30 rounded-lg font-body-md text-body-md text-on-surface focus:outline-none pr-space-md pl-9" type="text" value="10984"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-error text-[18px]">error</span>
+</div>
+<span class="font-body-sm text-body-sm text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                رقم الهوية غير صحيح، يتطلب 10 خانات تبدأ بـ 1 أو 2
+              </span>
+</div>
+<!-- Trip & Seat Dropdown -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">الرحلة والمقعد المخصص</label>
+<div class="relative">
+<select class="w-full h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:bg-surface-container-lowest">
+<option>رحلة #VIP-983 (مروي) • مقعد B04 [نافذة]</option>
+<option>رحلة #EXP-104 (بورتسودان) • مقعد C02 [ممر]</option>
+</select>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="flex items-center justify-between pt-1 cursor-pointer">
+<span class="font-body-sm text-body-sm text-on-surface">إرسال التذكرة عبر رسالة نصية (SMS) فورياً</span>
+<div class="w-11 h-6 bg-secondary rounded-full relative p-0.5 flex items-center justify-start transition-colors">
+<div class="w-5 h-5 bg-on-secondary rounded-full shadow-sm"></div>
+</div>
+</label>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-tabular-stat text-tabular-stat text-primary">350 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">ر.س</span></span>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container" type="button">إلغاء</button>
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-all shadow-sm" type="button">
+                إصدار التذكرة الآن
+              </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- 3. SECTION 02 — DRAWERS & SLIDE-OVER PANELS (LEFT-ANCHORED RTL) -->
+<section class="flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">dock_to_left</span>
+<span>الأدراج المنبثقة من الطرف الأيسر (Left-Anchored Slide-Overs)</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-tertiary">
+            02. الأدراج الجانبية واللوحات المنزلقة (Drawers &amp; Slide-Overs)
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            في واجهات العربية المعتمدة على RTL، تفتح الأدراج دائماً من الجانب الأيسر (الطرف المعاكس للقائمة الرئيسية اليمنى) لضمان عدم إخفاء سياق التنقل.
+          </p>
+</div>
+<div class="px-space-md py-1 rounded-full bg-surface-container-highest text-tertiary font-label-md text-label-md">
+          العرض المعياري: 440px - 480px
+        </div>
+</div>
+<!-- Live Mock Canvas Showing 3 Left-Anchored Drawers -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-space-lg">
+<!-- Specimen A: Read-Only Details Drawer -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-tertiary font-bold">نموذج (أ): درج استعراض تفاصيل الرحلة</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-mono text-body-sm">Width: 440px</span>
+</div>
+<!-- Drawer Frame Simulation -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg flex flex-col h-[680px] overflow-hidden">
+<!-- Header -->
+<div class="p-space-lg bg-surface-container-lowest flex items-center justify-between border-b border-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<button aria-label="إغلاق الدرج" class="w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-tertiary">تفاصيل الرحلة #VIP-983</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">خط النقل الشمالي السريع</span>
+</div>
+</div>
+<span class="px-space-sm py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                في الطريق
+              </span>
+</div>
+<!-- Scrollable Body -->
+<div class="p-space-lg flex-1 overflow-y-auto flex flex-col gap-space-lg">
+<!-- Route & Bus Card -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">الخرطوم</span>
+<span class="material-symbols-outlined text-secondary">trending_flat</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">مروي</span>
+</div>
+<span class="font-label-md text-label-md text-secondary">VIP درجة أولى</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>السائق المكلّف: <strong class="text-on-surface">أحمد محمد سليمان</strong></span>
+<span>اللوحة: <strong class="font-mono text-on-surface">س ب ت 912</strong></span>
+</div>
+</div>
+<!-- Journey Progress Stepper -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-tertiary">تتبع المحطات والمواقيت الحية</span>
+<div class="flex flex-col gap-space-md relative pr-4">
+<!-- Stepper line -->
+<div class="absolute right-1.5 top-2 bottom-2 w-0.5 bg-surface-container-highest"></div>
+<!-- Stop 1 -->
+<div class="flex items-start gap-space-md relative">
+<div class="w-3.5 h-3.5 rounded-full bg-secondary ring-4 ring-secondary-container z-10 shrink-0"></div>
+<div class="flex items-center justify-between w-full">
+<div class="flex flex-col">
+<span class="font-semibold text-body-md text-on-surface">محطة السوق الشعبي (الانطلاق)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">انطلقت في الموعد</span>
+</div>
+<span class="font-mono font-bold text-body-sm text-secondary">06:00 ص</span>
+</div>
+</div>
+<!-- Stop 2 (Current) -->
+<div class="flex items-start gap-space-md relative">
+<div class="w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-primary-fixed z-10 shrink-0 animate-pulse"></div>
+<div class="flex items-center justify-between w-full">
+<div class="flex flex-col">
+<span class="font-semibold text-body-md text-primary">استراحة شندي (المحطة الحالية)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">توقف استراحة 20 دقيقة</span>
+</div>
+<span class="font-mono font-bold text-body-sm text-primary">09:15 ص</span>
+</div>
+</div>
+<!-- Stop 3 -->
+<div class="flex items-start gap-space-md relative">
+<div class="w-3.5 h-3.5 rounded-full bg-surface-container-highest z-10 shrink-0"></div>
+<div class="flex items-center justify-between w-full">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface-variant">محطة الدامر</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">وصول متوقع</span>
+</div>
+<span class="font-mono text-body-sm text-on-surface-variant">11:45 ص</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Passengers Summary -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-tertiary">إشغال المقاعد والركاب</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">18 راكب مسجل / 25 مقعد</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 72%;"></div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container-lowest text-tertiary font-label-md text-label-md hover:bg-surface-container flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">print</span>
+                طباعة كشف الركاب
+              </button>
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary" type="button">
+                تعديل بيانات المسار
+              </button>
+</div>
+</div>
+</div>
+<!-- Specimen B: Edit Drawer -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-tertiary font-bold">نموذج (ب): درج التعديل وتحديث البيانات</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-mono text-body-sm">Edit Form</span>
+</div>
+<!-- Drawer Frame Simulation -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg flex flex-col h-[680px] overflow-hidden">
+<!-- Header with Unsaved badge -->
+<div class="p-space-lg bg-surface-container-lowest flex items-center justify-between border-b border-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<button aria-label="إغلاق" class="w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-tertiary">تعديل تفاصيل الحافلة والمقاعد</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">الأسطول #BUS-402</span>
+</div>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-label-md flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                تعديلات غير محفوظة
+              </span>
+</div>
+<!-- Scrollable Body with Inputs -->
+<div class="p-space-lg flex-1 overflow-y-auto flex flex-col gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">رقم اللوحة المعدنية</label>
+<input class="w-full h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="text" value="أ ك د - 9021"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">اسم السائق الاحتياطي الثاني</label>
+<input class="w-full h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="text" value="طارق عبد الله الزبير"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">حالة التكييف والخدمات الداخلية</label>
+<div class="grid grid-cols-2 gap-space-xs">
+<label class="flex items-center gap-space-xs p-space-sm rounded-lg bg-secondary-container/40 text-tertiary cursor-pointer">
+<input checked="" class="rounded text-secondary" type="checkbox"/>
+<span class="font-body-sm text-body-sm font-semibold">تكييف مركزي نشط</span>
+</label>
+<label class="flex items-center gap-space-xs p-space-sm rounded-lg bg-secondary-container/40 text-tertiary cursor-pointer">
+<input checked="" class="rounded text-secondary" type="checkbox"/>
+<span class="font-body-sm text-body-sm font-semibold">شاشات ومقابس USB</span>
+</label>
+</div>
+</div>
+<!-- Upload Specimen -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface">وثيقة الفحص الفني الدوري</label>
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col items-center justify-center gap-1 text-center cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-secondary text-[24px]">cloud_upload</span>
+<span class="font-label-md text-label-md text-tertiary">انقر لرفع ملف PDF أو صورة التقرير</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">الحد الأقصى 5 ميجابايت (ساري الصلاحية)</span>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-highest/60 flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">lock_clock</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">آخر تحديث تم بواسطة: <strong class="text-on-surface">مروان الكاتب</strong> (اليوم 11:20 ص)</span>
+</div>
+</div>
+<!-- Footer -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-space-sm rounded-lg bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container" type="button">
+                تجاهل التغييرات
+              </button>
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow-sm" type="button">
+                حفظ التحديثات
+              </button>
+</div>
+</div>
+</div>
+<!-- Specimen C: Advanced Filter Drawer -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-tertiary font-bold">نموذج (ج): درج الفلترة والفرز الشامل</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-mono text-body-sm">Filter Drawer</span>
+</div>
+<!-- Drawer Frame Simulation -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg flex flex-col h-[680px] overflow-hidden">
+<!-- Header -->
+<div class="p-space-lg bg-surface-container-lowest flex items-center justify-between border-b border-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<button aria-label="إغلاق" class="w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-tertiary">تصفية نتائج الرحلات</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">تطبيق معايير متعددة</span>
+</div>
+</div>
+<button class="text-secondary font-label-md text-label-md hover:underline" type="button">
+                إعادة ضبط الكل
+              </button>
+</div>
+<!-- Scrollable Body -->
+<div class="p-space-lg flex-1 overflow-y-auto flex flex-col gap-space-lg">
+<!-- Date Range -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface">تاريخ الرحلة</label>
+<div class="grid grid-cols-2 gap-space-xs">
+<input class="h-10 px-space-sm bg-surface-container-low rounded-lg text-center font-mono text-body-md" type="text" value="2025/03/01"/>
+<input class="h-10 px-space-sm bg-surface-container-low rounded-lg text-center font-mono text-body-md" type="text" value="2025/03/07"/>
+</div>
+</div>
+<!-- Price Range Slider -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface">نطاق سعر التذكرة (ر.س)</label>
+<span class="font-mono text-body-sm font-semibold text-primary">150 - 450 ر.س</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full relative my-2">
+<div class="bg-primary h-full rounded-full absolute right-1/4 left-1/4"></div>
+<div class="w-4 h-4 bg-primary-container rounded-full absolute right-1/4 -top-1 shadow"></div>
+<div class="w-4 h-4 bg-primary-container rounded-full absolute left-1/4 -top-1 shadow"></div>
+</div>
+</div>
+<!-- Transport Companies -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface">شركات النقل المصرحة</label>
+<div class="flex flex-col gap-space-xs">
+<label class="flex items-center justify-between p-space-sm rounded-lg hover:bg-surface-container-low cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">شركة سابتكو الدولية</span>
+<input checked="" class="rounded text-secondary w-4 h-4" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-sm rounded-lg hover:bg-surface-container-low cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">الأصيل للنقل البري</span>
+<input checked="" class="rounded text-secondary w-4 h-4" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-space-sm rounded-lg hover:bg-surface-container-low cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">شاهين إكسبريس</span>
+<input class="rounded text-secondary w-4 h-4" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Travel Class -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface">درجة السفر</label>
+<div class="grid grid-cols-2 gap-space-xs">
+<button class="py-space-sm rounded-lg bg-secondary text-on-secondary font-label-md text-label-md flex items-center justify-center gap-1 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">stars</span>
+                    درجة أولى VIP
+                  </button>
+<button class="py-space-sm rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container" type="button">
+                    اقتصادي قياسي
+                  </button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 فلاتر نشطة</span>
+<button class="px-space-lg py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow-sm flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_alt</span>
+<span>تطبيق التصفية (48 رحلة)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. SECTION 03 — SHARED PROCESS PATTERNS & DIALOG STATES -->
+<section class="flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">cycle</span>
+<span>دورة حياة العملية التفاعلية</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-tertiary">
+            03. حالات سير العملية التفاعلية (Process Lifecycle States)
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            أنماط موحدة تمثل الانتقال من حالة الانتظار إلى الخطأ أو النجاح أو الخروج غير المحفوظ في شاشات الإدارة.
+          </p>
+</div>
+</div>
+<!-- Lifecycle States Grid (4 States) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-lg items-stretch">
+<!-- State 1: Submitting State -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">حالة 1 • جاري المعالجة</span>
+<span class="material-symbols-outlined text-secondary animate-spin text-[20px]">progress_activity</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-tertiary">إصدار التذكرة ومعالجة الدفع</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                جاري الاتصال بالبوابة المالية الآمنة لنظام زول جو وتوثيق الرقم المرجعي...
+              </p>
+</div>
+<!-- Disabled Form Placeholder -->
+<div class="flex flex-col gap-space-xs opacity-60 pointer-events-none">
+<div class="w-full h-9 bg-surface-container-low rounded-lg"></div>
+<div class="w-full h-9 bg-surface-container-low rounded-lg"></div>
+</div>
+<!-- Caution message -->
+<div class="p-space-sm rounded-lg bg-surface-container flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[16px] shrink-0 mt-0.5">lock</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                يرجى عدم تحديث أو إغلاق الصفحة لمنع تكرار العملية المالية.
+              </span>
+</div>
+</div>
+<button class="w-full py-space-sm rounded-lg bg-primary/70 text-on-primary font-label-md text-label-md flex items-center justify-center gap-space-xs cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+<span>جاري الإصدار الآمن...</span>
+</button>
+</article>
+<!-- State 2: Submission Error with Recovery -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-error-container text-error font-label-md text-label-md">حالة 2 • خطأ تقني</span>
+<span class="material-symbols-outlined text-error text-[20px]">cloud_off</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">فشل مزامنة التذكرة</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                تعذر الاتصال بخادم المحطة الطرفية بمروي (خطأ مهلة 504 Gateway Timeout).
+              </p>
+</div>
+<!-- Error Banner -->
+<div class="p-space-sm rounded-lg bg-error-container/40 flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">sync_problem</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-error">كود الخطأ: ERR_TIMEOUT_ZOOL_09</span>
+<span class="font-body-sm text-body-sm text-on-error-container">لم يتم خصم أي مبالغ من رصيد الوكيل.</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<button class="w-full py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span>إعادة المحاولة التلقائية</span>
+</button>
+<button class="w-full py-space-xs text-on-surface-variant font-label-md text-label-md hover:text-on-surface" type="button">
+              إلغاء والعودة للقائمة
+            </button>
+</div>
+</article>
+<!-- State 3: Successful Completion Feedback -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-md items-center text-center">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center text-secondary shadow-inner">
+<span class="material-symbols-outlined text-[32px]">check_circle</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-low text-secondary font-label-md text-label-md self-center">حالة 3 • مكتملة بنجاح</span>
+<h3 class="font-headline-sm text-headline-sm text-tertiary">تم تأكيد الحجز وإصدار التذكرة!</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                تم تسجيل الراكب بنجاح في مانيفست الرحلة وإرسال رسالة SMS للمسافر.
+              </p>
+</div>
+<!-- Mini Ticket Summary -->
+<div class="w-full bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1 text-right">
+<div class="flex justify-between font-mono text-body-sm">
+<span class="text-on-surface-variant">الرقم المرجعي:</span>
+<span class="text-primary font-bold">#ZL-992015</span>
+</div>
+<div class="flex justify-between text-body-sm">
+<span class="text-on-surface-variant">المقعد المخصص:</span>
+<span class="text-tertiary font-bold">VIP - 04 [نافذة]</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<button class="w-full py-space-sm rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-tertiary flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>طباعة التذكرة الرقمية</span>
+</button>
+<button class="w-full py-space-xs text-on-surface-variant font-label-md text-label-md hover:text-on-surface" type="button">
+              العودة للجدول الرئيسي
+            </button>
+</div>
+</article>
+<!-- State 4: Unsaved Changes Confirmation Dialog -->
+<article class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md">حالة 4 • حماية البيانات</span>
+<span class="material-symbols-outlined text-primary text-[20px]">edit_off</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-tertiary">هل ترغب بمغادرة الصفحة وتجاهل التغييرات؟</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                قمت بتعديل بيانات 3 مقاعد وسعر التذكرة الأساسي، وسيتم فقدان جميع التغييرات في حال الخروج الآن دون حفظ.
+              </p>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">history</span>
+<span class="font-body-sm text-body-sm text-on-surface">مسودة التعديل تم حفظها محلياً مؤقتاً</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<button class="w-full py-space-sm rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow-sm" type="button">
+              متابعة التعديل وحفظ التغييرات
+            </button>
+<button class="w-full py-space-sm rounded-lg bg-surface-container-low text-error font-label-md text-label-md hover:bg-error-container/50" type="button">
+              تجاهل التغييرات والخروج
+            </button>
+</div>
+</article>
+</div>
+</section>
+<!-- Bottom Architectural Standards Note -->
+<footer class="w-full bg-surface-container-low rounded-xl p-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-tertiary">مواصفات الـ UX/UI المعتمدة للنظام (ZoolGo Standard Spec)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">تلتزم جميع أدراج التطبيق بفتح جهة اليسار (Left Drawer)، وتعتمد الأزرار الأولية دائماً لون العنابي الرئيسي (#8E1B32) للمهام التنفيذية.</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="px-space-md py-space-xs rounded-lg bg-surface-container-lowest text-tertiary font-label-md text-label-md">
+          Modals v1.2 Ready
+        </span>
+</div>
+</footer>
+</div>
+</div></main><footer class="w-full bg-surface-container-low mt-space-xl shadow-[0_1px_8px_rgba(14,92,62,0.04)]"><div class="w-full px-gutter-desktop mx-auto py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded bg-tertiary flex items-center justify-center text-on-tertiary"><span class="material-symbols-outlined text-[14px]">verified</span></div><span class="font-label-md text-label-md text-tertiary">ZoolGo Admin UI Kit v1.0 • منصة إدارة العمليات والحجوزات</span></div><div class="flex items-center gap-space-lg font-body-sm text-body-sm text-on-surface-variant"><span class="hover:text-on-surface transition-colors cursor-pointer">توثيق التصميم</span><span class="hover:text-on-surface transition-colors cursor-pointer">مواصفات RTL</span><span class="hover:text-on-surface transition-colors cursor-pointer">مصفوفة الألوان</span><span class="hover:text-on-surface transition-colors cursor-pointer">الدعم التشغيلي</span></div><div class="font-body-sm text-body-sm text-on-surface-variant">© 2025 زول جو للنقل البري الموحد. جميع الحقوق محفوظة.</div></div></footer></body></html>

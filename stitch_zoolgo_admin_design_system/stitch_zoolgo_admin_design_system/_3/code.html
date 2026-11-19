@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;font-family:'IBM Plex Sans Arabic',sans-serif;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-secondary-fixed":"#002113","outline":"#8b7172","outline-variant":"#debfc0","surface-variant":"#d0e8da","background":"#e7fff1","error-container":"#ffdad6","on-tertiary-container":"#8cc5a7","on-error":"#ffffff","error":"#ba1a1a","on-tertiary-fixed":"#002114","surface-container-high":"#d5eee0","on-primary":"#ffffff","on-error-container":"#93000a","on-surface-variant":"#574142","surface-container-highest":"#d0e8da","primary-fixed":"#ffdadb","primary-container":"#8e1b32","on-primary-fixed":"#40000e","surface":"#e7fff1","on-tertiary-fixed-variant":"#165039","tertiary-fixed-dim":"#99d3b4","inverse-on-surface":"#def7e8","secondary":"#226a4b","secondary-fixed-dim":"#8ed5af","surface-bright":"#e7fff1","on-primary-container":"#ff9ea6","surface-container":"#dbf4e5","on-tertiary":"#ffffff","on-background":"#0a1f17","secondary-container":"#a7efc7","surface-container-low":"#e1faeb","tertiary-fixed":"#b5efd0","on-primary-fixed-variant":"#8a182f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#005235","secondary-fixed":"#aaf2ca","inverse-surface":"#20352b","primary-fixed-dim":"#ffb2b7","on-surface":"#0a1f17","tertiary-container":"#1a533c","on-secondary-container":"#286f4f","tertiary":"#003b27","on-secondary":"#ffffff","surface-tint":"#aa3145","surface-dim":"#c7e0d2","primary":"#6d001e","inverse-primary":"#ffb2b7"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-sm":"0.5rem","margin":"1.5rem","gutter-desktop":"1.5rem","space-xl":"2rem","gutter":"1.25rem","space-lg":"1.5rem","space-md":"1rem","space-xs":"0.25rem","margin-desktop":"2rem"},"fontFamily":{"body-lg":["IBM Plex Sans"],"label-md":["IBM Plex Sans"],"headline-md":["IBM Plex Sans"],"body-sm":["IBM Plex Sans"],"headline-sm":["IBM Plex Sans"],"label-lg":["IBM Plex Sans"],"display-md":["IBM Plex Sans"],"display-lg":["IBM Plex Sans"],"headline-lg":["IBM Plex Sans"],"tabular-stat":["IBM Plex Sans"],"body-md":["IBM Plex Sans"]},"fontSize":{"body-lg":["1rem",{"lineHeight":"1.625rem","letterSpacing":"0","fontWeight":"400"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.025em","fontWeight":"600"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"0","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","letterSpacing":"0","fontWeight":"400"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"0","fontWeight":"600"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0","fontWeight":"600"}],"display-md":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"0","fontWeight":"700"}],"display-lg":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"0","fontWeight":"700"}],"headline-lg":["1.5rem",{"lineHeight":"2rem","letterSpacing":"0","fontWeight":"600"}],"tabular-stat":["1.5rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"700"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","letterSpacing":"0","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed right-0 top-0 h-full w-[260px] bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="p-space-md pb-space-sm flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-tertiary flex items-center justify-center text-on-tertiary font-headline-md font-bold">Z</div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold text-on-surface leading-tight">ZoolGo</span><span class="font-label-md text-label-md text-on-surface-variant">منظومة النقل الذكي</span></div></div><div class="mt-space-xs bg-surface-container-low px-space-sm py-1 rounded-full flex items-center justify-between"><span class="font-label-md text-label-md text-secondary font-semibold">لوحة الإدارة المركزية</span><span class="font-label-md text-label-md text-on-secondary-container bg-secondary-container px-1.5 py-0.5 rounded-full">v1.0</span></div></div><div class="flex-1 overflow-y-auto px-space-sm py-space-xs space-y-space-md"><nav data-active-classes="bg-tertiary text-on-tertiary font-bold shadow-sm"><div class="px-space-sm pb-space-xs"><p class="font-label-md text-label-md text-on-surface-variant font-bold mb-space-xs px-space-xs">الرئيسية والعمليات</p><div class="space-y-1"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">dashboard</span><span class="font-body-md text-body-md">نظرة عامة</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="live-fleet-tracking" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">fmd_good</span><span class="font-body-md text-body-md">التتبع المباشر</span></div><span class="font-label-md text-label-md bg-error text-on-error px-1.5 py-0.5 rounded-full animate-pulse">مباشر</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="bookings-and-tickets" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">confirmation_number</span><span class="font-body-md text-body-md">الحجوزات والتذاكر</span></div><span class="font-label-md text-label-md bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded-full">142</span></a><a aria-current="page" class="flex items-center justify-between px-space-sm py-2 rounded-lg transition-all bg-tertiary text-on-tertiary font-bold shadow-sm" data-path="transport-companies" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">directions_bus</span><span class="font-body-md text-body-md">شركات النقل</span></div><span class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="broker-offices" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">storefront</span><span class="font-body-md text-body-md">مكاتب الوكلاء</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="passenger-accounts" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">group</span><span class="font-body-md text-body-md">حسابات المسافرين</span></div></a></div></div><div class="px-space-sm pb-space-xs"><p class="font-label-md text-label-md text-on-surface-variant font-bold mb-space-xs px-space-xs">المالية والتسويات</p><div class="space-y-1"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="wallets-and-financial-transactions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">account_balance_wallet</span><span class="font-body-md text-body-md">المحافظ والمعاملات</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="commissions-and-settlements" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">payments</span><span class="font-body-md text-body-md">العمولات والتسوية</span></div><span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded-full">4 معلقة</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cancellations-and-refunds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">assignment_return</span><span class="font-body-md text-body-md">الإلغاءات والاسترداد</span></div><span class="font-label-md text-label-md bg-error-container text-on-error-container px-1.5 py-0.5 rounded-full">2 مراجعة</span></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="financial-reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">monitoring</span><span class="font-body-md text-body-md">التقارير المالية</span></div></a></div></div><div class="px-space-sm pb-space-xs"><p class="font-label-md text-label-md text-on-surface-variant font-bold mb-space-xs px-space-xs">إدارة النظام والصلاحيات</p><div class="space-y-1"><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin-team" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">admin_panel_settings</span><span class="font-body-md text-body-md">فريق الإدارة</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="roles-and-permissions" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">security</span><span class="font-body-md text-body-md">الأدوار والصلاحيات</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="activity-and-audit-log" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">receipt_long</span><span class="font-body-md text-body-md">سجل الأنشطة</span></div></a><a class="flex items-center justify-between px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="general-settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[1.25rem]">tune</span><span class="font-body-md text-body-md">الإعدادات العامة</span></div></a></div></div></nav></div><div class="p-space-sm bg-surface-container-low m-space-sm rounded-xl"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary font-bold text-body-sm">أ.س</div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface font-semibold">أحمد السر</span><span class="font-label-md text-label-md text-on-surface-variant">المشرف العام</span></div></div><a class="p-1 text-on-surface-variant hover:text-error transition-colors" data-path="login" href="#" title="تسجيل الخروج"><span class="material-symbols-outlined text-[1.25rem]">logout</span></a></div></div></aside><div class="pr-[260px]"><header class="fixed top-0 right-[260px] left-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md w-96"><div class="relative w-full"><span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[1.25rem]">search</span><input class="w-full pr-10 pl-3 py-2 bg-surface-container-low rounded-lg text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:bg-surface-container-lowest transition-colors" placeholder="بحث سريع برقم الشركة، الحجز، الحافلة..." type="text"/></div></div><div class="hidden lg:flex items-center gap-space-md"><div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-full"><span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span><span class="font-label-md text-label-md text-secondary font-medium">الأنظمة التشغيلية: متصلة 100%</span></div><div class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[1rem]">calendar_today</span><span>اليوم: 24 أكتوبر 2024</span></div></div><div class="flex items-center gap-space-md"><button class="relative p-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[1.25rem]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><button class="bg-primary-container text-on-primary px-space-md py-2 rounded-lg font-label-lg text-label-lg flex items-center gap-space-xs shadow-sm hover:opacity-95 transition-opacity" type="button"><span class="material-symbols-outlined text-[1.125rem]">add_circle</span><span>إجراء سريع</span></button><div class="flex items-center gap-space-xs pr-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UfglPDvtqYfIEtSbYJMbW3_O-EEcWbcuCSRM9FUVCSguA6VYCKXVDsUdquIFA-R8kP-GPaj0ceajyh2bvwf5KXtJagEEXKWLamOkX-A6GBLx6jXarb5mXhuHZEQVtWfA6IjrREDe76xvuYgQoVRtHA10sz1igjwRZ70BtVd_VchtnWqwjir0OLLnGPfSsQYPXOiGCD3sw5x1ojureR1Dhv_opfn1ez8xdvToe7a7RFqeu4sA4qlBB-56aAmdc9IcGOTNsror0Vaw"/><span class="material-symbols-outlined text-on-surface-variant text-[1.125rem]">expand_more</span></div></div></header><main class="w-full pt-16 min-h-screen bg-surface"><div class="flex flex-col w-full">
+<!-- Interactive Script for Filtering & View Modals -->
+<script>
+    function copyTripCode(code, element) {
+      navigator.clipboard.writeText(code).then(() => {
+        const toast = document.getElementById('toast-notification');
+        const toastText = document.getElementById('toast-text');
+        if (toast && toastText) {
+          toastText.textContent = `تم نسخ رقم الرحلة: ${code}`;
+          toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+          toast.classList.add('opacity-100', 'translate-y-0');
+          setTimeout(() => {
+            toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+          }, 2400);
+        }
+      });
+    }
+
+    function filterRoutes(startCity) {
+      const rows = document.querySelectorAll('.route-row');
+      const buttons = document.querySelectorAll('.route-filter-btn');
+      
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-tertiary', 'text-on-tertiary');
+        btn.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+      });
+      event.currentTarget.classList.add('bg-tertiary', 'text-on-tertiary');
+      event.currentTarget.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+
+      rows.forEach(row => {
+        if (!startCity || startCity === 'all' || row.getAttribute('data-origin') === startCity) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+<!-- Toast Notification Floating HUD -->
+<div class="fixed bottom-6 left-6 z-50 flex items-center gap-space-xs bg-inverse-surface text-inverse-on-surface px-space-md py- space-sm rounded-xl shadow-xl transition-all duration-300 opacity-0 pointer-events-none translate-y-2" id="toast-notification">
+<span class="material-symbols-outlined text-[1.25rem] text-secondary-fixed">check_circle</span>
+<span class="font-body-sm text-body-sm" id="toast-text">تم نسخ الرمز بنجاح</span>
+</div>
+<!-- Operational Context Header (Sticky Compact Bar) -->
+<div class="sticky top-16 z-30 w-full bg-surface-container-lowest/95 backdrop-blur-md px-space-lg py-space-sm shadow-sm">
+<div class="max-w-[1560px] mx-auto flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<!-- Company Identity & Badges -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-tertiary text-on-tertiary flex items-center justify-center font-headline-md font-bold shadow-sm">
+          ن
+        </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-bold">شركة النيل للنقل البري</h1>
+<span class="font-label-md text-label-md text-on-tertiary-container bg-tertiary-container px-2 py-0.5 rounded-full font-mono">TC-001</span>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              مرخص ونشط
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2 mt-0.5">
+<span>سجل تجاري: CR-489102-KRT</span>
+<span class="text-outline-variant">•</span>
+<span>الترخيص الاتحادي للخطوط السريعة #842</span>
+</p>
+</div>
+</div>
+<!-- Quick Operational Telemetry Strip -->
+<div class="flex items-center flex-wrap gap-2 lg:gap-3 bg-surface-container-low px-space-md py-1.5 rounded-xl">
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[1.125rem]">alt_route</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">المسارات النشطة</span>
+<span class="font-tabular-stat text-body-md font-bold text-on-surface leading-tight">14</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[1.125rem]">calendar_today</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">رحلات اليوم</span>
+<span class="font-tabular-stat text-body-md font-bold text-on-surface leading-tight">32</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary text-[1.125rem] animate-pulse">moving</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">رحلات جارية</span>
+<span class="font-tabular-stat text-body-md font-bold text-primary leading-tight">28</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[1.125rem]">directions_bus</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">الأسطول المسجل</span>
+<span class="font-tabular-stat text-body-md font-bold text-on-surface leading-tight">48</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[1.125rem]">satellite_alt</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">GPS متصل لحظياً</span>
+<span class="font-tabular-stat text-body-md font-bold text-secondary leading-tight">42 / 48</span>
+</div>
+</div>
+<a class="mr-auto inline-flex items-center gap-1.5 bg-primary-container text-on-primary px-space-md py-2 rounded-lg font-label-lg text-label-lg hover:opacity-95 shadow-sm transition-all" data-path="live-fleet-tracking" href="#">
+<span class="material-symbols-outlined text-[1.125rem]">map</span>
+<span>خريطة التتبع المباشر</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Domain Navigation Tabs -->
+<div class="w-full bg-surface-container-low px-space-lg pt-space-xs">
+<div class="max-w-[1560px] mx-auto flex items-center gap-space-xs overflow-x-auto scrollbar-none">
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap rounded-t-lg" href="#">
+        نظرة عامة
+      </a>
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-tertiary bg-surface-container-lowest font-bold whitespace-nowrap rounded-t-lg shadow-sm flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[1.125rem]">alt_route</span>
+<span>المسارات والمحطات المعتمدة</span>
+</a>
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-tertiary bg-surface-container-lowest font-bold whitespace-nowrap rounded-t-lg shadow-sm flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[1.125rem]">local_shipping</span>
+<span>الرحلات والأسطول المباشر</span>
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+</a>
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap rounded-t-lg" href="#">
+        الوسطاء والعمولات (16 مكتب)
+      </a>
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap rounded-t-lg" href="#">
+        الحجوزات والتذاكر
+      </a>
+<a class="px-space-md py-2.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap rounded-t-lg" href="#">
+        سجل النشاط والتدقيق
+      </a>
+</div>
+</div>
+<!-- Main Canvas Space -->
+<div class="max-w-[1560px] mx-auto w-full px-space-lg py-space-lg flex flex-col gap-space-xl">
+<!-- Top Analytical Banner & Teltonika IoT Sync Status -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Primary Fleet Capacity & Efficiency Card (Bento Style) -->
+<div class="lg:col-span-8 bg-tertiary text-on-tertiary p-space-lg rounded-xl shadow-md flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -left-12 -bottom-12 w-64 h-64 bg-tertiary-container rounded-full opacity-30 blur-2xl pointer-events-none"></div>
+<div class="flex items-start justify-between flex-wrap gap-space-md relative z-10">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container tracking-wider uppercase">حالة الركاب وسعة المقاعد اليوم</span>
+<div class="flex items-baseline gap-space-sm mt-1">
+<span class="font-display-lg text-display-lg font-bold">1,120</span>
+<span class="font-body-md text-body-md text-secondary-fixed-dim">راكب مسافر اليوم عبر 32 رحلة</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container-highest/20 backdrop-blur-md px-space-md py-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-[1.5rem]">pie_chart</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-tertiary-fixed">نسبة الإشغال الإجمالية</span>
+<span class="font-tabular-stat text-headline-sm font-bold text-on-tertiary">89.4%</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md mt-space-lg pt-space-md relative z-10">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container">إجمالي المقاعد المعروضة</span>
+<span class="font-tabular-stat text-body-lg font-bold text-on-tertiary">1,250 مقعد</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container">المقاعد المؤكدة</span>
+<span class="font-tabular-stat text-body-lg font-bold text-secondary-fixed">1,118 مقعد</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container">متوسط سرعة الأسطول</span>
+<span class="font-tabular-stat text-body-lg font-bold text-on-tertiary">84.2 كم/س</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container">تنبيهات المسار النشطة</span>
+<span class="font-tabular-stat text-body-lg font-bold text-secondary-fixed-dim">0 تنبيه أمني</span>
+</div>
+</div>
+</div>
+<!-- Teltonika IoT Telemetry Validation Box -->
+<div class="lg:col-span-4 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[1.25rem]">security</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">حوكمة أجهزة الـ GPS</span>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            تزامن مباشر
+          </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed my-2">
+          يتم استلام تدفق الإحداثيات والسرعة ومؤشرات الوقود عبر وحدات <strong>Teltonika FMC130 IoT</strong> المشفرة مباشرة ومطابقتها مركزياً كل 10 ثوانٍ لضمان سلامة المسافرين ومنع التجاوزات.
+        </p>
+<div class="bg-surface-container-low p-space-sm rounded-lg flex items-center justify-between mt-2">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[1.125rem]">sensors</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">بوابة الخوادم الحكومية</span>
+</div>
+<span class="font-mono text-body-sm font-bold text-secondary">متصلة (RTT 38ms)</span>
+</div>
+</div>
+</div>
+<!-- SECTION A: المسارات والمحطات المعتمدة -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<!-- Section Header & Filter Toolbar -->
+<div class="p-space-lg bg-surface-container-lowest flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<div class="w-2.5 h-6 bg-tertiary rounded-full"></div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">المسارات والمحطات المعتمدة</h2>
+<span class="font-label-md text-label-md bg-surface-container-high text-on-surface px-2 py-0.5 rounded-full">4 مسارات رئيسية</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            شبكة المسارات المشغلة بواسطة شركة النيل مع محطات التوقف ومواعيدها الرسمية المعتمدة
+          </p>
+</div>
+<!-- Filter Buttons & Search -->
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-on-surface-variant ml-1">تصفية بنقطة الانطلاق:</span>
+<button class="route-filter-btn px-space-md py-1.5 rounded-lg font-label-md text-label-md bg-tertiary text-on-tertiary transition-all" onclick="filterRoutes('all')">
+            الكل (4)
+          </button>
+<button class="route-filter-btn px-space-md py-1.5 rounded-lg font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all" onclick="filterRoutes('الخرطوم')">
+            الخرطوم (3)
+          </button>
+<button class="route-filter-btn px-space-md py-1.5 rounded-lg font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all" onclick="filterRoutes('مروي')">
+            مروي (1)
+          </button>
+<button class="route-filter-btn px-space-md py-1.5 rounded-lg font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-all" onclick="filterRoutes('بورتسودان')">
+            بورتسودان
+          </button>
+</div>
+</div>
+<!-- Routes Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
+<th class="py-3 px-space-md font-semibold">رمز المسار</th>
+<th class="py-3 px-space-md font-semibold">خط السير (الانطلاق ← الوجهة)</th>
+<th class="py-3 px-space-md font-semibold">محطات التوقف الوسيطة</th>
+<th class="py-3 px-space-md font-semibold">المسافة والزمن</th>
+<th class="py-3 px-space-md font-semibold">التكرار اليومي</th>
+<th class="py-3 px-space-md font-semibold">الحالة</th>
+<th class="py-3 px-space-md font-semibold text-center">إجراءات</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-surface-container-low text-on-surface">
+<!-- Route 1 -->
+<tr class="route-row hover:bg-surface-container-low/60 transition-colors" data-origin="الخرطوم">
+<td class="py-4 px-space-md font-mono text-tertiary font-bold">
+<span class="bg-surface-container px-2 py-1 rounded text-body-sm">RT-KRT-MRW-01</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-on-surface">الخرطوم (الميناء البري)</span>
+<span class="material-symbols-outlined text-[1rem] text-secondary rotate-180">arrow_back</span>
+<span class="font-semibold text-on-surface">مروي (المحطة المركزية)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">شريان الشمال السريع</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">شندي</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">البجراوية</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<span class="font-tabular-stat text-body-md font-bold text-on-surface">380 كم</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">~ 5 ساعات قيادة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">update</span>
+                  6 رحلات / يوم
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  نشط ومعتمد
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="px-2.5 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg font-label-md text-label-md flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[1rem]">visibility</span>
+<span>التفاصيل</span>
+</button>
+<button class="px-2.5 py-1.5 bg-secondary-container text-on-secondary-container hover:opacity-90 rounded-lg font-label-md text-label-md flex items-center gap-1 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">schedule</span>
+<span>الرحلات</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Route 2 -->
+<tr class="route-row hover:bg-surface-container-low/60 transition-colors" data-origin="الخرطوم">
+<td class="py-4 px-space-md font-mono text-tertiary font-bold">
+<span class="bg-surface-container px-2 py-1 rounded text-body-sm">RT-KRT-PTS-02</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-on-surface">الخرطوم (الميناء البري)</span>
+<span class="material-symbols-outlined text-[1rem] text-secondary rotate-180">arrow_back</span>
+<span class="font-semibold text-on-surface">بورتسودان (الميناء البري)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">طريق التحدي الساحلي الدولي</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">شندي</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">عطبرة</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">هيا</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<span class="font-tabular-stat text-body-md font-bold text-on-surface">820 كم</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">~ 11 ساعة قيادة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">update</span>
+                  4 رحلات / يوم
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  نشط ومعتمد
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="px-2.5 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg font-label-md text-label-md flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[1rem]">visibility</span>
+<span>التفاصيل</span>
+</button>
+<button class="px-2.5 py-1.5 bg-secondary-container text-on-secondary-container hover:opacity-90 rounded-lg font-label-md text-label-md flex items-center gap-1 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">schedule</span>
+<span>الرحلات</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Route 3 -->
+<tr class="route-row hover:bg-surface-container-low/60 transition-colors" data-origin="الخرطوم">
+<td class="py-4 px-space-md font-mono text-tertiary font-bold">
+<span class="bg-surface-container px-2 py-1 rounded text-body-sm">RT-KRT-ATB-03</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-on-surface">الخرطوم (الميناء البري)</span>
+<span class="material-symbols-outlined text-[1rem] text-secondary rotate-180">arrow_back</span>
+<span class="font-semibold text-on-surface">عطبرة المركزية</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">طريق النيل الشرقي</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">الجيلي</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">شندي</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">الدامر</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<span class="font-tabular-stat text-body-md font-bold text-on-surface">310 كم</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">~ 4 ساعات قيادة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">update</span>
+                  8 رحلات / يوم
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  نشط ومعتمد
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="px-2.5 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg font-label-md text-label-md flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[1rem]">visibility</span>
+<span>التفاصيل</span>
+</button>
+<button class="px-2.5 py-1.5 bg-secondary-container text-on-secondary-container hover:opacity-90 rounded-lg font-label-md text-label-md flex items-center gap-1 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">schedule</span>
+<span>الرحلات</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Route 4 -->
+<tr class="route-row hover:bg-surface-container-low/60 transition-colors" data-origin="مروي">
+<td class="py-4 px-space-md font-mono text-tertiary font-bold">
+<span class="bg-surface-container px-2 py-1 rounded text-body-sm">RT-MRW-DNG-04</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-on-surface">مروي (المحطة المركزية)</span>
+<span class="material-symbols-outlined text-[1rem] text-secondary rotate-180">arrow_back</span>
+<span class="font-semibold text-on-surface">دنقلا (الميناء البري)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">القطاع الشمالي الغربي</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">الدبة</span>
+<span class="text-outline-variant">›</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded-full text-body-sm text-on-surface">القولد</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<span class="font-tabular-stat text-body-md font-bold text-on-surface">240 كم</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">~ 3.5 ساعة قيادة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">update</span>
+                  3 رحلات / يوم
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  نشط ومعتمد
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="px-2.5 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg font-label-md text-label-md flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[1rem]">visibility</span>
+<span>التفاصيل</span>
+</button>
+<button class="px-2.5 py-1.5 bg-secondary-container text-on-secondary-container hover:opacity-90 rounded-lg font-label-md text-label-md flex items-center gap-1 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">schedule</span>
+<span>الرحلات</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- SECTION B: الرحلات الجارية والقادمة اليوم -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<!-- Section Header -->
+<div class="p-space-lg bg-surface-container-lowest flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<div class="w-2.5 h-6 bg-primary-container rounded-full"></div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">الرحلات الجارية والقادمة (اليوم)</h2>
+<span class="font-label-md text-label-md bg-primary-fixed-dim text-on-primary-fixed px-2 py-0.5 rounded-full font-bold">تشغيل فوري</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            جدول رحلات اليوم الحية والمجدولة مع مؤشرات الركاب، نسب الإشغال، وحالة التتبع الجغرافي
+          </p>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-md text-label-md">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span>في الطريق (28)</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-md text-label-md mr-3">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span>صعود ركاب (2)</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-md text-label-md mr-3">
+<span class="w-2.5 h-2.5 rounded-full bg-surface-container-highest"></span>
+<span>مجدولة لاحقاً (2)</span>
+</div>
+</div>
+</div>
+<!-- Trips Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
+<th class="py-3 px-space-md font-semibold">رقم الرحلة والوقت</th>
+<th class="py-3 px-space-md font-semibold">المسار ونوع الخدمة</th>
+<th class="py-3 px-space-md font-semibold">الحافلة المخصصة والربان</th>
+<th class="py-3 px-space-md font-semibold">سعة المقاعد والحجز</th>
+<th class="py-3 px-space-md font-semibold">الحالة التشغيلية</th>
+<th class="py-3 px-space-md font-semibold">حالة الـ GPS والسرعة</th>
+<th class="py-3 px-space-md font-semibold text-center">إجراءات التحكم</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-surface-container-low text-on-surface">
+<!-- Trip 1: TRIP-983 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-tertiary">TRIP-983</span>
+<button class="text-on-surface-variant hover:text-tertiary" onclick="copyTripCode('TRIP-983', this)" title="نسخ رمز الرحلة">
+<span class="material-symbols-outlined text-[1rem]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[0.875rem]">schedule</span>
+<span>اليوم 08:30 ص</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="font-semibold text-on-surface">الخرطوم ← مروي</div>
+<span class="inline-block font-label-md text-label-md text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">مباشر إكسبريس</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem] text-tertiary">directions_bus</span>
+<span class="font-semibold text-on-surface font-mono">ZG-BUS-018</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Toyota Coaster VIP</span>
+<span class="font-body-sm text-body-sm text-on-surface mt-0.5">السائق: أحمد محمد سليمان</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col w-36">
+<div class="flex justify-between items-center font-label-md text-label-md mb-1">
+<span class="text-on-surface font-bold">21 / 25 مقعد</span>
+<span class="text-secondary font-bold font-tabular-stat">84%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 84%"></div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-fixed text-on-secondary-fixed font-semibold px-2.5 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                  جارية (في الطريق)
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-label-md text-label-md text-secondary font-semibold">
+<span class="material-symbols-outlined text-[1rem]">cell_tower</span>
+<span>متصل 4G</span>
+</div>
+<span class="font-tabular-stat text-body-sm font-bold text-on-surface">85 كم/ساعة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="p-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" title="عرض تفاصيل الرحلة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">assignment</span>
+</button>
+<button class="p-1.5 bg-tertiary text-on-tertiary rounded-lg hover:opacity-90 transition-opacity" title="عرض على الخريطة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">fmd_good</span>
+</button>
+<button class="p-1.5 bg-secondary-container text-on-secondary-container rounded-lg hover:opacity-90 transition-opacity" title="عرض قائمة الحجوزات" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">confirmation_number</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Trip 2: TRIP-985 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-tertiary">TRIP-985</span>
+<button class="text-on-surface-variant hover:text-tertiary" onclick="copyTripCode('TRIP-985', this)" title="نسخ رمز الرحلة">
+<span class="material-symbols-outlined text-[1rem]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[0.875rem]">schedule</span>
+<span>اليوم 06:00 ص</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="font-semibold text-on-surface">الخرطوم ← بورتسودان</div>
+<span class="inline-block font-label-md text-label-md text-tertiary bg-surface-container-high px-1.5 py-0.5 rounded">درجة أولى VIP</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem] text-tertiary">directions_bus</span>
+<span class="font-semibold text-on-surface font-mono">ZG-BUS-042</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mercedes Travego VIP</span>
+<span class="font-body-sm text-body-sm text-on-surface mt-0.5">السائق: عثمان فضل الله</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col w-36">
+<div class="flex justify-between items-center font-label-md text-label-md mb-1">
+<span class="text-on-surface font-bold">45 / 45 مقعد</span>
+<span class="text-primary font-bold font-tabular-stat">100% مكتمل</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-fixed text-on-secondary-fixed font-semibold px-2.5 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                  جارية (قرب عطبرة)
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-label-md text-label-md text-secondary font-semibold">
+<span class="material-symbols-outlined text-[1rem]">cell_tower</span>
+<span>متصل 4G</span>
+</div>
+<span class="font-tabular-stat text-body-sm font-bold text-on-surface">88 كم/ساعة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="p-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" title="عرض تفاصيل الرحلة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">assignment</span>
+</button>
+<button class="p-1.5 bg-tertiary text-on-tertiary rounded-lg hover:opacity-90 transition-opacity" title="عرض على الخريطة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">fmd_good</span>
+</button>
+<button class="p-1.5 bg-secondary-container text-on-secondary-container rounded-lg hover:opacity-90 transition-opacity" title="عرض قائمة الحجوزات" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">confirmation_number</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Trip 3: TRIP-990 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-tertiary">TRIP-990</span>
+<button class="text-on-surface-variant hover:text-tertiary" onclick="copyTripCode('TRIP-990', this)" title="نسخ رمز الرحلة">
+<span class="material-symbols-outlined text-[1rem]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[0.875rem]">schedule</span>
+<span>اليوم 10:00 ص</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="font-semibold text-on-surface">الخرطوم ← عطبرة</div>
+<span class="inline-block font-label-md text-label-md text-on-surface-variant bg-surface-container-high px-1.5 py-0.5 rounded">خدمة منتظمة</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem] text-tertiary">directions_bus</span>
+<span class="font-semibold text-on-surface font-mono">ZG-BUS-011</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">King Long Coach</span>
+<span class="font-body-sm text-body-sm text-on-surface mt-0.5">السائق: إبراهيم عوض</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col w-36">
+<div class="flex justify-between items-center font-label-md text-label-md mb-1">
+<span class="text-on-surface font-bold">34 / 40 مقعد</span>
+<span class="text-secondary font-bold font-tabular-stat">85%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-primary-fixed-dim text-on-primary-fixed font-semibold px-2.5 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  صعود الركاب (الميناء البري)
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">wifi_tethering</span>
+<span>متصل (متوقفة)</span>
+</div>
+<span class="font-tabular-stat text-body-sm font-bold text-on-surface">0 كم/ساعة</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="p-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" title="عرض تفاصيل الرحلة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">assignment</span>
+</button>
+<button class="p-1.5 bg-tertiary text-on-tertiary rounded-lg hover:opacity-90 transition-opacity" title="عرض على الخريطة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">fmd_good</span>
+</button>
+<button class="p-1.5 bg-secondary-container text-on-secondary-container rounded-lg hover:opacity-90 transition-opacity" title="عرض قائمة الحجوزات" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">confirmation_number</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Trip 4: TRIP-994 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-4 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-tertiary">TRIP-994</span>
+<button class="text-on-surface-variant hover:text-tertiary" onclick="copyTripCode('TRIP-994', this)" title="نسخ رمز الرحلة">
+<span class="material-symbols-outlined text-[1rem]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[0.875rem]">schedule</span>
+<span>اليوم 02:00 م</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="font-semibold text-on-surface">الخرطوم ← مروي (المسائية)</div>
+<span class="inline-block font-label-md text-label-md text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">حافلة مريحة</span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem] text-tertiary">directions_bus</span>
+<span class="font-semibold text-on-surface font-mono">ZG-BUS-027</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Toyota Coaster</span>
+<span class="font-body-sm text-body-sm text-on-surface mt-0.5">السائق: جلال إدريس</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col w-36">
+<div class="flex justify-between items-center font-label-md text-label-md mb-1">
+<span class="text-on-surface font-bold">18 / 25 مقعد</span>
+<span class="text-secondary font-bold font-tabular-stat">72%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 72%"></div>
+</div>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-surface-container-high text-on-surface font-semibold px-2.5 py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+                  مجدولة (قيد الحجز)
+                </span>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">sensors</span>
+<span>متصل (تجهيز)</span>
+</div>
+<span class="font-tabular-stat text-body-sm font-bold text-on-surface-variant">جاهزية 100%</span>
+</div>
+</td>
+<td class="py-4 px-space-md">
+<div class="flex items-center justify-center gap-space-xs">
+<button class="p-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg transition-colors" title="عرض تفاصيل الرحلة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">assignment</span>
+</button>
+<button class="p-1.5 bg-tertiary text-on-tertiary rounded-lg hover:opacity-90 transition-opacity" title="عرض على الخريطة" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">fmd_good</span>
+</button>
+<button class="p-1.5 bg-secondary-container text-on-secondary-container rounded-lg hover:opacity-90 transition-opacity" title="عرض قائمة الحجوزات" type="button">
+<span class="material-symbols-outlined text-[1.125rem]">confirmation_number</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- SECTION C: ملخص أسطول الحافلات وتتبع الـ GPS -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<!-- Section Header -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<div class="w-2.5 h-6 bg-secondary rounded-full"></div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">أسطول الحافلات وتتبع الـ GPS اللحظي</h2>
+<span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold">48 حافلة مسجلة</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            مراقبة الموقع اللحظي، السرعة، حالة الاستشعار، وآخر بث سلكي/لاسلكي لوحدات التتبع
+          </p>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[1.125rem]">search</span>
+<input class="pr-9 pl-3 py-1.5 bg-surface-container-low rounded-lg text-body-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:bg-surface-container-lowest transition-colors w-64" placeholder="بحث برقم الحافلة أو اللوحة..." type="text"/>
+</div>
+<button class="p-2 bg-surface-container-low text-on-surface rounded-lg hover:bg-surface-container transition-colors" title="تحديث الاتصال" type="button">
+<span class="material-symbols-outlined text-[1.25rem]">sync</span>
+</button>
+</div>
+</div>
+<!-- Fleet Grid Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md mt-space-xs">
+<!-- Fleet Item 1: ZG-BUS-018 -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[1.5rem]">airport_shuttle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md font-bold text-on-surface font-mono">ZG-BUS-018</span>
+<span class="font-label-md text-label-md text-on-surface-variant">خ ر ط - 1234</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-medium">
+                في الخدمة
+              </span>
+</div>
+<div class="mt-space-md space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الموديل والسعة:</span>
+<span class="font-semibold text-on-surface">Toyota Coaster (25)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الرحلة الحالية:</span>
+<span class="font-mono font-bold text-tertiary">TRIP-983</span>
+</div>
+<div class="flex items-start justify-between text-body-sm">
+<span class="text-on-surface-variant">الموقع التقديري:</span>
+<span class="text-on-surface font-semibold text-left">شريان الشمال، ك 165</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<div class="flex items-center gap-1 text-secondary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span>GPS متصل</span>
+</div>
+<span class="text-on-surface-variant font-mono">منذ 15 ثانية</span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="w-full py-1.5 bg-tertiary text-on-tertiary rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:opacity-95 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">map</span>
+<span>الخريطة</span>
+</button>
+<button class="w-full py-1.5 bg-surface-container-lowest text-on-surface rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:bg-surface-container transition-colors" type="button">
+<span>التفاصيل</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Fleet Item 2: ZG-BUS-042 -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[1.5rem]">directions_bus</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md font-bold text-on-surface font-mono">ZG-BUS-042</span>
+<span class="font-label-md text-label-md text-on-surface-variant">خ ر ط - 4829</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-medium">
+                في الخدمة
+              </span>
+</div>
+<div class="mt-space-md space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الموديل والسعة:</span>
+<span class="font-semibold text-on-surface">Mercedes Travego (45)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الرحلة الحالية:</span>
+<span class="font-mono font-bold text-tertiary">TRIP-985</span>
+</div>
+<div class="flex items-start justify-between text-body-sm">
+<span class="text-on-surface-variant">الموقع التقديري:</span>
+<span class="text-on-surface font-semibold text-left">طريق التحدي، ك 280</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<div class="flex items-center gap-1 text-secondary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span>GPS متصل</span>
+</div>
+<span class="text-on-surface-variant font-mono">منذ 22 ثانية</span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="w-full py-1.5 bg-tertiary text-on-tertiary rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:opacity-95 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">map</span>
+<span>الخريطة</span>
+</button>
+<button class="w-full py-1.5 bg-surface-container-lowest text-on-surface rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:bg-surface-container transition-colors" type="button">
+<span>التفاصيل</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Fleet Item 3: ZG-BUS-011 -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[1.5rem]">directions_bus</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md font-bold text-on-surface font-mono">ZG-BUS-011</span>
+<span class="font-label-md text-label-md text-on-surface-variant">خ ر ط - 7712</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-medium">
+                في الخدمة
+              </span>
+</div>
+<div class="mt-space-md space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الموديل والسعة:</span>
+<span class="font-semibold text-on-surface">King Long Coach (40)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الرحلة الحالية:</span>
+<span class="font-mono font-bold text-tertiary">TRIP-990</span>
+</div>
+<div class="flex items-start justify-between text-body-sm">
+<span class="text-on-surface-variant">الموقع التقديري:</span>
+<span class="text-on-surface font-semibold text-left">الميناء البري (الخرطوم)</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<div class="flex items-center gap-1 text-secondary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>متصل (متوقفة)</span>
+</div>
+<span class="text-on-surface-variant font-mono">منذ دقيقة</span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="w-full py-1.5 bg-tertiary text-on-tertiary rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:opacity-95 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[1rem]">map</span>
+<span>الخريطة</span>
+</button>
+<button class="w-full py-1.5 bg-surface-container-lowest text-on-surface rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:bg-surface-container transition-colors" type="button">
+<span>التفاصيل</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Fleet Item 4: ZG-BUS-005 -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+<div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[1.5rem]">build</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md font-bold text-on-surface font-mono">ZG-BUS-005</span>
+<span class="font-label-md text-label-md text-on-surface-variant">خ ر ط - 3319</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md bg-error-container text-on-error-container px-2 py-0.5 rounded-full font-medium">
+                صيانة دورية
+              </span>
+</div>
+<div class="mt-space-md space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الموديل والسعة:</span>
+<span class="font-semibold text-on-surface">Toyota Coaster (25)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">الرحلة الحالية:</span>
+<span class="text-on-surface-variant italic">غير مسندة حالياً</span>
+</div>
+<div class="flex items-start justify-between text-body-sm">
+<span class="text-on-surface-variant">الموقع التقديري:</span>
+<span class="text-on-surface font-semibold text-left">الورشة المركزية (بحري)</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<div class="flex items-center gap-1 text-on-surface-variant font-semibold">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span>متصل (المقر الرئيسي)</span>
+</div>
+<span class="text-on-surface-variant font-mono">منذ 5 دقائق</span>
+</div>
+<div class="mt-1">
+<button class="w-full py-1.5 bg-surface-container-lowest text-on-surface rounded-lg font-label-md text-label-md flex items-center justify-center gap-1 hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[1rem]">tune</span>
+<span>سجل الصيانة والمواصفات</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Governance & Compliance Bottom Callout -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[1.5rem]">verified_user</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">تذكير معايير الحوكمة وسلامة النقل المشترك</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">بيانات أجهزة التتبع مستلمة ومطابقة مع وحدة Teltonika IoT المركزية وتخضع لمراقبة هيئة النقل البري الاتحادية.</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-1 font-semibold" href="#">
+<span>دليل بروتوكول التتبع</span>
+<span class="material-symbols-outlined text-[1rem] rotate-180">arrow_back</span>
+</a>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="w-full px-space-lg text-center font-body-sm text-body-sm text-on-surface-variant">© 2024 منصة ZoolGo لإدارة النقل وحجوزات السفر بين المدن | ZoolGo Admin UI Kit v1.0. جميع الحقوق محفوظة.</div></footer></div></body></html>
