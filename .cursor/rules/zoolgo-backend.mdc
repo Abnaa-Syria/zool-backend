@@ -1,0 +1,36 @@
+---
+description: ZoolGo backend architectural patterns, financial invariants, and layer standards
+globs: zool-go-backend/**/*.ts, src/**/*.ts, prisma/**/*.prisma
+alwaysApply: true
+---
+
+# ZoolGo Backend Architecture & Engineering Rules
+
+## 1. 4-Layer Architecture (Strict Invariant)
+- **Routes (`*.routes.ts`)**: Route definitions, HTTP verbs, middleware chaining. NO business logic or database calls.
+- **Controllers (`*.controller.ts`)**: Extract `req.body`, `req.params`, `req.query`, invoke service, return `res.status(200).json(successResponse(data, meta, req.requestId))`. Wrap all methods with `asyncHandler`.
+- **Services (`*.service.ts`)**: Business logic, policies, transactions, audit logs, throw typed `AppError`. Never touch Express `req`/`res`.
+- **Repositories (`*.repository.ts`)**: Prisma queries, row locks (`SELECT FOR UPDATE`), joins. Mutating methods accept `tx?: Prisma.TransactionClient`.
+
+## 2. Financial Invariants (Zero Tolerance)
+- Money is integer minor units (`*Minor`). Never use float/double. 1 SDG = 100 minor units (`1500000` = 15,000 SDG).
+- Currency is strictly `"SDG"`.
+- Atomic wallet transactions: Always use `getPrisma().$transaction()`.
+- Acquire row lock before balance change: `SELECT * FROM wallets WHERE brokerOfficeId = ? FOR UPDATE`.
+- Double-entry ledger: Every balance change must insert a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and unique idempotent `ledgerKey`.
+- Prohibit direct balance credit without verified top-up workflow (`D-ADJ-01`).
+
+## 3. Dynamic RBAC
+- Permissions defined in `PERMISSION_CATALOG` (`src/shared/constants/permissions.ts`).
+- Route protection: `authenticate` + `requirePermission('<perm>')`.
+- Role revocation/suspension must increment `AdminUser.authzVersion` and update Redis `zoolgo:authz:version:{adminId}`.
+
+## 4. Envelopes and Validation
+- Response: `successResponse(data, meta, req.requestId)`.
+- Errors: Throw `AppError` subclasses (`unauthorized`, `forbidden`, `notFound`, `conflict`, `validation`, `badRequest`).
+- Zod schemas in `<domain>.validation.ts`. Use `.strict()` on update payloads.
+
+## 5. Multi-File Prisma
+- Schemas live in `prisma/schema/*.prisma`.
+- Validate with `npx prisma validate`.
+- Migrate with `npm run prisma:migrate`.

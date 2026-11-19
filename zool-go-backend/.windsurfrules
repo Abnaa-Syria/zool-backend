@@ -1,0 +1,21 @@
+# Windsurf Rules for ZoolGo Backend
+
+These rules apply to all AI actions in the ZoolGo Backend codebase:
+
+1. Architecture:
+   - Enforce 4-layer separation: Route -> Controller -> Service -> Repository.
+   - Controllers wrap async methods with `asyncHandler()` and return `res.status(200).json(successResponse(data, meta, req.requestId))`.
+   - Repositories encapsulate all Prisma queries and accept optional `tx?: Prisma.TransactionClient`.
+
+2. Money & Financial Rules:
+   - Money is strictly integer minor units (`*Minor`). Never use floating-point types for currency.
+   - Currency is strictly `"SDG"`.
+   - Wallet balance modifications must be inside `getPrisma().$transaction()` with pessimistic row lock (`SELECT FOR UPDATE`).
+   - Every balance modification must record a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and unique `ledgerKey`.
+
+3. Security & RBAC:
+   - Route protection requires `authenticate` and `requirePermission('<perm>')` using `PERMISSION_CATALOG`.
+   - Role revocation or credential change must increment `AdminUser.authzVersion` and update Redis.
+
+4. Error Standards:
+   - Throw typed `AppError` subclasses. Never return ad-hoc error JSON.
