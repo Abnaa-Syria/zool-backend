@@ -1480,6 +1480,176 @@ paths:
       responses:
         '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
+  /admin/vehicles:
+    get:
+      tags: [Fleet (admin)]
+      summary: List vehicles (fleet.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, MAINTENANCE, RETIRED] } }
+        - { name: q, in: query, schema: { type: string }, description: Match plate or model }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Fleet (admin)]
+      summary: Create vehicle with seat layout and amenities (fleet.manage). Capacity = number of seats in the layout.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [companyId, plateNumber, model, layout]
+              properties:
+                companyId: { type: string }
+                plateNumber: { type: string }
+                model: { type: string, example: Toyota Coaster }
+                serviceClass: { type: string, enum: [STANDARD, VIP] }
+                layout:
+                  description: Either a full seatLayout or the numbered shortcut
+                  oneOf:
+                    - type: object
+                      properties:
+                        seatLayout:
+                          type: object
+                          properties:
+                            rows: { type: integer }
+                            columns: { type: integer }
+                            aisleAfterColumn: { type: integer }
+                            driverSide: { type: string, enum: [LEFT, RIGHT] }
+                            seats:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  label: { type: string }
+                                  row: { type: integer }
+                                  column: { type: integer }
+                                  isWomenOnly: { type: boolean }
+                    - type: object
+                      properties:
+                        numbered:
+                          type: object
+                          properties:
+                            rows: { type: integer, example: 7 }
+                            columns: { type: integer, example: 4 }
+                            womenOnlyLabels: { type: array, items: { type: string }, example: ['11', '12'] }
+                amenities:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code: { type: string, example: luggage }
+                      value: { type: string, example: '30' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Plate number already registered }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/vehicles/{id}:
+    get:
+      tags: [Fleet (admin)]
+      summary: Vehicle detail incl. seat layout and amenities (fleet.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Fleet (admin)]
+      summary: Update vehicle (fleet.manage). A new layout applies to trips created afterwards; amenities replace the list.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                model: { type: string }
+                serviceClass: { type: string, enum: [STANDARD, VIP] }
+                status: { type: string, enum: [ACTIVE, MAINTENANCE, RETIRED] }
+                layout: { type: object }
+                amenities: { type: array, items: { type: object } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/drivers:
+    get:
+      tags: [Fleet (admin)]
+      summary: List drivers (fleet.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, SUSPENDED] } }
+        - { name: q, in: query, schema: { type: string }, description: Match name, driver code or phone }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Fleet (admin)]
+      summary: Create driver with login phone (fleet.manage). driverCode is generated when omitted.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [companyId, displayName, phone]
+              properties:
+                companyId: { type: string }
+                displayName: { type: string }
+                phone: { type: string, example: '+249912345678' }
+                driverCode: { type: string, example: ZGD-7649 }
+                licenseNumber: { type: string }
+                licenseExpiry: { type: string, format: date }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Phone or driver code already registered }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/drivers/{id}:
+    get:
+      tags: [Fleet (admin)]
+      summary: Driver detail (fleet.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Fleet (admin)]
+      summary: Update driver (fleet.manage). Phone change or suspension revokes all driver sessions and bumps authzVersion.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                displayName: { type: string }
+                phone: { type: string }
+                licenseNumber: { type: string, nullable: true }
+                licenseExpiry: { type: string, format: date, nullable: true }
+                status: { type: string, enum: [ACTIVE, SUSPENDED] }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Phone already registered to another driver }
 
 components:
   securitySchemes:

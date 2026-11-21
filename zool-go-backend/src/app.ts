@@ -29,6 +29,7 @@ import { adminBookingRoutes, brokerBookingRoutes } from './modules/bookings';
 import { adminCommissionRoutes, brokerCommissionRoutes } from './modules/commissions';
 import { brokerReportsRoutes } from './modules/reports';
 import { adminGeoRoutes } from './modules/geo';
+import { adminFleetRoutes } from './modules/fleet';
 
 export function createApp() {
   const app = express();
@@ -111,6 +112,7 @@ export function createApp() {
   app.use(`${prefix}/admin/wallets`, adminWalletRoutes);
   app.use(`${prefix}/admin/commissions`, adminCommissionRoutes);
   app.use(`${prefix}/admin`, adminGeoRoutes);
+  app.use(`${prefix}/admin`, adminFleetRoutes);
 
   try {
     const openapiPath = path.join(process.cwd(), 'docs', 'openapi.yaml');
