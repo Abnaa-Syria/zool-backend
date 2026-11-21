@@ -32,6 +32,25 @@ export class BookingsRepository {
     return client(tx).booking.findUnique({ where: { id: bookingId }, include: bookingInclude });
   }
 
+  /** Flat rows for CSV export (caller enforces the row cap). */
+  listForExport(where: Prisma.BookingWhereInput, take: number) {
+    return getPrisma().booking.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take,
+      include: {
+        trip: { select: { tripNumber: true, origin: true, destination: true, departureAt: true, company: { select: { name: true } } } },
+        office: { select: { code: true, name: true } },
+        employee: { select: { displayName: true } },
+        _count: { select: { tickets: true } },
+      },
+    });
+  }
+
+  count(where: Prisma.BookingWhereInput) {
+    return getPrisma().booking.count({ where });
+  }
+
   async list(params: { where: Prisma.BookingWhereInput; skip: number; take: number }) {
     const [items, total] = await Promise.all([
       getPrisma().booking.findMany({

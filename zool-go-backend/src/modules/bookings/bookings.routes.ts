@@ -81,6 +81,14 @@ adminBookingRoutes.get(
   asyncHandler((req, res) => bookingsController.listAdmin(req, res)),
 );
 
+// Must be registered before '/:id'.
+adminBookingRoutes.get(
+  '/export.csv',
+  requirePermission('bookings.view'),
+  validate({ query: adminListBookingsQuerySchema }),
+  asyncHandler((req, res) => bookingsController.exportAdminCsv(req, res)),
+);
+
 adminBookingRoutes.get(
   '/:id/tickets/:ticketNumber/pdf',
   requirePermission('bookings.view'),

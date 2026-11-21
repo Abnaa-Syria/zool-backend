@@ -1,3 +1,5 @@
+import { csvFilename, sendCsv } from '../../shared/http/csv';
+import type { AdminBookingFilters } from './bookings.service';
 import type { BookingStatus } from '@prisma/client';
 import type { Request, Response } from 'express';
 import { successResponse } from '../../shared/http/success-response';
@@ -126,6 +128,14 @@ export class BookingsController {
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
     res.setHeader('Content-Length', buffer.length);
     res.status(200).send(buffer);
+  }
+
+  async exportAdminCsv(req: Request, res: Response): Promise<void> {
+    const csv = await bookingsService.exportAdminCsv(req.query as AdminBookingFilters, {
+      actorAdminId: req.auth!.adminId,
+      requestId: req.requestId,
+    });
+    sendCsv(res, csv, csvFilename('bookings'));
   }
 
   async listAdmin(req: Request, res: Response): Promise<Response> {

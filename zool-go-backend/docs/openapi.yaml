@@ -1841,6 +1841,68 @@ paths:
       responses:
         '200': { description: Updated list, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/overview:
+    get:
+      tags: [Insights (admin)]
+      summary: REQ-ADM-10 KPI snapshot (bookings.view). Wallet / top-up / commission sections are included only when the caller has wallets.view / wallets.topups.view / commissions.view. Default window is the last 24 h.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, schema: { type: string }, description: Sudan date YYYY-MM-DD or ISO instant }
+        - { name: to, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { description: Invalid range or RANGE_TOO_LARGE (> 92 days) }
+  /admin/reports/summary:
+    get:
+      tags: [Insights (admin)]
+      summary: REQ-ADM-09 summary for a required window of at most 92 days (reports.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string } }
+        - { name: to, in: query, required: true, schema: { type: string } }
+        - { name: officeId, in: query, schema: { type: string } }
+        - { name: companyId, in: query, schema: { type: string } }
+      responses:
+        '200': { description: 'bookingsCount, bookingsAmountMinor, cancelledCount, refundedAmountMinor, unsettledCommissionMinor, settledCommissionMinor, walletsBalanceMinor, currency', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { description: Missing or invalid range, RANGE_TOO_LARGE }
+  /admin/reports/by-office:
+    get:
+      tags: [Insights (admin)]
+      summary: Confirmed bookings per broker office in the window (reports.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string } }
+        - { name: to, in: query, required: true, schema: { type: string } }
+        - { name: companyId, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/reports/by-carrier:
+    get:
+      tags: [Insights (admin)]
+      summary: Confirmed bookings per carrier in the window (reports.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string } }
+        - { name: to, in: query, required: true, schema: { type: string } }
+        - { name: officeId, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/bookings/export.csv:
+    get:
+      tags: [Bookings (admin)]
+      summary: REQ-ADM-14 CSV export with the same filters as GET /admin/bookings (bookings.view). UTF-8 BOM, money as *Minor + currency, max 10000 rows, audited as bookings.exported.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: officeId, in: query, schema: { type: string } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: employeeId, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: from, in: query, schema: { type: string } }
+        - { name: to, in: query, schema: { type: string } }
+        - { name: q, in: query, schema: { type: string } }
+      responses:
+        '200': { description: CSV file, content: { text/csv: { schema: { type: string } } } }
+        '422': { description: RANGE_TOO_LARGE (more than 10000 rows) }
 
 components:
   securitySchemes:

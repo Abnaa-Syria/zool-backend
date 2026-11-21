@@ -1,3 +1,4 @@
+import { CSV_MAX_ROWS, toCsv } from '../../shared/http/csv';
 import {
   BookingStatus,
   CommissionAccrualStatus,
@@ -108,6 +109,40 @@ function confirmedAtFilter(query: { from?: string; to?: string }): Prisma.DateTi
     else filter.lte = to.date;
   }
   return filter;
+}
+
+
+export type AdminBookingFilters = {
+  officeId?: string;
+  companyId?: string;
+  employeeId?: string;
+  status?: BookingStatus;
+  from?: string;
+  to?: string;
+  q?: string;
+};
+
+/** Shared by the admin list and its CSV export so both apply identical filters. */
+export function adminBookingsWhere(query: AdminBookingFilters): Prisma.BookingWhereInput {
+  const confirmedAt = confirmedAtFilter(query);
+  const q = query.q?.trim();
+  return {
+    ...(query.officeId ? { officeId: query.officeId } : {}),
+    ...(query.employeeId ? { employeeId: query.employeeId } : {}),
+    ...(query.companyId ? { trip: { companyId: query.companyId } } : {}),
+    ...(query.status ? { status: query.status } : {}),
+    ...(Object.keys(confirmedAt).length > 0 ? { confirmedAt } : {}),
+    ...(q
+      ? {
+          OR: [
+            { id: { contains: q } },
+            { tickets: { some: { ticketNumber: { contains: q } } } },
+            { passengers: { some: { phone: { contains: q } } } },
+            { passengers: { some: { fullName: { contains: q } } } },
+          ],
+        }
+      : {}),
+  };
 }
 
 export class BookingsService {
@@ -448,27 +483,44 @@ export class BookingsService {
     q?: string;
   }) {
     const { page, pageSize, skip, take } = parsePagination(query);
-    const confirmedAt = confirmedAtFilter(query);
-    const q = query.q?.trim();
-    const where: Prisma.BookingWhereInput = {
-      ...(query.officeId ? { officeId: query.officeId } : {}),
-      ...(query.employeeId ? { employeeId: query.employeeId } : {}),
-      ...(query.companyId ? { trip: { companyId: query.companyId } } : {}),
-      ...(query.status ? { status: query.status } : {}),
-      ...(Object.keys(confirmedAt).length > 0 ? { confirmedAt } : {}),
-      ...(q
-        ? {
-            OR: [
-              { id: { contains: q } },
-              { tickets: { some: { ticketNumber: { contains: q } } } },
-              { passengers: { some: { phone: { contains: q } } } },
-              { passengers: { some: { fullName: { contains: q } } } },
-            ],
-          }
-        : {}),
-    };
+    const where = adminBookingsWhere(query);
     const { items, total } = await bookingsRepository.list({ where, skip, take });
     return { items: items.map(toBookingDto), meta: paginationMeta(page, pageSize, total) };
+  }
+
+  /** REQ-ADM-14: same filters as listAdmin; synchronous, capped at CSV_MAX_ROWS. */
+  async exportAdminCsv(query: AdminBookingFilters, actor: { actorAdminId: string; requestId?: string }) {
+    const where = adminBookingsWhere(query);
+    const total = await bookingsRepository.count(where);
+    if (total > CSV_MAX_ROWS) {
+      throw new AppError({
+        statusCode: 422,
+        code: ErrorCodes.RANGE_TOO_LARGE,
+        message: `Export is limited to ${CSV_MAX_ROWS} rows; narrow the filters`,
+        details: { total, max: CSV_MAX_ROWS },
+      });
+    }
+    const rows = await bookingsRepository.listForExport(where, CSV_MAX_ROWS);
+    await auditService.record({
+      actorAdminId: actor.actorAdminId,
+      action: 'bookings.exported',
+      resourceType: 'booking',
+      requestId: actor.requestId,
+      metadata: { filters: query, rows: rows.length },
+    });
+    return toCsv(
+      [
+        'bookingId', 'bookingRef', 'channel', 'status', 'paymentMethod', 'paymentStatus', 'officeCode', 'officeName',
+        'employee', 'carrier', 'tripNumber', 'origin', 'destination', 'departureAt', 'tickets',
+        'totalAmountMinor', 'commissionAmountMinor', 'currency', 'confirmedAt', 'cancelledAt', 'createdAt',
+      ],
+      rows.map((b) => [
+        b.id, b.bookingRef, b.channel, b.status, b.paymentMethod, b.paymentStatus, b.office?.code, b.office?.name,
+        b.employee?.displayName, b.trip.company.name, b.trip.tripNumber, b.trip.origin, b.trip.destination,
+        b.trip.departureAt, b._count.tickets, b.totalAmount, b.commissionAmount, 'SDG', b.confirmedAt, b.cancelledAt,
+        b.createdAt,
+      ]),
+    );
   }
 
   async getAdminById(bookingId: string) {

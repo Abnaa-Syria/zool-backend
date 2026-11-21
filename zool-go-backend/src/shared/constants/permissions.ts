@@ -37,6 +37,7 @@ export const PERMISSION_CATALOG = [
   { key: 'fleet.manage', module: 'fleet', description: 'Create and update vehicles and drivers' },
   { key: 'settings.view', module: 'settings', description: 'View runtime platform settings' },
   { key: 'settings.manage', module: 'settings', description: 'Change runtime platform settings' },
+  { key: 'reports.view', module: 'reports', description: 'View platform-wide admin reports' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_CATALOG)[number]['key'];

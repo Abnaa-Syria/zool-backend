@@ -32,6 +32,7 @@ import { adminGeoRoutes } from './modules/geo';
 import { adminFleetRoutes } from './modules/fleet';
 import { adminNetworkRoutes } from './modules/network';
 import { adminSettingsRoutes } from './modules/settings';
+import { adminInsightsRoutes } from './modules/insights';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -118,6 +119,7 @@ export function createApp() {
   app.use(`${prefix}/admin`, adminGeoRoutes);
   app.use(`${prefix}/admin`, adminFleetRoutes);
   app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
+  app.use(`${prefix}/admin`, adminInsightsRoutes);
   app.use(`${prefix}/admin`, adminNetworkRoutes);
 
   try {
