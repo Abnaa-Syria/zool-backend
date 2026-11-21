@@ -30,6 +30,7 @@ import { adminCommissionRoutes, brokerCommissionRoutes } from './modules/commiss
 import { brokerReportsRoutes } from './modules/reports';
 import { adminGeoRoutes } from './modules/geo';
 import { adminFleetRoutes } from './modules/fleet';
+import { adminNetworkRoutes } from './modules/network';
 
 export function createApp() {
   const app = express();
@@ -113,6 +114,7 @@ export function createApp() {
   app.use(`${prefix}/admin/commissions`, adminCommissionRoutes);
   app.use(`${prefix}/admin`, adminGeoRoutes);
   app.use(`${prefix}/admin`, adminFleetRoutes);
+  app.use(`${prefix}/admin`, adminNetworkRoutes);
 
   try {
     const openapiPath = path.join(process.cwd(), 'docs', 'openapi.yaml');

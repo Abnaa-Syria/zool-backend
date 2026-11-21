@@ -1650,6 +1650,134 @@ paths:
         '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Phone already registered to another driver }
+  /admin/routes:
+    get:
+      tags: [Network (admin)]
+      summary: List carrier routes with stops (catalog.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: companyId, in: query, schema: { type: string } }
+        - { name: stationId, in: query, schema: { type: string }, description: Routes that start, end or stop at this station }
+        - { name: isActive, in: query, schema: { type: string, enum: ['true', 'false'] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Network (admin)]
+      summary: Create route with ordered intermediate stops (catalog.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [companyId, originStationId, destinationStationId, durationMinutes]
+              properties:
+                companyId: { type: string }
+                code: { type: string, example: KRT-PZU }
+                originStationId: { type: string }
+                destinationStationId: { type: string }
+                durationMinutes: { type: integer, example: 720 }
+                stops:
+                  type: array
+                  items:
+                    type: object
+                    required: [stationId, offsetMinutes]
+                    properties:
+                      stationId: { type: string }
+                      offsetMinutes: { type: integer, description: Minutes after departure (strictly increasing) }
+                      dwellMinutes: { type: integer }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Route code already exists for this carrier }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/routes/{id}:
+    get:
+      tags: [Network (admin)]
+      summary: Route detail (catalog.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Network (admin)]
+      summary: Update duration, active flag or replace stops (catalog.manage). Affects trips scheduled afterwards only.
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                durationMinutes: { type: integer }
+                isActive: { type: boolean }
+                stops: { type: array, items: { type: object } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/trips/schedule:
+    post:
+      tags: [Network (admin)]
+      summary: Schedule structured trips from a route (catalog.manage). Seats come from the vehicle layout; stop times from the route. Rejects overlapping vehicle/driver assignments (VEHICLE_BUSY / DRIVER_BUSY).
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [routeId, vehicleId, departures, basePrice]
+              properties:
+                routeId: { type: string }
+                vehicleId: { type: string }
+                driverId: { type: string }
+                departures: { type: array, maxItems: 60, items: { type: string, format: date-time } }
+                basePrice: { type: integer, description: Seat price in minor units (SDG x 100) }
+                serviceClass: { type: string, enum: [STANDARD, VIP], description: Defaults to the vehicle class }
+      responses:
+        '201': { description: Created trips, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: VEHICLE_BUSY, DRIVER_BUSY or ASSIGNMENT_MISMATCH }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/trips/{id}:
+    get:
+      tags: [Network (admin)]
+      summary: Structured trip detail - stations, stops, vehicle, driver, seat map and counts (catalog.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/trips/{id}/assignment:
+    patch:
+      tags: [Network (admin)]
+      summary: Re-assign driver (until completion) or vehicle (only before boarding and with no held/sold seats; seat map rebuilt) (catalog.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                vehicleId: { type: string }
+                driverId: { type: string, nullable: true }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: VEHICLE_BUSY, DRIVER_BUSY, ASSIGNMENT_MISMATCH or TRIP_SEATS_TAKEN }
 
 components:
   securitySchemes:
