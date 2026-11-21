@@ -18,7 +18,13 @@ export function toBookingDto(booking: BookingRow) {
   return {
     id: booking.id,
     status: booking.status,
+    bookingRef: booking.bookingRef,
+    channel: booking.channel,
+    paymentMethod: booking.paymentMethod,
+    paymentStatus: booking.paymentStatus,
     officeId: booking.officeId,
+    office: booking.office,
+    customerId: booking.customerId,
     employee: booking.employee
       ? { id: booking.employee.id, displayName: booking.employee.displayName }
       : null,

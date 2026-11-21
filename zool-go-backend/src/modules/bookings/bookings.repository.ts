@@ -13,6 +13,7 @@ function client(tx?: PrismaTx) {
 export const bookingInclude = {
   trip: { include: { company: true } },
   employee: { select: { id: true, displayName: true } },
+  office: { select: { id: true, code: true, name: true } },
   passengers: true,
   tickets: { include: { tripSeat: true } },
   commissionAccrual: true,
