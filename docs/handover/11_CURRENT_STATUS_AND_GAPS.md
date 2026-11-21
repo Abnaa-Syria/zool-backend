@@ -88,7 +88,7 @@ From the comprehensive 222-action inventory documented in `docs/ADMIN_DASHBOARD_
 2. **SMS Gateway:** Integration with Sudanese telecom providers (Zain, MTN, Sudani) for production OTP delivery.
 
 ### 4.5. Production Hardening
-1. **Source Control:** Repos exist (`QeemaTech/zool_BE`, `QeemaTech/zool_dashboard`). Remaining: branch protection rules on `main`.
+1. **Source Control:** Active repos since 2026-11-21: `https://github.com/Abnaa-Syria/zool-backend` (this repo) and `https://github.com/Abnaa-Syria/zool-dashboard`. The former `QeemaTech/zool_BE` and `QeemaTech/zool_dashboard` are kept only as a `legacy` remote. Remaining: branch protection rules on `main`.
 2. **Object Storage:** Migrate local receipt storage from `./uploads/receipts/` to an S3-compatible private object store (e.g., Cloudflare R2, MinIO, AWS S3).
 3. **CI/CD Pipeline:** CI added 2026-11-21 (`zool_BE/.github/workflows/backend-ci.yml`, `zool_dashboard/.github/workflows/ci.yml`). Remaining: CD / container builds.
 
