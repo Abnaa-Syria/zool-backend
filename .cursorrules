@@ -1,32 +1,25 @@
-# Cursor Rules for ZoolGo Backend
+# ZoolGo Backend — Coding Rules (summary)
 
-You are working on the ZoolGo Backend codebase (`zool-go-backend`), a high-integrity Express 4 / TypeScript / MySQL / Redis modular monolith for Sudanese intercity transport.
+**Single source of truth: `AGENTS.md` (repo root).** Read it before writing code. This file is a short summary kept in sync with it; if they ever disagree, `AGENTS.md` and the code win. API rules for every client: `docs/API_CONVENTIONS.md`. Project plan: `docs/MASTER_PLAN.md`.
 
-## Invariant Coding Standards
+## Layers (zool-go-backend/src/modules/<domain>/)
+- `*.routes.ts` → `authenticate` + `requirePermission('<key>')` (admin) or `authenticateBroker` + `requireBrokerPermission(...)` (broker), `validate({ body/query/params })`, then `asyncHandler`.
+- `*.controller.ts` → parse HTTP, call service, `return successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })`. Never `res.json` / `res.status().json` (enforced by `tests/architecture/http-contract.test.ts`).
+- `*.service.ts` → business logic, transactions via `getPrisma().$transaction(async (tx) => ...)`, throws `AppError` (`validation`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `rateLimited`, `internal`) or domain codes from `src/shared/errors/error-codes.ts`. No Express imports.
+- `*.repository.ts` → all Prisma access; mutating methods accept optional `tx`.
+- Zod schemas in `*.validation.ts`; `.strict()` on update schemas.
 
-1. Strict 4-Layer Architecture:
-   - Routes (`src/modules/*/*.routes.ts`): Route paths, verbs, and middleware chaining ONLY (`authenticate`, `requirePermission`, `validate`).
-   - Controllers (`src/modules/*/*.controller.ts`): Request parameter parsing, calling services, wrapping with `asyncHandler`, returning `res.status(200).json(successResponse(data, meta, req.requestId))`.
-   - Services (`src/modules/*/*.service.ts`): Business logic, transaction orchestration, throwing typed `AppError`. Never access `req`, `res`, or format HTTP status codes.
-   - Repositories (`src/modules/*/*.repository.ts`): Prisma queries, row locks (`SELECT FOR UPDATE`), joins. Mutating methods must accept optional `tx?: Prisma.TransactionClient`.
+## Money (zero tolerance)
+- Integers in minor units only (1 SDG = 100). Currency `SDG`. API fields end in `*Minor`; DB columns are plain ints (`balance`, `basePrice`, `totalAmount`).
+- Wallet changes: inside a transaction, `walletsRepository.lockWallet(walletId, tx)` first, then a `WalletLedgerEntry` (`type`, positive `amount`, `balanceAfter`, unique `idempotencyKey`, `referenceType`/`referenceId`).
+- No admin balance adjustments outside the audited top-up flow (D-ADJ-01).
 
-2. Financial Invariants (Zero Tolerance):
-   - NO floating-point numbers for money. All amounts must be integer minor units (`*Minor`).
-   - 1 SDG = 100 minor units. Currency is strictly `"SDG"`.
-   - Any wallet debit or credit must be in an atomic transaction: `getPrisma().$transaction(async (tx) => { ... })`.
-   - Always lock the wallet row before modifying: `SELECT * FROM wallets WHERE brokerOfficeId = ? FOR UPDATE`.
-   - Every balance modification must record a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and unique `ledgerKey`.
-   - No direct balance credit without verified top-up workflow (`D-ADJ-01`).
+## RBAC
+- Admin permissions in `src/shared/constants/permissions.ts`; broker in `broker-permissions.ts`. Never hard-code ad-hoc strings.
+- Role change, suspension, session revoke or credential change → increment `authzVersion` and `setAuthzVersion(...)`.
 
-3. Dynamic RBAC:
-   - Use permissions from `PERMISSION_CATALOG` (`src/shared/constants/permissions.ts`).
-   - Protect endpoints with `requirePermission('<perm>')`.
-   - Stale sessions or revoked roles must bump `authzVersion` in MySQL and Redis.
+## Database
+- Schema: `prisma/schema/*.prisma`; migrations: `prisma/schema/migrations/` only; additive migrations; never edit a pushed migration.
 
-4. Envelopes and Errors:
-   - Never return raw errors or ad-hoc JSON.
-   - Use `successResponse()` for success.
-   - Throw `AppError` subclasses (`unauthorized`, `forbidden`, `notFound`, `conflict`, `validation`, `badRequest`).
-
-5. Zod Validation:
-   - Place in `<domain>.validation.ts`. Use `.strict()` on update payloads.
+## Tests
+- Vitest + Supertest in `tests/`; `.env.test` must point to a DB whose name contains `test`. Run `npm run lint && npx tsc --noEmit && npm test`.

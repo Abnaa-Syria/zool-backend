@@ -4,7 +4,7 @@ import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { computeCommission, compareSeatLabels, decimalToNumber } from '../../shared/utils/money';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
-import { utcDayRange } from '../../shared/validation/common';
+import { zonedDayRange } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
 import { CatalogErrors } from './catalog.errors';
 import {
@@ -15,6 +15,11 @@ import {
 type SeatCounts = Record<TripSeatStatus, number>;
 
 const EMPTY_COUNTS: SeatCounts = { FREE: 0, HELD: 0, SOLD: 0 };
+
+/** Date-only filters are Sudan calendar days, not UTC days. */
+function platformDay(ymd: string): { from: Date; to: Date } {
+  return zonedDayRange(ymd, env().PLATFORM_TIMEZONE);
+}
 
 function seatSummary(counts: SeatCounts | undefined) {
   const c = counts ?? EMPTY_COUNTS;
@@ -124,7 +129,7 @@ export class CatalogService {
       ...(query.destination ? { destination: { contains: query.destination } } : {}),
       ...(query.date
         ? (() => {
-            const { from, to } = utcDayRange(query.date);
+            const { from, to } = platformDay(query.date);
             return { departureAt: { gte: from, lt: to } };
           })()
         : {}),
@@ -243,16 +248,16 @@ export class CatalogService {
     let departureAt: Prisma.DateTimeFilter = { gte: now };
 
     if (query.dateFrom || query.dateTo) {
-      const rangeFrom = query.dateFrom ? utcDayRange(query.dateFrom).from : now;
+      const rangeFrom = query.dateFrom ? platformDay(query.dateFrom).from : now;
       const rangeTo = query.dateTo
-        ? utcDayRange(query.dateTo).to
+        ? platformDay(query.dateTo).to
         : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
       departureAt = {
         gte: rangeFrom > now ? rangeFrom : now,
         lt: rangeTo,
       };
     } else if (query.date) {
-      const { from, to } = utcDayRange(query.date);
+      const { from, to } = platformDay(query.date);
       departureAt = { gte: from > now ? from : now, lt: to };
     }
 

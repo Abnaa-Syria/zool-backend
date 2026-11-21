@@ -1,36 +1,31 @@
 ---
 description: ZoolGo backend architectural patterns, financial invariants, and layer standards
-globs: zool-go-backend/**/*.ts, src/**/*.ts, prisma/**/*.prisma
+globs: zool-go-backend/**/*.ts, zool-go-backend/prisma/**/*.prisma
 alwaysApply: true
 ---
 
-# ZoolGo Backend Architecture & Engineering Rules
+# ZoolGo Backend — Coding Rules (summary)
 
-## 1. 4-Layer Architecture (Strict Invariant)
-- **Routes (`*.routes.ts`)**: Route definitions, HTTP verbs, middleware chaining. NO business logic or database calls.
-- **Controllers (`*.controller.ts`)**: Extract `req.body`, `req.params`, `req.query`, invoke service, return `res.status(200).json(successResponse(data, meta, req.requestId))`. Wrap all methods with `asyncHandler`.
-- **Services (`*.service.ts`)**: Business logic, policies, transactions, audit logs, throw typed `AppError`. Never touch Express `req`/`res`.
-- **Repositories (`*.repository.ts`)**: Prisma queries, row locks (`SELECT FOR UPDATE`), joins. Mutating methods accept `tx?: Prisma.TransactionClient`.
+**Single source of truth: `AGENTS.md` (repo root).** Read it before writing code. This file is a short summary kept in sync with it; if they ever disagree, `AGENTS.md` and the code win. API rules for every client: `docs/API_CONVENTIONS.md`. Project plan: `docs/MASTER_PLAN.md`.
 
-## 2. Financial Invariants (Zero Tolerance)
-- Money is integer minor units (`*Minor`). Never use float/double. 1 SDG = 100 minor units (`1500000` = 15,000 SDG).
-- Currency is strictly `"SDG"`.
-- Atomic wallet transactions: Always use `getPrisma().$transaction()`.
-- Acquire row lock before balance change: `SELECT * FROM wallets WHERE brokerOfficeId = ? FOR UPDATE`.
-- Double-entry ledger: Every balance change must insert a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and unique idempotent `ledgerKey`.
-- Prohibit direct balance credit without verified top-up workflow (`D-ADJ-01`).
+## Layers (zool-go-backend/src/modules/<domain>/)
+- `*.routes.ts` → `authenticate` + `requirePermission('<key>')` (admin) or `authenticateBroker` + `requireBrokerPermission(...)` (broker), `validate({ body/query/params })`, then `asyncHandler`.
+- `*.controller.ts` → parse HTTP, call service, `return successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })`. Never `res.json` / `res.status().json` (enforced by `tests/architecture/http-contract.test.ts`).
+- `*.service.ts` → business logic, transactions via `getPrisma().$transaction(async (tx) => ...)`, throws `AppError` (`validation`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `rateLimited`, `internal`) or domain codes from `src/shared/errors/error-codes.ts`. No Express imports.
+- `*.repository.ts` → all Prisma access; mutating methods accept optional `tx`.
+- Zod schemas in `*.validation.ts`; `.strict()` on update schemas.
 
-## 3. Dynamic RBAC
-- Permissions defined in `PERMISSION_CATALOG` (`src/shared/constants/permissions.ts`).
-- Route protection: `authenticate` + `requirePermission('<perm>')`.
-- Role revocation/suspension must increment `AdminUser.authzVersion` and update Redis `zoolgo:authz:version:{adminId}`.
+## Money (zero tolerance)
+- Integers in minor units only (1 SDG = 100). Currency `SDG`. API fields end in `*Minor`; DB columns are plain ints (`balance`, `basePrice`, `totalAmount`).
+- Wallet changes: inside a transaction, `walletsRepository.lockWallet(walletId, tx)` first, then a `WalletLedgerEntry` (`type`, positive `amount`, `balanceAfter`, unique `idempotencyKey`, `referenceType`/`referenceId`).
+- No admin balance adjustments outside the audited top-up flow (D-ADJ-01).
 
-## 4. Envelopes and Validation
-- Response: `successResponse(data, meta, req.requestId)`.
-- Errors: Throw `AppError` subclasses (`unauthorized`, `forbidden`, `notFound`, `conflict`, `validation`, `badRequest`).
-- Zod schemas in `<domain>.validation.ts`. Use `.strict()` on update payloads.
+## RBAC
+- Admin permissions in `src/shared/constants/permissions.ts`; broker in `broker-permissions.ts`. Never hard-code ad-hoc strings.
+- Role change, suspension, session revoke or credential change → increment `authzVersion` and `setAuthzVersion(...)`.
 
-## 5. Multi-File Prisma
-- Schemas live in `prisma/schema/*.prisma`.
-- Validate with `npx prisma validate`.
-- Migrate with `npm run prisma:migrate`.
+## Database
+- Schema: `prisma/schema/*.prisma`; migrations: `prisma/schema/migrations/` only; additive migrations; never edit a pushed migration.
+
+## Tests
+- Vitest + Supertest in `tests/`; `.env.test` must point to a DB whose name contains `test`. Run `npm run lint && npx tsc --noEmit && npm test`.

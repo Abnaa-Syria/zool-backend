@@ -34,15 +34,22 @@ export function calendarDateInZone(date: Date, timeZone: string): string {
   return dtf.format(date);
 }
 
-/** Inclusive-start / exclusive-end bounds for the calendar day containing `now` in `timeZone`. */
-export function officeDayBounds(now: Date, timeZone: string): { from: Date; to: Date } {
-  const ymd = calendarDateInZone(now, timeZone);
+/**
+ * UTC bounds (inclusive start, exclusive end) of the local calendar day `ymd` (YYYY-MM-DD)
+ * in `timeZone`. Use this for every date-only API filter: a Khartoum date is not a UTC date.
+ */
+export function zonedDayRange(ymd: string, timeZone: string): { from: Date; to: Date } {
   const [y, m, d] = ymd.split('-').map(Number) as [number, number, number];
   const utcGuess = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
   const offset = offsetAt(utcGuess, timeZone);
   const from = new Date(Date.UTC(y, m - 1, d, 0, 0, 0) - offset);
   const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
   return { from, to };
+}
+
+/** Inclusive-start / exclusive-end bounds for the calendar day containing `now` in `timeZone`. */
+export function officeDayBounds(now: Date, timeZone: string): { from: Date; to: Date } {
+  return zonedDayRange(calendarDateInZone(now, timeZone), timeZone);
 }
 
 export function isIanaTimeZone(value: string): boolean {

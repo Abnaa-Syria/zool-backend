@@ -1,21 +1,25 @@
-# Windsurf Rules for ZoolGo Backend
+# ZoolGo Backend — Coding Rules (summary)
 
-These rules apply to all AI actions in the ZoolGo Backend codebase:
+**Single source of truth: `AGENTS.md` (repo root).** Read it before writing code. This file is a short summary kept in sync with it; if they ever disagree, `AGENTS.md` and the code win. API rules for every client: `docs/API_CONVENTIONS.md`. Project plan: `docs/MASTER_PLAN.md`.
 
-1. Architecture:
-   - Enforce 4-layer separation: Route -> Controller -> Service -> Repository.
-   - Controllers wrap async methods with `asyncHandler()` and return `res.status(200).json(successResponse(data, meta, req.requestId))`.
-   - Repositories encapsulate all Prisma queries and accept optional `tx?: Prisma.TransactionClient`.
+## Layers (zool-go-backend/src/modules/<domain>/)
+- `*.routes.ts` → `authenticate` + `requirePermission('<key>')` (admin) or `authenticateBroker` + `requireBrokerPermission(...)` (broker), `validate({ body/query/params })`, then `asyncHandler`.
+- `*.controller.ts` → parse HTTP, call service, `return successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })`. Never `res.json` / `res.status().json` (enforced by `tests/architecture/http-contract.test.ts`).
+- `*.service.ts` → business logic, transactions via `getPrisma().$transaction(async (tx) => ...)`, throws `AppError` (`validation`, `unauthorized`, `forbidden`, `notFound`, `conflict`, `rateLimited`, `internal`) or domain codes from `src/shared/errors/error-codes.ts`. No Express imports.
+- `*.repository.ts` → all Prisma access; mutating methods accept optional `tx`.
+- Zod schemas in `*.validation.ts`; `.strict()` on update schemas.
 
-2. Money & Financial Rules:
-   - Money is strictly integer minor units (`*Minor`). Never use floating-point types for currency.
-   - Currency is strictly `"SDG"`.
-   - Wallet balance modifications must be inside `getPrisma().$transaction()` with pessimistic row lock (`SELECT FOR UPDATE`).
-   - Every balance modification must record a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and unique `ledgerKey`.
+## Money (zero tolerance)
+- Integers in minor units only (1 SDG = 100). Currency `SDG`. API fields end in `*Minor`; DB columns are plain ints (`balance`, `basePrice`, `totalAmount`).
+- Wallet changes: inside a transaction, `walletsRepository.lockWallet(walletId, tx)` first, then a `WalletLedgerEntry` (`type`, positive `amount`, `balanceAfter`, unique `idempotencyKey`, `referenceType`/`referenceId`).
+- No admin balance adjustments outside the audited top-up flow (D-ADJ-01).
 
-3. Security & RBAC:
-   - Route protection requires `authenticate` and `requirePermission('<perm>')` using `PERMISSION_CATALOG`.
-   - Role revocation or credential change must increment `AdminUser.authzVersion` and update Redis.
+## RBAC
+- Admin permissions in `src/shared/constants/permissions.ts`; broker in `broker-permissions.ts`. Never hard-code ad-hoc strings.
+- Role change, suspension, session revoke or credential change → increment `authzVersion` and `setAuthzVersion(...)`.
 
-4. Error Standards:
-   - Throw typed `AppError` subclasses. Never return ad-hoc error JSON.
+## Database
+- Schema: `prisma/schema/*.prisma`; migrations: `prisma/schema/migrations/` only; additive migrations; never edit a pushed migration.
+
+## Tests
+- Vitest + Supertest in `tests/`; `.env.test` must point to a DB whose name contains `test`. Run `npm run lint && npx tsc --noEmit && npm test`.

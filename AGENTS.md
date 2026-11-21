@@ -43,7 +43,7 @@ Infrastructure (Prisma MySQL 8.4, ioredis Redis 7.4, Local File Storage)
 2. **Controller (`*.controller.ts`)**:
    - Parse HTTP inputs (`req.body`, `req.params`, `req.query`, `req.user`).
    - Call the appropriate service method.
-   - Return standard JSON envelope: `res.status(200).json(successResponse(data, meta, req.requestId))`.
+   - Return standard JSON envelope: `return successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })` (never `res.json` / `res.status().json` — enforced by `tests/architecture/http-contract.test.ts`).
    - Wrap all methods with `asyncHandler`.
    - Never query Prisma or make transaction decisions in controllers.
 3. **Service (`*.service.ts`)**:
@@ -63,23 +63,22 @@ Infrastructure (Prisma MySQL 8.4, ioredis Redis 7.4, Local File Storage)
 
 1. **Minor Units Only (Integers)**:
    - Money is **never** stored, calculated, or passed as floating-point numbers or major units.
-   - Fields must use the `*Minor` suffix: `amountMinor`, `balanceMinor`, `fareAmountMinor`, `commissionAmountMinor`.
+   - **API/DTO fields** use the `*Minor` suffix: `amountMinor`, `balanceMinor`, `totalAmountMinor`, `commissionAmountMinor`.
+   - **Database columns** predate the suffix and are plain integers in minor units (`Wallet.balance`, `Trip.basePrice`, `Booking.totalAmount`, `WalletLedgerEntry.amount`). Map them to `*Minor` in DTOs; never rename existing columns.
    - In Sudanese Pounds (SDG), `1 SDG = 100 minor units`. Example: 25,000 SDG = `2500000`.
 2. **Strict Currency**:
    - Currency is locked to `"SDG"` (`D-CUR-01`).
 3. **Atomic Wallet Transactions**:
    - Any wallet debit, credit, top-up, booking charge, or refund **MUST** run inside `getPrisma().$transaction()`.
-   - **Pessimistic Row Locking**: Before modifying wallet balances, acquire an exclusive row lock:
+   - **Pessimistic Row Locking**: Before modifying a wallet balance, lock the row through the repository:
      ```typescript
-     const [wallet] = await tx.$queryRaw<Wallet[]>`
-       SELECT * FROM wallets WHERE brokerOfficeId = ${brokerOfficeId} FOR UPDATE
-     `;
+     await walletsRepository.lockWallet(wallet.id, tx); // SELECT id FROM wallets WHERE id = ? FOR UPDATE
      ```
-   - Verify balance sufficiency explicitly: `if (wallet.balanceMinor < debitAmountMinor) throw WalletErrors.insufficientBalance();`.
+   - Debits use the repository's conditional debit (updates 0 rows when the balance is insufficient) and the service throws `INSUFFICIENT_BALANCE`.
 4. **Double-Entry Ledger Integrity**:
    - Every balance modification **MUST** create a corresponding `WalletLedgerEntry` record in the same transaction.
-   - Required fields: `walletId`, `amountMinor`, `balanceBeforeMinor`, `balanceAfterMinor`, `type`, `referenceType`, `referenceId`, `ledgerKey`.
-   - `ledgerKey` must be unique and idempotent (e.g. `topup:{intentId}`, `booking:{bookingId}`, `refund:{bookingId}`) to prevent replay attacks or duplicate balance modifications.
+   - Fields (see `prisma/schema/wallet.prisma`): `walletId`, `type` (`CREDIT_TOPUP` | `DEBIT_BOOKING` | `CREDIT_REFUND` | `DEBIT_COMMISSION_PAYOUT`), `amount` (always positive, minor units), `balanceAfter`, `idempotencyKey`, `referenceType`, `referenceId`.
+   - `idempotencyKey` is unique (e.g. `topup:{intentId}`, `booking:{bookingId}`, `refund:{bookingId}`) so a replayed operation cannot move money twice.
 5. **No Arbitrary Adjustments**:
    - Administrative balance adjustments without a verified top-up intent or audited workflow are strictly forbidden (`D-ADJ-01`).
 
@@ -88,7 +87,7 @@ Infrastructure (Prisma MySQL 8.4, ioredis Redis 7.4, Local File Storage)
 ## 4. Dynamic RBAC and Security Conventions
 
 1. **Permission Catalog**:
-   - All permissions must be defined in `src/shared/constants/permissions.ts` (`PERMISSION_CATALOG`).
+   - Admin permissions: `src/shared/constants/permissions.ts` (`PERMISSION_CATALOG`). Broker staff permissions: `src/shared/constants/broker-permissions.ts`, guarded with `authenticateBroker` + `requireBrokerPermission(...)`.
    - Never invent or hardcode arbitrary permission strings in routes or services.
 2. **Route Protection**:
    - Always chain `authenticate` and `requirePermission('<permission_code>')`:
@@ -117,21 +116,23 @@ Adhere strictly to `docs/HTTP_RESPONSE_AND_ERROR_STANDARD.md`.
 import { successResponse } from '../../shared/http/success-response';
 
 // Standard 200 OK
-res.status(200).json(successResponse(data, meta, req.requestId));
+return successResponse(res, { statusCode: 200, message: 'Thing retrieved', data, meta, requestId: req.requestId });
 
 // Standard 201 Created
-res.status(201).json(successResponse(createdEntity, undefined, req.requestId));
+return successResponse(res, { statusCode: 201, message: 'Thing created', data: createdEntity, requestId: req.requestId });
 ```
 
 Envelope structure:
 ```json
 {
   "success": true,
-  "data": { ... },
-  "meta": { "page": 1, "limit": 20, "total": 100, "totalPages": 5 },
-  "requestId": "req_abc123"
+  "statusCode": 200,
+  "message": "Bookings retrieved",
+  "data": [ ... ],
+  "meta": { "page": 1, "pageSize": 20, "total": 100, "totalPages": 5, "requestId": "req_abc123" }
 }
 ```
+Pagination: `parsePagination` / `paginationMeta` in `src/shared/utils/pagination.ts` (`page`, `pageSize` ≤ 100). Full API rules: `docs/API_CONVENTIONS.md`.
 
 ### Operational Errors:
 Always throw `AppError` (`src/shared/errors/app-error.ts`). Never return ad-hoc error JSON objects.
@@ -142,7 +143,7 @@ throw AppError.unauthorized('Invalid phone number or password');
 throw AppError.forbidden('User lacks permission: trips.create');
 throw AppError.notFound('Bus trip not found');
 throw AppError.conflict('Phone number already registered');
-throw AppError.badRequest('Invalid status transition');
+throw AppError.validation('Invalid status transition');
 throw AppError.validation('Validation failed', validationErrors);
 ```
 

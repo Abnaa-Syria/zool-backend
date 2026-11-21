@@ -39,7 +39,7 @@ docker compose up -d mysql-test redis       # Test DB (3307) & shared Redis (638
 1. **4-Layer Dependency Direction**:
    `Routes -> Controller -> Service -> Repository -> Prisma / Redis`
    - Never import Prisma in controllers or route definitions.
-   - Controllers only parse HTTP, call services, and return `res.status(200).json(successResponse(data, meta, req.requestId))`.
+   - Controllers only parse HTTP, call services, and return `return successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })` (never `res.json` / `res.status().json` — enforced by `tests/architecture/http-contract.test.ts`).
    - Services throw `AppError` subclasses. Never use `res.status(500)`.
    - Mutating repository methods must accept an optional `tx?: Prisma.TransactionClient`.
 
@@ -47,9 +47,9 @@ docker compose up -d mysql-test redis       # Test DB (3307) & shared Redis (638
    - Money is **never** floating-point. All monetary amounts must be integer minor units (`*Minor`).
    - 1 SDG = 100 minor units (`1500000` = 15,000 SDG). Currency is strictly `"SDG"`.
    - Wallet balance modifications **must** be inside `getPrisma().$transaction()`.
-   - Always acquire an exclusive row lock before modifying balance:
-     `SELECT * FROM wallets WHERE brokerOfficeId = ? FOR UPDATE`
-   - Every balance change must insert a `WalletLedgerEntry` with `balanceBeforeMinor`, `balanceAfterMinor`, and an idempotent `ledgerKey`.
+   - Always lock the wallet row first: `walletsRepository.lockWallet(walletId, tx)` (`SELECT id FROM wallets WHERE id = ? FOR UPDATE`).
+   - Every balance change must insert a `WalletLedgerEntry` (`type`, positive `amount`, `balanceAfter`, unique `idempotencyKey`, `referenceType`/`referenceId`).
+   - DB columns are plain minor-unit integers (`balance`, `basePrice`, `totalAmount`); DTOs expose them as `*Minor`.
    - Direct administrative wallet balance credit without a verified top-up intent is strictly forbidden (`D-ADJ-01`).
 
 3. **Dynamic RBAC & Security**:
@@ -59,8 +59,9 @@ docker compose up -d mysql-test redis       # Test DB (3307) & shared Redis (638
    - Any role revocation, suspension, or credential change must increment `AdminUser.authzVersion` and update Redis key `zoolgo:authz:version:{adminId}`.
 
 4. **Response Envelopes & Validation**:
-   - Success envelope: `successResponse(data, meta, req.requestId)`.
-   - Error throwing: `AppError.badRequest()`, `AppError.unauthorized()`, `AppError.forbidden()`, `AppError.notFound()`, `AppError.conflict()`, `AppError.validation()`.
+   - Success envelope: `successResponse(res, { statusCode, message, data, meta, requestId: req.requestId })`.
+   - Error throwing: `AppError.validation()`, `AppError.unauthorized()`, `AppError.forbidden()`, `AppError.notFound()`, `AppError.conflict()`, `AppError.rateLimited()`, `AppError.internal()`, or a domain error with a code from `src/shared/errors/error-codes.ts`.
+   - API rules for every surface (admin, broker, customer, driver): `docs/API_CONVENTIONS.md`.
    - Controller async handlers: Wrap with `asyncHandler()`.
    - Zod validation: Put schemas in `<domain>.validation.ts`. Use `.strict()` on update schemas.
 
