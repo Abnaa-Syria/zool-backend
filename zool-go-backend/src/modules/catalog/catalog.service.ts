@@ -1,5 +1,6 @@
 import { Prisma, TripSeatStatus, type TripSeat, type SeatHold } from '@prisma/client';
 import { env } from '../../config/env';
+import { runtimeSettings } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { computeCommission, compareSeatLabels, decimalToNumber } from '../../shared/utils/money';
@@ -380,7 +381,7 @@ export class CatalogService {
     requestId?: string;
   }) {
     const mode = input.mode ?? (input.seatCount && !input.seatIds ? 'AUTO' : 'MANUAL');
-    const ttlMs = env().SEAT_HOLD_TTL_SECONDS * 1000;
+    const ttlMs = runtimeSettings.number('booking.seatHoldTtlSeconds') * 1000;
 
     const holds = await getPrisma().$transaction(async (tx) => {
       await catalogRepository.releaseExpiredHolds(input.tripId, tx);

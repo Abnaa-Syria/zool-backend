@@ -1,5 +1,5 @@
+import { runtimeSettings } from '../../shared/settings/runtime-settings';
 import { WalletLedgerType, type BrokerOfficeStatus, type WalletLedgerEntry } from '@prisma/client';
-import { env } from '../../config/env';
 import type { PrismaTx } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { ErrorCodes } from '../../shared/errors/error-codes';
@@ -111,7 +111,7 @@ export class WalletsService {
 
     let walletIds: string[] | undefined;
     if (query.lowBalance === true) {
-      walletIds = await walletsRepository.findLowBalanceWalletIds(env().LOW_BALANCE_WARNING_THRESHOLD);
+      walletIds = await walletsRepository.findLowBalanceWalletIds(runtimeSettings.number('wallet.lowBalanceThresholdMinor'));
       if (walletIds.length === 0) {
         return { items: [], meta: paginationMeta(page, pageSize, 0) };
       }

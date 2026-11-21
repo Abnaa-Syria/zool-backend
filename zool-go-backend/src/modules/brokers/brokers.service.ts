@@ -1,10 +1,10 @@
+import { runtimeSettings } from '../../shared/settings/runtime-settings';
 import {
   BrokerEmployeeRole,
   BrokerOfficeStatus,
   Prisma,
   type SettlementPeriod,
 } from '@prisma/client';
-import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { setBrokerAuthzVersion } from '../../shared/security/broker-authz-cache';
@@ -76,7 +76,8 @@ export class BrokersService {
           {
             code: input.code,
             name: input.name,
-            settlementPeriod: input.settlementPeriod ?? env().DEFAULT_SETTLEMENT_PERIOD,
+            settlementPeriod:
+              input.settlementPeriod ?? (runtimeSettings.get('settlement.defaultPeriod') as 'WEEKLY' | 'MONTHLY'),
             ...(input.minTopUpMinorOverride !== undefined
               ? { minTopUpMinorOverride: input.minTopUpMinorOverride }
               : {}),

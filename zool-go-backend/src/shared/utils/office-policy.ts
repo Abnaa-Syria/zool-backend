@@ -1,4 +1,5 @@
 import { env } from '../../config/env';
+import { runtimeSettings } from '../settings/runtime-settings';
 
 export type OfficePolicySource = {
   minTopUpMinorOverride: number | null;
@@ -19,10 +20,10 @@ export type ResolvedOfficePolicy = {
 export function resolveOfficePolicy(office: OfficePolicySource): ResolvedOfficePolicy {
   const cfg = env();
   return {
-    minTopUpMinor: office.minTopUpMinorOverride ?? cfg.MIN_TOP_UP_AMOUNT,
-    exposureCeiling: office.exposureCeilingOverride ?? cfg.DEFAULT_BOOKING_EXPOSURE_CEILING,
+    minTopUpMinor: office.minTopUpMinorOverride ?? runtimeSettings.number('wallet.minTopUpMinor'),
+    exposureCeiling: office.exposureCeilingOverride ?? runtimeSettings.number('booking.defaultExposureCeiling'),
     lowBalanceThresholdMinor:
-      office.lowBalanceThresholdMinorOverride ?? cfg.LOW_BALANCE_WARNING_THRESHOLD,
+      office.lowBalanceThresholdMinorOverride ?? runtimeSettings.number('wallet.lowBalanceThresholdMinor'),
     timeZone: office.timeZone || cfg.PLATFORM_TIMEZONE,
     settlementPeriod: office.settlementPeriod,
   };

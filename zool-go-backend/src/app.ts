@@ -31,6 +31,8 @@ import { brokerReportsRoutes } from './modules/reports';
 import { adminGeoRoutes } from './modules/geo';
 import { adminFleetRoutes } from './modules/fleet';
 import { adminNetworkRoutes } from './modules/network';
+import { adminSettingsRoutes } from './modules/settings';
+import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
   const app = express();
@@ -84,6 +86,7 @@ export function createApp() {
     }),
   );
 
+  app.use(settingsFreshness);
   app.use(prefix, healthRoutes);
   app.use(`${prefix}/auth`, authRoutes);
   app.use(`${prefix}/admins`, adminsRoutes);
@@ -114,6 +117,7 @@ export function createApp() {
   app.use(`${prefix}/admin/commissions`, adminCommissionRoutes);
   app.use(`${prefix}/admin`, adminGeoRoutes);
   app.use(`${prefix}/admin`, adminFleetRoutes);
+  app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
   app.use(`${prefix}/admin`, adminNetworkRoutes);
 
   try {

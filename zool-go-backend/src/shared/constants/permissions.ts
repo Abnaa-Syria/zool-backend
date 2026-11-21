@@ -35,6 +35,8 @@ export const PERMISSION_CATALOG = [
   { key: 'geo.manage', module: 'geo', description: 'Create and update cities, stations and amenities' },
   { key: 'fleet.view', module: 'fleet', description: 'View vehicles and drivers' },
   { key: 'fleet.manage', module: 'fleet', description: 'Create and update vehicles and drivers' },
+  { key: 'settings.view', module: 'settings', description: 'View runtime platform settings' },
+  { key: 'settings.manage', module: 'settings', description: 'Change runtime platform settings' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_CATALOG)[number]['key'];

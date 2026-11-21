@@ -1814,6 +1814,33 @@ paths:
         '200': { description: 'Trip cancelled; data = { trip, refundedBookings, refundedAmountMinor, failed[] }', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: TRIP_NOT_CANCELLABLE (already departed) }
+  /admin/settings:
+    get:
+      tags: [Settings (admin)]
+      summary: D-SET-02 runtime settings with value, default, bounds and last editor (settings.view)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    patch:
+      tags: [Settings (admin)]
+      summary: Change one or more settings; validated against the catalog, audited before/after, effective on every instance within ~5 s (settings.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [values]
+              properties:
+                values:
+                  type: object
+                  additionalProperties: { oneOf: [{ type: number }, { type: boolean }, { type: string }] }
+                  example: { 'booking.seatHoldTtlSeconds': 600, 'cash.enabled': true }
+      responses:
+        '200': { description: Updated list, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
 
 components:
   securitySchemes:
