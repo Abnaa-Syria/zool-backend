@@ -46,7 +46,9 @@ describe('Stage 1 auth + RBAC', () => {
     expect(verify.status).toBe(200);
     expect(verify.body.data.accessToken).toBeTruthy();
     expect(verify.body.data.refreshToken).toBeUndefined();
-    expect(verify.headers['set-cookie']?.join(';')).toContain('zoolgo_refresh=');
+    expect((verify.headers['set-cookie'] as unknown as string[] | undefined)?.join(';')).toContain(
+      'zoolgo_refresh=',
+    );
     expect(verify.body.data.admin.permissions).toContain('admins.view');
   });
 
@@ -125,7 +127,7 @@ describe('Stage 1 auth + RBAC', () => {
       .post('/api/v1/auth/otp/verify')
       .send({ phone: '+249900000001', code: login.body.data.devOtp });
     expect(verify.status).toBe(200);
-    const cookieHeader = verify.headers['set-cookie'] as string[];
+    const cookieHeader = verify.headers['set-cookie'] as unknown as string[];
     const oldCookie = cookieHeader.find((c) => c.startsWith('zoolgo_refresh='))!;
 
     const rotated = await request(app).post('/api/v1/auth/refresh').set('Cookie', oldCookie);
@@ -146,7 +148,7 @@ describe('Stage 1 auth + RBAC', () => {
     const verify = await request(app)
       .post('/api/v1/auth/otp/verify')
       .send({ phone: '+249900000001', code: login.body.data.devOtp });
-    const cookie = (verify.headers['set-cookie'] as string[]).find((c) => c.startsWith('zoolgo_refresh='))!;
+    const cookie = (verify.headers['set-cookie'] as unknown as string[]).find((c) => c.startsWith('zoolgo_refresh='))!;
     const logout = await request(app).post('/api/v1/auth/logout').set('Cookie', cookie);
     expect(logout.status).toBe(200);
     const refresh = await request(app).post('/api/v1/auth/refresh').set('Cookie', cookie);

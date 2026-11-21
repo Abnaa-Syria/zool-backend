@@ -45,7 +45,7 @@ describe('Admin self-service phone change', () => {
     expect(created.status).toBe(201);
     await new Promise((r) => setTimeout(r, 1100));
     const login = await loginWithOtp(app, phone);
-    return { token: login.accessToken, id: created.body.data.id as string, phone };
+    return { token: login.accessToken, agent: login.agent, id: created.body.data.id as string, phone };
   }
 
   beforeEach(async () => {
@@ -111,13 +111,18 @@ describe('Admin self-service phone change', () => {
       ),
     ).toBe(true);
 
-    const me = await request(app).get('/api/v1/auth/me').set(auth(actor.token));
-    expect(me.status).toBe(200);
-    expect(me.body.data.identities[0].value).toBe(nextPhone);
+    // Credential change invalidates the existing access token and refresh session.
+    const staleMe = await request(app).get('/api/v1/auth/me').set(auth(actor.token));
+    expect(staleMe.status).toBe(401);
+    const staleRefresh = await actor.agent.post('/api/v1/auth/refresh');
+    expect(staleRefresh.status).toBe(401);
 
     await new Promise((r) => setTimeout(r, 1100));
     const newLogin = await loginWithOtp(app, nextPhone);
     expect(newLogin.admin.id).toBe(actor.id);
+    const me = await request(app).get('/api/v1/auth/me').set(auth(newLogin.accessToken));
+    expect(me.status).toBe(200);
+    expect(me.body.data.identities[0].value).toBe(nextPhone);
 
     const oldOtp = await request(app).post('/api/v1/auth/otp/request').send({ phone: actor.phone });
     expect(oldOtp.status).toBe(401);

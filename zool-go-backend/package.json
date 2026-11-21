@@ -21,7 +21,8 @@
     "prisma:validate": "prisma validate",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "db:test:prepare": "node scripts/test-db-prepare.mjs"
   },
   "prisma": {
     "schema": "prisma/schema",
