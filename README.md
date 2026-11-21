@@ -14,5 +14,5 @@ Mobile app designs (Figma): https://www.figma.com/design/sz5wZeoY4Bz4rOVhnFpkWq/
 
 ## Workflow
 
-- Work on a branch, open a PR to `main`; CI must be green.
+- Commit and push directly to `main` (no branches / PRs). Before pushing, run lint, typecheck and tests locally; CI runs the same checks on every push.
 - Never commit `.env*` files except the `*.example` templates.

@@ -9,7 +9,7 @@ Updated 2026-11-21. ZoolGo lives in **two Git repositories**:
 
 The former `QeemaTech/zool_BE` / `QeemaTech/zool_dashboard` repos and the old `d:\zool-go\` layout (with the misspelled `zool-go-dashpoard` folder) are **retired**; older documents may still mention them.
 
-Workflow: branch → PR to `main` → CI green (`.github/workflows/`) → merge.
+Workflow: commit and push directly to `main`; run lint, typecheck and tests locally first. CI (`.github/workflows/`) re-runs them on every push.
 
 ---
 
