@@ -387,7 +387,45 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 | D-GPS-01 GPS | LOCKED (PO) — driver phone | No |
 | D-SUS-01 Suspension | LOCKED (delegated) | No |
 | D-SET-02 Runtime settings | LOCKED (PO) — hybrid DB + .env | No |
+| D-CASH-01 Cash to driver | LOCKED (PO) — v1 | No |
+| D-RT-01 Round trip | LOCKED (PO) — v1 | No |
+| D-CHG-01 Modify booking | LOCKED (PO) — v1 | No |
 | D-BROKER-CHANNEL-01 Broker web + mobile | LOCKED (PO) | No |
+
+---
+
+## D-CASH-01 — Cash payment to the driver (customer channel)
+
+**Status:** **LOCKED (PO)** — 2026-11-21. Required in v1.
+
+1. At checkout the customer may choose `CASH_ON_BOARD`. The booking is `CONFIRMED` with `paymentStatus = UNPAID_CASH` and tickets are issued immediately, so the seat is sold.
+2. **Abuse limits** (all `SystemSetting`, editable by admin): cash enabled on/off, platform-wide and per carrier; max seats per cash booking (default 4); max open unpaid cash bookings per customer (default 2); cash closes N hours before departure (default 1 h); a customer with ≥ 2 cash no-shows loses cash eligibility.
+3. **At boarding** the driver app shows "collect X SDG". Boarding a cash ticket records the collection (`CashCollection`: ticket, driver, amount, time) and sets `paymentStatus = PAID_CASH`.
+4. Not boarded by departure → ticket `NO_SHOW`, booking `paymentStatus = UNPAID_CASH` stays as evidence, and it counts toward the no-show limit. No money moves.
+5. Cancelling an unpaid cash booking needs no refund. Cash collected per trip and driver is reportable for carrier reconciliation (carrier settlement itself stays D-REV-01, out of scope).
+6. Brokers never use cash: their channel is wallet-only (unchanged).
+
+## D-RT-01 — Round trip
+
+**Status:** **LOCKED (PO)** — 2026-11-21. Required in v1 (customer and broker).
+
+1. A round trip is a `BookingGroup` (`type = ROUND_TRIP`) with **two ordinary bookings** (outbound and return). Each leg has its own trip, seats, passengers and tickets.
+2. One checkout. Seats are held on both trips first; the quote covers both legs; one payment covers the total (customer: one `PaymentIntent` or cash; broker: one transaction with one wallet debit per leg, atomic). If either leg fails, nothing is booked.
+3. The return trip must depart after the outbound arrival. The passenger list is the same for both legs.
+4. After booking, each leg is managed independently: cancel or modify one leg, with refunds computed per leg.
+
+## D-CHG-01 — Modify a booking (تعديل الرحلة)
+
+**Status:** **LOCKED (PO)** — 2026-11-21. Required in v1, alongside cancellation, for customer and broker.
+
+1. **Change seat on the same trip:** free, while the trip is `SCHEDULED`. The seat is swapped inside the booking and the ticket is re-issued with the same ticket number and a new seat.
+2. **Change to another trip** (another date or time on the same carrier and route): allowed until the change cutoff (default 6 h before departure) and at most N times per booking (default 2).
+   - The old booking becomes `CHANGED` (new terminal status) and its seats are released. A new booking is created with `replacesBookingId`. Both happen in one transaction.
+   - **Price difference + change fee** (fee default 0, `SystemSetting`):
+     - Higher price: the customer pays the difference (`PaymentIntent`, or cash at boarding for cash bookings); the broker wallet is debited the difference.
+     - Lower price: the difference is refunded to the original method or wallet. Unpaid cash bookings have nothing to refund.
+   - Broker commission: the old accrual is clawed back and a new one accrued on the new booking.
+3. A change quote (`…/change-quote`) shows the difference and fee before the user confirms. Change after the cutoff returns `CHANGE_NOT_ALLOWED`.
 
 ---
 

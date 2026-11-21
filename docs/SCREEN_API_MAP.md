@@ -57,7 +57,7 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 | Unread notifications dot | `GET /customer/notifications/unread-count` | ❌ |
 | Recent searches | `GET /customer/recent-searches` (saved server-side on each search, so they survive a reinstall) | ❌ |
 | Popular destinations with "from" price | `GET /public/destinations/popular` → `{ city, imageUrl, fromPriceMinor }[]` | ❌ |
-| Search | → Results | |
+| Search (one-way or **round trip**, D-RT-01) | → Results; for a round trip the app searches the outbound date, then the return date (`GET /customer/trips?…&date=<return>&fromCityId=<to>&toCityId=<from>`) | ❌ |
 
 ### Results (3074:2473), Loading (2718), Empty (2814), Error (2839)
 | Need | Endpoint | Status |
@@ -78,7 +78,7 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 | Need | Endpoint | Status |
 |---|---|---|
 | Seat map: layout grid, driver position, each seat `{ label, state: AVAILABLE/HELD/SOLD, isWomenOnly }` | `GET /customer/trips/:id/seats` | ❌ (broker equivalent ✅ inside `GET /broker/trips/:id`) |
-| Hold the selected seats | `POST /customer/trips/:id/holds { seatLabels[] }` → `{ holdId, expiresAt }`. `409 SEAT_UNAVAILABLE` → show the modal | ❌ |
+| Hold the selected seats | `POST /customer/trips/:id/holds { seatLabels[] }` → `{ holdId, expiresAt }`. `409 SEAT_UNAVAILABLE` → show the modal. Round trip: one hold per leg | ❌ |
 | Release | `DELETE /customer/holds/:id` | ❌ |
 
 🎨 Seat labels: the layout defines them and every screen shows the same label. The design mixes `8`, `A12` and `12A`. Show the hold countdown.
@@ -91,8 +91,8 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 ### Booking Review / Checkout (3074:3175) + processing modal (3074:4255)
 | Need | Endpoint | Status |
 |---|---|---|
-| Price breakdown, coupon validation | `POST /customer/bookings/quote { holdId, passengers[], couponCode? }` → `{ unitPriceMinor, subtotalMinor, discountMinor, totalMinor, coupon }` | ❌ |
-| Create booking + payment | `POST /customer/bookings { holdId, passengers[], couponCode?, paymentMethod }` + `Idempotency-Key` → `{ booking (PENDING_PAYMENT), payment: { intentId, nextAction } }` | ❌ |
+| Price breakdown, coupon validation, cash eligibility | `POST /customer/bookings/quote { holdIds[1-2], passengers[], couponCode? }` → per leg + total `{ subtotalMinor, discountMinor, totalMinor, coupon, cashAllowed, cashBlockedReason? }` | ❌ |
+| Create booking(s) + payment | `POST /customer/bookings { holdIds[1-2], passengers[], couponCode?, paymentMethod: ONLINE\|CASH_ON_BOARD }` + `Idempotency-Key` → `{ group?, bookings[], payment }`. ONLINE → `PENDING_PAYMENT` + `{ intentId, nextAction }`; CASH → `CONFIRMED` + `UNPAID_CASH` (D-CASH-01) | ❌ |
 | Payment completes | provider webhook `POST /payments/webhooks/:provider` (exists for broker top-ups) → booking `CONFIRMED`, tickets issued, notification | ⚠️ the port exists; the customer intent is new |
 | App polls the result | `GET /customer/bookings/:id` | ❌ |
 
@@ -103,10 +103,11 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 |---|---|---|
 | Tabs | `GET /customer/bookings?tab=UPCOMING\|ONGOING\|PAST\|CANCELLED` | ❌ |
 | Ongoing card: next station, ETA, progress % | included for `ONGOING` (from the trip's live state) | ❌ |
-| "Edit trip" | v1 = **cancel** only: `GET /customer/bookings/:id/cancellation-quote` → refund amount; `POST /customer/bookings/:id/cancel` | ❌ |
+| Cancel | `GET /customer/bookings/:id/cancellation-quote` → refund amount; `POST /customer/bookings/:id/cancel` | ❌ |
+| "تعديل الرحلة" (D-CHG-01) | Change seat: `POST /customer/bookings/:id/change-seat { from, to }`. Change trip: `GET /customer/bookings/:id/change-options?date=` → `POST /customer/bookings/:id/change-quote { newTripId, seatLabels[] }` → `{ priceDiffMinor, changeFeeMinor, payMinor \| refundMinor }` → `POST /customer/bookings/:id/change` + `Idempotency-Key` | ❌ |
 | "Book again" | client re-runs the search with the same cities | — |
 
-🎨 The cancelled tab, the cancel confirmation (with refund amount) and empty states are not designed. Rename "تعديل الرحلة" to "إلغاء الحجز" until changes are supported.
+🎨 Not designed: the cancelled tab, the cancel confirmation (with refund amount), the **modify flow** (choose seat or new date → difference → pay/refund), round-trip cards (two legs under one booking group) and empty states.
 
 ### Rate carrier modal (3074:4230)
 | Need | Endpoint | Status |
@@ -148,9 +149,9 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 ### Payment methods (3074:3017)
 | Need | Endpoint | Status |
 |---|---|---|
-| Saved methods | `GET /customer/payment-methods` | ❌ — **blocked on D-PAY-01** (card tokenisation depends on the PSP) |
+| Saved methods | `GET /customer/payment-methods` → always includes `CASH_ON_BOARD` (with `eligible` + reason); saved cards are **blocked on D-PAY-01** (tokenisation depends on the PSP) | ❌ |
 
-🎨 **Cash to driver** is shown here but not at checkout. It is a product decision and is **not in v1** unless the PO adds it.
+🎨 Checkout must offer **cash to driver** (D-CASH-01) and show why it is unavailable when blocked (limit reached, too close to departure, carrier disabled).
 
 ### Privacy (3074:3059), Settings (3074:3132)
 `GET /public/content/privacy` (❌). Language is saved through `PATCH /customer/me/preferences`. Theme is local only.
@@ -169,7 +170,8 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 | GPS (D-GPS-01) | Background location while `IN_PROGRESS` | `POST /driver/trips/:id/positions [{ lat, lng, speedKmh, heading, recordedAt }]` (batched) | ❌ |
 | Passenger boarding (3043:3234) | Manifest: seat, name, phone, boarding status; boarded/booked counts | `GET /driver/trips/:id/manifest` | ❌ |
 | QR scanner (3043:3291) + result card (3043:3312) | Verify a code without boarding the passenger yet | `POST /driver/trips/:id/scan { code }` → `VALID \| ALREADY_BOARDED \| WRONG_TRIP \| CANCELLED \| INVALID` + passenger, seat, route, departure | ❌ |
-| "Register & continue" | Board | `POST /driver/trips/:id/boardings { ticketNumber }` (idempotent) | ❌ |
+| "Register & continue" | Board | `POST /driver/trips/:id/boardings { ticketNumber, cashCollectedMinor? }` (idempotent). For `UNPAID_CASH` tickets the scan result shows the amount to collect and boarding records the `CashCollection` (D-CASH-01) | ❌ |
+| Cash summary for the trip | `GET /driver/trips/:id/cash` → expected vs collected | ❌ |
 | 🎨 Manual check-in / no-show | Board without a QR; mark no-show after departure | same endpoint with `method: MANUAL`; `POST /driver/trips/:id/no-shows { ticketNumber }` | ❌ |
 | Profile (3043:4049) | Name, driver code, phone, company, license expiry/status | `GET /driver/me` | ❌ |
 
@@ -195,6 +197,8 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 | Send / share ticket | PDF download (D-TICKET-01: download only) | `GET /broker/bookings/:id/tickets/:ticketNumber/pdf`, `POST /broker/bookings/:id/dispatch` | ✅ |
 | Bookings list (3083:1927) | Tabs active / completed / cancelled | `GET /broker/bookings?tab=ACTIVE\|COMPLETED\|CANCELLED` | ⚠️ the list exists; add `tab` + boarding status |
 | 🎨 Cancel booking (no button in design) | Refund to wallet + clawback | `POST /broker/bookings/:id/cancel` | ✅ |
+| 🎨 Modify booking (D-CHG-01) | Change seat / change trip with wallet debit or refund of the difference | `POST /broker/bookings/:id/change-seat`, `…/change-quote`, `…/change` | ❌ |
+| Round trip (D-RT-01) | Two holds → one quote → one confirm | `POST /broker/bookings/quote` and `/confirm` accept `holdIds[1-2]` | ⚠️ single trip only today |
 | My ticket (3083:2743) | Same ticket view as the customer's (QR) | `GET /broker/bookings/:id` (tickets[]) | ⚠️ add the QR payload |
 | 🎨 Wallet / top-up (no screen in design) | Balance, ledger, top-up with receipt | `GET /broker/wallet`, `GET /broker/wallet/ledger`, `POST /broker/wallet/top-ups`, `POST /broker/wallet/top-ups/:id/evidence` | ✅ |
 | Profile (3083:2921) | Agent name, role, office | `GET /broker/auth/me` | ✅ (🎨 the "company + rating" card is wrong for an office) |
@@ -208,7 +212,7 @@ Static. Splash calls `app-config` and, if a refresh token is stored, `POST /cust
 2. **One seat-label format** everywhere, taken from the bus layout.
 3. **QR code** on tickets, not a barcode.
 4. **Missing screens:** customer passenger details, payment result, cancel booking + refund, filter/sort; driver login, trip start/complete, invalid scan, manual check-in; broker login, wallet/top-up, cancel booking, insufficient balance.
-5. **Broker review math** (§3) and **no round trip in v1**: hide the "ذهاب وعودة" toggle until it is specified.
+5. **Broker review math** (§3). **Round trip** (D-RT-01): add the return-date picker, a two-leg results/seat flow and two-leg review, ticket and My Trips cards. **Modify** and **cash** flows (D-CHG-01, D-CASH-01).
 6. **Consistent carrier and office names** across the screens of one flow.
 7. **Empty / loading / error states** for lists (My Trips, Notifications, bookings, manifest).
 
