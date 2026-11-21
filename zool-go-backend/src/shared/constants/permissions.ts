@@ -31,6 +31,8 @@ export const PERMISSION_CATALOG = [
   { key: 'bookings.view', module: 'bookings', description: 'List and inspect bookings across offices' },
   { key: 'bookings.cancel', module: 'bookings', description: 'Cancel a booking as admin with a required reason' },
   { key: 'bookings.override', module: 'bookings', description: 'Reserved: booking override (unimplemented in M1)' },
+  { key: 'geo.view', module: 'geo', description: 'View cities, stations and amenities' },
+  { key: 'geo.manage', module: 'geo', description: 'Create and update cities, stations and amenities' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_CATALOG)[number]['key'];

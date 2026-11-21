@@ -56,7 +56,12 @@ export async function resetDatabase(): Promise<void> {
   await prisma.bookingGroup.deleteMany();
   await prisma.routeStop.deleteMany();
   await prisma.route.deleteMany();
+  await prisma.vehicleAmenity.deleteMany();
   await prisma.vehicle.deleteMany();
+  await prisma.amenity.deleteMany();
+  await prisma.tripStop.deleteMany();
+  await prisma.station.deleteMany();
+  await prisma.city.deleteMany();
   await prisma.driverOtpChallenge.deleteMany();
   await prisma.driverRefreshSession.deleteMany();
   await prisma.driverIdentity.deleteMany();

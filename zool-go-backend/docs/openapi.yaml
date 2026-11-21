@@ -1312,6 +1312,175 @@ paths:
       parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
       responses:
         '200': { description: Cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/cities:
+    get:
+      tags: [Reference data (admin)]
+      summary: List cities with station counts (geo.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: q, in: query, schema: { type: string }, description: Match code or name }
+        - { name: isActive, in: query, schema: { type: string, enum: ['true', 'false'] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Reference data (admin)]
+      summary: Create city (geo.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [code, nameAr, nameEn]
+              properties:
+                code: { type: string, example: PZU }
+                nameAr: { type: string }
+                nameEn: { type: string, example: Port Sudan }
+                imageUrl: { type: string, format: uri }
+                isPopular: { type: boolean }
+                sortOrder: { type: integer }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { description: City code already exists }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/cities/{id}:
+    patch:
+      tags: [Reference data (admin)]
+      summary: Update city; deactivate with isActive=false (geo.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                nameAr: { type: string }
+                nameEn: { type: string }
+                imageUrl: { type: string, nullable: true }
+                isPopular: { type: boolean }
+                sortOrder: { type: integer }
+                isActive: { type: boolean }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/stations:
+    get:
+      tags: [Reference data (admin)]
+      summary: List stations (geo.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: cityId, in: query, schema: { type: string } }
+        - { name: q, in: query, schema: { type: string } }
+        - { name: isActive, in: query, schema: { type: string, enum: ['true', 'false'] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Reference data (admin)]
+      summary: Create station in a city (geo.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [cityId, nameAr, nameEn]
+              properties:
+                cityId: { type: string }
+                nameAr: { type: string }
+                nameEn: { type: string }
+                address: { type: string }
+                latitude: { type: number, description: Must be sent together with longitude }
+                longitude: { type: number }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/stations/{id}:
+    patch:
+      tags: [Reference data (admin)]
+      summary: Update station; deactivate with isActive=false (geo.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                nameAr: { type: string }
+                nameEn: { type: string }
+                address: { type: string, nullable: true }
+                latitude: { type: number, nullable: true }
+                longitude: { type: number, nullable: true }
+                isActive: { type: boolean }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/amenities:
+    get:
+      tags: [Reference data (admin)]
+      summary: List amenity catalog (geo.view)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Reference data (admin)]
+      summary: Create amenity (geo.manage)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [code, nameAr, nameEn, icon]
+              properties:
+                code: { type: string, example: wifi }
+                nameAr: { type: string }
+                nameEn: { type: string }
+                icon: { type: string }
+                sortOrder: { type: integer }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { description: Amenity code already exists }
+  /admin/amenities/{id}:
+    patch:
+      tags: [Reference data (admin)]
+      summary: Update amenity (geo.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                nameAr: { type: string }
+                nameEn: { type: string }
+                icon: { type: string }
+                sortOrder: { type: integer }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+
 components:
   securitySchemes:
     bearerAuth:
