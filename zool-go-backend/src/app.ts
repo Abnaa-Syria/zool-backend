@@ -33,6 +33,9 @@ import { adminFleetRoutes } from './modules/fleet';
 import { adminNetworkRoutes } from './modules/network';
 import { adminSettingsRoutes } from './modules/settings';
 import { adminInsightsRoutes } from './modules/insights';
+import { adminCustomersRoutes } from './modules/customers';
+import { adminCouponsRoutes } from './modules/coupons';
+import { adminContentRoutes, publicContentRoutes } from './modules/content';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -119,6 +122,10 @@ export function createApp() {
   app.use(`${prefix}/admin`, adminGeoRoutes);
   app.use(`${prefix}/admin`, adminFleetRoutes);
   app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
+  app.use(`${prefix}/admin/customers`, adminCustomersRoutes);
+  app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
+  app.use(`${prefix}/admin/content`, adminContentRoutes);
+  app.use(`${prefix}/public/content`, publicContentRoutes);
   app.use(`${prefix}/admin`, adminInsightsRoutes);
   app.use(`${prefix}/admin`, adminNetworkRoutes);
 

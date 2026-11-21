@@ -1903,6 +1903,150 @@ paths:
       responses:
         '200': { description: CSV file, content: { text/csv: { schema: { type: string } } } }
         '422': { description: RANGE_TOO_LARGE (more than 10000 rows) }
+  /admin/customers:
+    get:
+      tags: [Customers (admin)]
+      summary: List customer accounts (customers.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: q, in: query, schema: { type: string }, description: Match name, email or phone }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, SUSPENDED, DELETED] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/customers/{id}:
+    get:
+      tags: [Customers (admin)]
+      summary: Customer detail with booking counts (customers.view)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Customers (admin)]
+      summary: Suspend/reactivate (suspension revokes sessions) or reset cash no-shows (customers.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                status: { type: string, enum: [ACTIVE, SUSPENDED] }
+                resetCashNoShows: { type: boolean, enum: [true] }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/coupons:
+    get:
+      tags: [Coupons (admin)]
+      summary: List coupons (coupons.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: q, in: query, schema: { type: string } }
+        - { name: isActive, in: query, schema: { type: string, enum: ['true', 'false'] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+    post:
+      tags: [Coupons (admin)]
+      summary: Create coupon (coupons.manage). PERCENT value in basis points (2500 = 25%); FIXED value in minor units.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [code, discountType, value, validFrom, validTo]
+              properties:
+                code: { type: string, example: EID25 }
+                discountType: { type: string, enum: [PERCENT, FIXED] }
+                value: { type: integer }
+                maxDiscountAmountMinor: { type: integer }
+                minSubtotalAmountMinor: { type: integer }
+                companyId: { type: string, description: Restrict to one carrier }
+                validFrom: { type: string, format: date-time }
+                validTo: { type: string, format: date-time }
+                maxRedemptions: { type: integer }
+                perCustomerLimit: { type: integer }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '409': { description: Coupon code already exists }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/coupons/{id}:
+    patch:
+      tags: [Coupons (admin)]
+      summary: Activate/deactivate, extend validity or change the redemption cap (coupons.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                isActive: { type: boolean }
+                validTo: { type: string, format: date-time }
+                maxRedemptions: { type: integer, nullable: true }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/content:
+    get:
+      tags: [Content (admin)]
+      summary: List app content pages (content.manage)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /admin/content/{slug}:
+    put:
+      tags: [Content (admin)]
+      summary: Create or replace a content page, e.g. privacy (content.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: slug, in: path, required: true, schema: { type: string, example: privacy } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [titleAr, titleEn, sections]
+              properties:
+                titleAr: { type: string }
+                titleEn: { type: string }
+                sections:
+                  type: array
+                  items:
+                    type: object
+                    required: [titleAr, titleEn, bodyAr, bodyEn]
+                    properties:
+                      titleAr: { type: string }
+                      titleEn: { type: string }
+                      bodyAr: { type: string }
+                      bodyEn: { type: string }
+      responses:
+        '200': { description: Published, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /public/content/{slug}:
+    get:
+      tags: [Public]
+      summary: App content page (no login; rate limited)
+      parameters: [{ name: slug, in: path, required: true, schema: { type: string, example: privacy } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
 
 components:
   securitySchemes:

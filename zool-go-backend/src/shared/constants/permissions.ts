@@ -38,6 +38,11 @@ export const PERMISSION_CATALOG = [
   { key: 'settings.view', module: 'settings', description: 'View runtime platform settings' },
   { key: 'settings.manage', module: 'settings', description: 'Change runtime platform settings' },
   { key: 'reports.view', module: 'reports', description: 'View platform-wide admin reports' },
+  { key: 'customers.view', module: 'customers', description: 'View customer accounts' },
+  { key: 'customers.manage', module: 'customers', description: 'Suspend customers and reset cash no-shows' },
+  { key: 'coupons.view', module: 'coupons', description: 'View coupons' },
+  { key: 'coupons.manage', module: 'coupons', description: 'Create and update coupons' },
+  { key: 'content.manage', module: 'content', description: 'Publish app content pages (privacy, terms, help)' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_CATALOG)[number]['key'];

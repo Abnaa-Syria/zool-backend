@@ -92,6 +92,7 @@ export async function resetDatabase(): Promise<void> {
   await prisma.customerIdentity.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.systemSetting.deleteMany();
+  await prisma.contentPage.deleteMany();
 
   const redis = getRedis();
   const keys = await redis.keys(`${process.env.REDIS_KEY_PREFIX ?? 'zoolgo_test:'}*`);
