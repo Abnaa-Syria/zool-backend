@@ -389,4 +389,4 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 - [`BACKEND_READINESS_AUDIT.md`](BACKEND_READINESS_AUDIT.md)  
 - [`BACKEND_REQUIREMENTS.md`](BACKEND_REQUIREMENTS.md)  
 - [`ADMIN_DASHBOARD_BACKEND_GAP_AUDIT.md`](ADMIN_DASHBOARD_BACKEND_GAP_AUDIT.md)  
-- [`../zool-go-backend/STAGE1_PLAN.md`](../zool-go-backend/STAGE1_PLAN.md) (M0 complete; next vertical bound by this register)  
+- [`archive/stage-plans/STAGE1_PLAN.md`](archive/stage-plans/STAGE1_PLAN.md) (M0 complete; next vertical bound by this register)  

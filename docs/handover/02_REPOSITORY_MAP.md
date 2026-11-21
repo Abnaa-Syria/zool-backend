@@ -1,95 +1,56 @@
 # ZoolGo — Repository and Filesystem Map
 
-This document details the physical structure of the ZoolGo workspace located at `d:\zool-go\`. It documents directory purposes, lifecycle statuses, configuration entry points, and source control findings.
+Updated 2026-11-21. ZoolGo lives in **two Git repositories**:
+
+| Repository | Local folder (suggested) | Contents |
+|---|---|---|
+| https://github.com/Abnaa-Syria/zool-backend | `zool_BE/` | Backend API, all docs, designs, AI-assistant rules |
+| https://github.com/Abnaa-Syria/zool-dashboard | `zool_dashboard/` | Admin dashboard (React) |
+
+The former `QeemaTech/zool_BE` / `QeemaTech/zool_dashboard` repos and the old `d:\zool-go\` layout (with the misspelled `zool-go-dashpoard` folder) are **retired**; older documents may still mention them.
+
+Workflow: branch → PR to `main` → CI green (`.github/workflows/`) → merge.
 
 ---
 
-## 1. Source Control and Git Audit
-
-> [!CAUTION]
-> **Source Control Status (NO GIT):**  
-> An automated filesystem audit executed on 2026-11-19 verified that:
-> 1. Root workspace `d:\zool-go\.git` **DOES NOT EXIST**.
-> 2. Backend directory `d:\zool-go\zool-go-backend\.git` **DOES NOT EXIST**.
-> 3. Frontend directory `d:\zool-go\zool-go-dashpoard\.git` **DOES NOT EXIST**.
-> 4. No parent directory contains a `.git` folder (`git status` exits with code 128: `fatal: not a git repository`).
->
-> **Receiving Engineer Rule:** Do not initialize Git or push commits without explicit coordination with project leadership. Maintain local backups before modifying files.
-
----
-
-## 2. Sensitive Directory Naming Note
-
-> [!IMPORTANT]
-> **Notice the Directory Spelling: `zool-go-dashpoard`**  
-> The React Admin Dashboard frontend is located in a folder named:
-> ```text
-> d:\zool-go\zool-go-dashpoard\    <-- Note the 'p' instead of 'b'
-> ```
-> **Do not rename this directory.** Shell scripts, Docker mounts, IDE workspace configurations, and cross-document references depend on this exact string.
-
----
-
-## 3. High-Level Workspace Tree
+## 1. Backend Repository Tree (`zool-backend`)
 
 ```text
-d:\zool-go\
-├── docs/                                # Architecture specifications & roadmaps
-│   ├── handover/                        # This engineering handover package (20 files)
-│   ├── ADMIN_BACKEND_COMPLETION_ROADMAP.md
-│   ├── ADMIN_DASHBOARD_API_REQUIREMENTS.md
-│   ├── ADMIN_DASHBOARD_BACKEND_GAP_AUDIT.md
-│   ├── ADMIN_DASHBOARD_ROUTE_AND_ACTION_MATRIX.md
+zool_BE/
+├── README.md                     # Repo index
+├── CLAUDE.md, AGENTS.md, .cursorrules, .windsurfrules, .cursor/, .agents/
+│                                 # AI coding rules — single copy, repo root only
+├── .github/
+│   ├── copilot-instructions.md
+│   └── workflows/backend-ci.yml  # lint, typecheck, build, migrate deploy, drift check, tests
+├── docs/
+│   ├── MASTER_PLAN.md            # Project plan (authoritative sequence)
 │   ├── BACKEND_DECISION_REGISTER.md
-│   ├── BACKEND_READINESS_AUDIT.md
-│   ├── BACKEND_REQUIREMENTS.md
-│   ├── FRONTEND_ARCHITECTURE.md
-│   ├── IMPLEMENTATION_PLAN.md
-│   ├── PROJECT_BRIEF.md
-│   ├── REQUIREMENTS_AND_DECISIONS.md
-│   └── SCREEN_INVENTORY.md
-│
-├── zool-go-backend/                     # Express/Prisma/MySQL/Redis Backend API
-│   ├── prisma/                          # Multi-file Prisma schemas & migrations
-│   │   ├── migrations/                  # Applied SQL migration history
-│   │   ├── schema/                      # 12 domain schema files (.prisma)
-│   │   └── seed.ts                      # Database seeder (Super Admin, RBAC, demo trips)
-│   ├── src/                             # Backend TypeScript source code
-│   │   ├── config/                      # Zod-validated environment config
-│   │   ├── infrastructure/              # Database, Redis, Pino Logger, Local Storage
-│   │   ├── modules/                     # 17 domain feature modules
-│   │   ├── shared/                      # Middleware, errors, responses, security, utils
-│   │   ├── app.ts                       # Express application assembly & route mounting
-│   │   └── server.ts                    # HTTP server entry point & graceful shutdown
-│   ├── tests/                           # Vitest integration & unit test suites
-│   ├── docs/                            # OpenAPI YAML, HTTP specs, Authz specs
-│   ├── postman/                         # Postman collections (Stage 1 & Stage 2)
-│   ├── scripts/                         # Smoke test scripts (Node.js/ESM)
-│   ├── uploads/                         # Local storage for receipt evidence (gitignored)
-│   ├── docker-compose.yml               # Local MySQL 8.4 & Redis 7.4 services
-│   ├── package.json                     # Dependencies & scripts
-│   └── tsconfig.json                    # TypeScript compiler configuration
-│
-├── zool-go-dashpoard/                   # React 19 / Vite / Tailwind Admin Dashboard
-│   ├── public/                          # Static public assets
-│   ├── src/                             # Frontend source code
-│   │   ├── app/                         # App shell, sidebar, topbar, React router
-│   │   ├── components/                  # Shared UI components (TactileButton, etc.)
-│   │   ├── features/                    # Feature modules (11 modules + tracking)
-│   │   ├── lib/                         # Utility helpers (clsx, twMerge)
-│   │   └── services/                    # Overview service & mock data fetchers
-│   ├── index.html                       # HTML entry point (Cairo typography, RTL)
-│   ├── package.json                     # Dependencies & scripts
-│   ├── tailwind.config.js               # Design tokens, color palette, RTL rules
-│   └── vite.config.ts                   # Vite build configuration
-│
-├── Zool/                                # Visual assets, mobile mockups, and authority PDF
-│   ├── ZoolGo_Broker_Journey.pdf        # Sole authority document for M1 broker vertical
-│   ├── logo.png                         # ZoolGo brand asset
-│   └── *.png                            # 44 mobile UI screenshots (Customer & Driver apps)
-│
-└── stitch_zoolgo_admin_design_system/   # Raw Stitch UI design proposals & templates
-    └── stitch_zoolgo_admin_design_system/ # HTML/CSS references (historical proposal only)
+│   ├── handover/                 # Engineering handover package
+│   └── archive/stage-plans/      # Historical STAGE*_PLAN.md files
+├── Zool/                         # Mobile screen exports + ZoolGo_Broker_Journey.pdf
+├── stitch_zoolgo_admin_design_system/  # Admin design proposals (reference only)
+└── zool-go-backend/
+    ├── prisma.config.ts          # Prisma CLI config (schema + migrations path + seed)
+    ├── prisma/
+    │   ├── schema/*.prisma       # Multi-file schema
+    │   ├── schema/migrations/    # THE ONLY migrations folder
+    │   └── seed.ts
+    ├── src/{config,infrastructure,modules,shared}, app.ts, server.ts
+    ├── tests/                    # Vitest integration suites (+ architecture/)
+    ├── docs/openapi.yaml         # Served at /docs (Swagger UI)
+    ├── postman/, scripts/        # Postman collections, smoke + db:test:prepare scripts
+    ├── .env.example, .env.test.example
+    └── docker-compose.yml        # Optional: MySQL dev 3308 / test 3307, Redis 6380
+```
+
+## 2. Dashboard Repository Tree (`zool-dashboard`)
+
+```text
+zool_dashboard/
+├── .github/workflows/ci.yml      # lint, typecheck, tests, build
+├── src/{app,components,features,lib,mocks,services}
+├── index.html, vite.config.ts, tailwind.config.js, package.json
 ```
 
 ---
@@ -111,10 +72,10 @@ d:\zool-go\
   - `src/modules/`: 17 isolated domain modules (e.g., `auth/`, `admins/`, `brokers/`, `bookings/`, `payments/`, `commissions/`).
   - `src/infrastructure/`: Low-level database connections (`database/prisma.ts`), Redis client (`redis/redis.ts`), Pino structured logging (`observability/logger.ts`), and local disk storage provider (`storage/local-disk-storage.ts`).
   - `src/shared/`: Cross-cutting concerns including `asyncHandler`, `errorHandler`, `validate` (Zod), `requirePermission`, and standard envelopes (`successResponse`, `AppError`).
-  - `prisma/schema/`: Multi-file schema directory containing 12 modular `.prisma` files.
+  - `prisma/schema/`: Multi-file schema directory containing 12 modular `.prisma` files; migrations in `prisma/schema/migrations/`.
   - `tests/`: 9 test suites covering authentication, RBAC, policy rules, broker flows, and admin milestones.
 
-### 4.2. `zool-go-dashpoard\` (spelled with 'p')
+### 4.2. `zool-dashboard` repository
 - **Status:** **ACTIVE / PROTOTYPE SOURCE CODE**
 - **Purpose:** Single-page administrative dashboard for desktop operators, displaying operational metrics, broker management, booking inspections, and financial queues.
 - **Entry Points:**
@@ -154,7 +115,4 @@ d:\zool-go\
 
 ---
 
-*Verified from filesystem:*
-- Git check command: `Test-Path "d:\zool-go\.git", "d:\zool-go\zool-go-backend\.git", "d:\zool-go\zool-go-dashpoard\.git"` -> `False, False, False`
-- Frontend build output: `d:\zool-go\zool-go-dashpoard\dist\`
-- Backend build output: `d:\zool-go\zool-go-backend\dist\`
+*Verified from the working copies on 2026-11-21.*

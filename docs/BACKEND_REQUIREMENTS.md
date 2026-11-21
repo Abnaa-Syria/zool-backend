@@ -198,5 +198,5 @@ Constraints from PDF:
 
 - [`BACKEND_READINESS_AUDIT.md`](BACKEND_READINESS_AUDIT.md)  
 - [`BACKEND_DECISION_REGISTER.md`](BACKEND_DECISION_REGISTER.md) — **Locked for next vertical (Broker Journey PDF)** binds M1 scope; Stage 1/M0 is complete without broker domain code  
-- [`../zool-go-backend/STAGE1_PLAN.md`](../zool-go-backend/STAGE1_PLAN.md)  
+- [`archive/stage-plans/STAGE1_PLAN.md`](archive/stage-plans/STAGE1_PLAN.md)  
 

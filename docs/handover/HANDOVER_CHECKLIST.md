@@ -15,7 +15,7 @@ This checklist serves as the formal handover agreement between the outgoing Engi
 - [ ] **Environment Templates Received:** Inspected `.env.example` in `zool-go-backend` and verified understanding of all configuration variables.
 - [ ] **Secure Secret Transfer:** Acknowledged that production secrets (JWT secrets, HMAC keys, webhook secrets) must be transferred via an encrypted password manager (e.g., 1Password, Bitwarden), not in plain text or Markdown files.
 - [ ] **Database & Cache Topology Understood:** Verified MySQL 8.4 ports (`3308` dev, `3307` test) and Redis 7.4 port (`6380`). Confirmed port conflict checks before starting containers.
-- [ ] **Prisma Schemas & Migrations:** Verified Prisma 6 multi-file schema directory (`prisma/schema/`) and the 4 applied SQL migrations in `prisma/migrations/`.
+- [ ] **Prisma Schemas & Migrations:** Verified Prisma 6 multi-file schema directory (`prisma/schema/`) and the 5 applied SQL migrations in `prisma/schema/migrations/`.
 - [ ] **Database Seeder Understood:** Verified that `npm run db:seed` provisions the Super Admin (`+249900000001`), static permission catalog, and Stage 2 demo broker office (`ZG-BRK-1`).
 
 ### 1.3. Local Runtime and Build Verification

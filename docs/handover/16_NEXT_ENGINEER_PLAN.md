@@ -113,7 +113,7 @@ Open a second terminal and trace an authenticated admin workflow:
 ### Checklist C: Modifying Prisma Schemas and Migrations
 - [ ] Edit or create `.prisma` file under `prisma/schema/`.
 - [ ] Run `npx prisma validate` to confirm multi-file schema integrity.
-- [ ] Run `npm run prisma:migrate` to generate a timestamped SQL migration in `prisma/migrations/`.
+- [ ] Run `npm run prisma:migrate` to generate a timestamped SQL migration in `prisma/schema/migrations/`.
 - [ ] Run `npm run prisma:generate` to regenerate `@prisma/client`.
 - [ ] Update `tests/helpers/app.ts` `resetDatabase()` if a new table requires truncation before tests.
 - [ ] Run backend tests (`npm test`) to verify zero schema regressions.

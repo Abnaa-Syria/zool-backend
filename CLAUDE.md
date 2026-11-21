@@ -10,7 +10,7 @@ All backend commands run in `zool-go-backend`:
 cd zool-go-backend
 
 # Dependencies
-npm install
+npm ci
 
 # Build & Typecheck
 npm run build
@@ -26,7 +26,7 @@ npx prisma migrate dev --name <migration_name>
 # Testing
 npm test                  # Run full test suite (requires mysql-test 3307 + redis 6380 and a .env.test; tests refuse to run against a non-test DB)
 npx vitest run tests/architecture/   # Run offline architecture tests (no DB required)
-npx vitest run tests/auth/           # Run specific domain test
+npx vitest run tests/auth-rbac.test.ts  # Run one test file
 
 # Docker Services (run inside zool-go-backend/, where docker-compose.yml lives)
 docker compose up -d mysql redis            # Dev DB (3308) & shared Redis (6380, prefix zoolgo:)

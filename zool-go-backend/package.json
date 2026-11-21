@@ -24,10 +24,6 @@
     "db:reset": "prisma migrate reset --force",
     "db:test:prepare": "node scripts/test-db-prepare.mjs"
   },
-  "prisma": {
-    "schema": "prisma/schema",
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@prisma/client": "6.19.0",
     "bcryptjs": "^3.0.2",
