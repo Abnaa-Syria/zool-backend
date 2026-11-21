@@ -47,6 +47,25 @@ export function zonedDayRange(ymd: string, timeZone: string): { from: Date; to: 
   return { from, to };
 }
 
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Parses a `from`/`to` query bound. A date-only value (`YYYY-MM-DD`) is a calendar day in
+ * `timeZone`: `from` → start of that day, `to` → start of the next day (use with `lt`).
+ * Any other value is treated as an ISO instant.
+ */
+export function parseDateBound(
+  value: string,
+  bound: 'from' | 'to',
+  timeZone: string,
+): { date: Date; exclusive: boolean } {
+  if (DATE_ONLY.test(value)) {
+    const range = zonedDayRange(value, timeZone);
+    return bound === 'from' ? { date: range.from, exclusive: false } : { date: range.to, exclusive: true };
+  }
+  return { date: new Date(value), exclusive: false };
+}
+
 /** Inclusive-start / exclusive-end bounds for the calendar day containing `now` in `timeZone`. */
 export function officeDayBounds(now: Date, timeZone: string): { from: Date; to: Date } {
   return zonedDayRange(calendarDateInZone(now, timeZone), timeZone);

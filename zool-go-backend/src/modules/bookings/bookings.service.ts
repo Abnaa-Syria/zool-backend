@@ -9,6 +9,7 @@ import {
   WalletLedgerType,
 } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
+import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { ErrorCodes } from '../../shared/errors/error-codes';
@@ -20,7 +21,7 @@ import {
 import { resolveOfficePolicy } from '../../shared/utils/office-policy';
 import { normalizePhone } from '../../shared/utils/phone';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
-import { officeDayBounds } from '../../shared/utils/timezone';
+import { officeDayBounds, parseDateBound } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
 import { catalogRepository } from '../catalog/catalog.repository';
 import { catalogService } from '../catalog/catalog.service';
@@ -93,6 +94,20 @@ function assertLines(seatIds: string[], passengers: PassengerInput[]): void {
   if (passengers.length !== seatIds.length) {
     throw BookingErrors.passengerSeatMismatch();
   }
+}
+
+
+/** `from`/`to` list filters; date-only values are Sudan calendar days (API_CONVENTIONS §6). */
+function confirmedAtFilter(query: { from?: string; to?: string }): Prisma.DateTimeFilter {
+  const tz = env().PLATFORM_TIMEZONE;
+  const filter: Prisma.DateTimeFilter = {};
+  if (query.from) filter.gte = parseDateBound(query.from, 'from', tz).date;
+  if (query.to) {
+    const to = parseDateBound(query.to, 'to', tz);
+    if (to.exclusive) filter.lt = to.date;
+    else filter.lte = to.date;
+  }
+  return filter;
 }
 
 export class BookingsService {
@@ -398,15 +413,7 @@ export class BookingsService {
 
     const employeeFilter = canSeeWholeOffice(actor) ? query.employeeId : actor.employeeId;
 
-    const confirmedAt: Prisma.DateTimeFilter = {};
-    if (query.from) confirmedAt.gte = new Date(query.from);
-    if (query.to) {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(query.to)) {
-        confirmedAt.lt = new Date(new Date(`${query.to}T00:00:00.000Z`).getTime() + 86_400_000);
-      } else {
-        confirmedAt.lte = new Date(query.to);
-      }
-    }
+    const confirmedAt = confirmedAtFilter(query);
 
     const where: Prisma.BookingWhereInput = {
       officeId: actor.officeId,
@@ -441,15 +448,7 @@ export class BookingsService {
     q?: string;
   }) {
     const { page, pageSize, skip, take } = parsePagination(query);
-    const confirmedAt: Prisma.DateTimeFilter = {};
-    if (query.from) confirmedAt.gte = new Date(query.from);
-    if (query.to) {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(query.to)) {
-        confirmedAt.lt = new Date(new Date(`${query.to}T00:00:00.000Z`).getTime() + 86_400_000);
-      } else {
-        confirmedAt.lte = new Date(query.to);
-      }
-    }
+    const confirmedAt = confirmedAtFilter(query);
     const q = query.q?.trim();
     const where: Prisma.BookingWhereInput = {
       ...(query.officeId ? { officeId: query.officeId } : {}),

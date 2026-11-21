@@ -4,7 +4,9 @@ import {
   WalletLedgerType,
   type Prisma,
 } from '@prisma/client';
+import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
+import { parseDateBound } from '../../shared/utils/timezone';
 
 export interface BrokerActor {
   employeeId: string;
@@ -14,25 +16,13 @@ export interface BrokerActor {
 }
 
 function parseRange(query: { from?: string; to?: string }): { from: Date; to: Date } {
+  // Date-only bounds are Sudan calendar days (API_CONVENTIONS §6).
+  const tz = env().PLATFORM_TIMEZONE;
   const now = new Date();
-  const defaultFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  let from = query.from ? new Date(query.from) : defaultFrom;
-  let to: Date;
-  if (query.to) {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(query.to)) {
-      to = new Date(new Date(`${query.to}T00:00:00.000Z`).getTime() + 86_400_000);
-    } else {
-      to = new Date(query.to);
-    }
-  } else {
-    to = now;
-  }
-
-  if (query.from && /^\d{4}-\d{2}-\d{2}$/.test(query.from)) {
-    from = new Date(`${query.from}T00:00:00.000Z`);
-  }
-
+  const from = query.from
+    ? parseDateBound(query.from, 'from', tz).date
+    : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const to = query.to ? parseDateBound(query.to, 'to', tz).date : now;
   return { from, to };
 }
 

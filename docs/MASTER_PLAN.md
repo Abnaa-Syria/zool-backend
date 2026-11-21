@@ -45,7 +45,9 @@
 ## المرحلة 1 — عقد الـ API (1–2 أسبوع)
 1. جدول ربط **كل شاشة فيجما (54)** بـ endpoints (`docs/SCREEN_API_MAP.md`).
 2. `docs/API_CONVENTIONS.md`: المبالغ `*Minor` أعداد صحيحة، enums بأحرف كبيرة، تواريخ ISO‑UTC (العرض بتوقيت المكتب)، غلاف موحّد، ترقيم موحّد، `/api/v1` بدون breaking changes.
-3. توليد OpenAPI من Zod + اختبار عقد في CI.
+3. ✅ اختبار تطابق OpenAPI مع المسارات الفعلية في CI (`tests/architecture/openapi-parity.test.ts`) — الملف الحالي مطابق 100%.
+
+**حالة المرحلة 1 (2026-11-21):** ✅ `docs/SCREEN_API_MAP.md` · ✅ `docs/API_CONVENTIONS.md` · ✅ اختبار تطابق OpenAPI · ✅ إصلاح أيام البحث والتقارير لتوقيت السودان · ✅ توحيد ملفات قواعد الـ AI مع الكود.
 
 ## المرحلة 2 — توسيع نموذج البيانات (أسبوعان) — migrations **إضافية فقط**
 `Customer` (+ هوية/جلسات)، `Driver`، `Vehicle`، `Station`، `Route`/`RouteStop`، `TripAssignment`، `Notification`، `DeviceToken`، `PaymentIntent`، `BoardingScan`، `VehiclePosition`؛ `Booking.channel` (`BROKER`/`DIRECT`) بمحرك حجز واحد؛ ربط `Trip` بالمسار والحافلة بحقول اختيارية. Seed بمدن ومحطات سودانية.

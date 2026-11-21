@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { officeDayBounds, zonedDayRange } from '../../src/shared/utils/timezone';
+import { officeDayBounds, parseDateBound, zonedDayRange } from '../../src/shared/utils/timezone';
 
 describe('zonedDayRange (date-only filters use Sudan calendar days)', () => {
   it('maps a Khartoum date (UTC+2) to the right UTC window', () => {
@@ -17,5 +17,27 @@ describe('zonedDayRange (date-only filters use Sudan calendar days)', () => {
   it('officeDayBounds agrees with zonedDayRange', () => {
     const now = new Date('2026-11-22T10:00:00.000Z');
     expect(officeDayBounds(now, 'Africa/Khartoum')).toEqual(zonedDayRange('2026-11-22', 'Africa/Khartoum'));
+  });
+});
+
+describe('parseDateBound (list filters)', () => {
+  const tz = 'Africa/Khartoum';
+
+  it('date-only from = start of the Sudan day; to = start of the next day (exclusive)', () => {
+    expect(parseDateBound('2026-11-22', 'from', tz)).toEqual({
+      date: new Date('2026-11-21T22:00:00.000Z'),
+      exclusive: false,
+    });
+    expect(parseDateBound('2026-11-22', 'to', tz)).toEqual({
+      date: new Date('2026-11-22T22:00:00.000Z'),
+      exclusive: true,
+    });
+  });
+
+  it('ISO instants pass through unchanged and inclusive', () => {
+    expect(parseDateBound('2026-11-22T10:00:00.000Z', 'to', tz)).toEqual({
+      date: new Date('2026-11-22T10:00:00.000Z'),
+      exclusive: false,
+    });
   });
 });
