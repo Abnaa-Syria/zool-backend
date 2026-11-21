@@ -22,11 +22,14 @@ This document details the relational database architecture, entity relationships
   - `booking.prisma`: Bookings, passenger details, tickets, and dispatch attempts.
   - `commission.prisma`: Broker commission accruals, period settlements, and payouts.
 
-### Migration History (`prisma/migrations/`)
+### Migration History (`prisma/schema/migrations/` — the single canonical folder)
+> Until 2026-11-21 migrations were split across `prisma/migrations/` and `prisma/schema/migrations/`, and neither folder could build the full schema alone. They are now merged into `prisma/schema/migrations/` (the folder Prisma uses for a multi-file schema). CI verifies `migrate deploy` on a fresh DB and `migrate diff --exit-code` (no drift).
+
 1. `20261020143911_stage1_auth_rbac`: Core admin identities, custom roles, permissions, audit logging, and sessions.
-2. `20261020180000_ticket_dispatch_attempts`: Ticket dispatch attempts tracking (PDF downloads and attempts).
-3. `20261023210000_stage2_6_policy_locks`: Major-to-minor money unit conversions, timezone support, and policy lock columns.
-4. `20261023220000_admin_phone_change_otp`: Phone change OTP challenges and identity verification columns.
+2. `20261020163529_stage2_broker_vertical`: Broker offices, employees, wallets, ledger, carriers, trips, seats, holds, bookings, commissions.
+3. `20261020180000_ticket_dispatch_attempts`: Ticket dispatch attempts tracking (PDF downloads and attempts).
+4. `20261023210000_stage2_6_policy_locks`: Major-to-minor money unit conversions, timezone support, and policy lock columns.
+5. `20261023220000_admin_phone_change_otp`: Phone change OTP challenges and identity verification columns.
 
 ---
 

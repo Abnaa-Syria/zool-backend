@@ -64,7 +64,9 @@ From the comprehensive 222-action inventory documented in `docs/ADMIN_DASHBOARD_
 ## 4. Categorized Technical Gaps
 
 ### 4.1. Engineering Gaps (Approved Scope, Code Required)
-1. **Admin Phone Change Security Hardening:** Update `verifyPhoneChangeOtp` in `auth.service.ts` to invalidate active `RefreshSession` rows and bump `authzVersion` in Redis and MySQL.
+1. ~~**Admin Phone Change Security Hardening**~~ — **DONE 2026-11-21** (sessions revoked, `authzVersion` bumped, pending login OTPs expired; test updated).
+1a. ~~**Split migration folders**~~ — **DONE 2026-11-21**: merged into `prisma/schema/migrations/` (5 migrations); CI checks fresh deploy + no drift.
+1b. **Test DB safety** — **DONE 2026-11-21**: `.env.test.example` added; `tests/setup.ts` refuses to run when the DB name lacks `test` (previously, without `.env.test`, the suite would truncate the dev DB).
 2. **Frontend Authentication Shell:** Build a dedicated `/login` route with phone input and 6-digit OTP verification; persist JWT in memory and configure an Axios/Fetch interceptor.
 3. **Milestone C Backend APIs:**
    - `REQ-ADM-09`: Admin reporting summary across carriers and offices (`GET /admin/reports/summary`).
@@ -86,9 +88,9 @@ From the comprehensive 222-action inventory documented in `docs/ADMIN_DASHBOARD_
 2. **SMS Gateway:** Integration with Sudanese telecom providers (Zain, MTN, Sudani) for production OTP delivery.
 
 ### 4.5. Production Hardening
-1. **Source Control Initialization:** Initialize Git, configure `.gitignore` properly, establish remote repositories, and set up branch protection rules.
+1. **Source Control:** Repos exist (`QeemaTech/zool_BE`, `QeemaTech/zool_dashboard`). Remaining: branch protection rules on `main`.
 2. **Object Storage:** Migrate local receipt storage from `./uploads/receipts/` to an S3-compatible private object store (e.g., Cloudflare R2, MinIO, AWS S3).
-3. **CI/CD Pipeline:** Create GitHub Actions or GitLab CI pipelines for automated linting, type-checking, database migrations, and container builds.
+3. **CI/CD Pipeline:** CI added 2026-11-21 (`zool_BE/.github/workflows/backend-ci.yml`, `zool_dashboard/.github/workflows/ci.yml`). Remaining: CD / container builds.
 
 ---
 

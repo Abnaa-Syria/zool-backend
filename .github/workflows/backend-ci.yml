@@ -1,0 +1,73 @@
+name: backend-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: zool-go-backend
+
+    services:
+      mysql-test:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: zoolgo_test
+        ports: ['3307:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+      redis:
+        image: redis:7.4-alpine
+        ports: ['6380:6379']
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s --health-timeout=3s --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: zool-go-backend/package-lock.json
+
+      - run: npm ci
+      - run: cp .env.test.example .env.test && cp .env.example .env
+
+      - name: Prisma validate & generate
+        run: npx prisma validate && npx prisma generate
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3307/zoolgo_test
+
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
+
+      - name: Migrations build a fresh database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3307/zoolgo_test
+
+      - name: Migrations match the Prisma schema (no drift)
+        run: >-
+          npx prisma migrate diff
+          --from-migrations prisma/schema/migrations
+          --to-schema-datamodel prisma/schema
+          --shadow-database-url mysql://root:root@127.0.0.1:3307/zoolgo_shadow
+          --exit-code
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3307/zoolgo_test
+
+      - name: Tests
+        run: npm test

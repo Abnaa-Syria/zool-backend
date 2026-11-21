@@ -195,7 +195,8 @@ throw AppError.validation('Validation failed', validationErrors);
 - **Port Isolation**:
   - Test MySQL runs on port **3307** (`zoolgo_test` database).
   - Test Redis runs on port **6380** (`zoolgo_test:` prefix).
-  - Dev MySQL runs on port 3308, Dev Redis on 6379.
+  - Dev MySQL runs on port 3308. Dev and test share one Redis on 6380, isolated by key prefix (`zoolgo:` vs `zoolgo_test:`).
+  - Tests load `.env.test` (copy from `.env.test.example`); `tests/setup.ts` refuses to run if the DB name does not contain `test`.
 - **Database Reset**: Every integration test must reset and seed in `beforeEach()`:
   ```typescript
   import { resetDatabase } from '../helpers/reset-db';

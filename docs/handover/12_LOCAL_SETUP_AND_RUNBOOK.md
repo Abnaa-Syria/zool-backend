@@ -12,6 +12,33 @@ This runbook provides complete instructions for configuring, running, testing, a
 - **Docker:** Docker Desktop for Windows with WSL2 backend (required for MySQL 8.4 and Redis 7.4 containers)
 - **Memory & Ports:** At least 8 GB RAM available; free TCP ports `4000` (Backend API), `5173` (Frontend Dashboard), `3308` (MySQL Dev), `3307` (MySQL Test), and `6380` (Redis).
 
+### 1.1. Option B — Laragon (no Docker) — verified 2026-11-21
+
+Laragon ships MySQL 8.4 and Redis 5 (`C:\laragon\bin\redis`), which is enough for local dev and the full test suite (72/72 passing).
+
+1. Start MySQL from Laragon (default `127.0.0.1:3306`, user `root`, empty password). Start Redis from Laragon's menu (default port `6379`).
+2. Create the databases (HeidiSQL or CLI):
+   ```sql
+   CREATE DATABASE zoolgo      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE zoolgo_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+3. In `zool-go-backend/`: `cp .env.example .env` and `cp .env.test.example .env.test`, then set in **both**:
+   - `.env`: `DATABASE_URL=mysql://root@127.0.0.1:3306/zoolgo`
+   - `.env.test`: `DATABASE_URL=mysql://root@127.0.0.1:3306/zoolgo_test`
+   - both: `REDIS_URL=redis://127.0.0.1:6379` (dev/test stay isolated by `REDIS_KEY_PREFIX`).
+4. Bootstrap:
+   ```bash
+   npm ci
+   npx prisma generate
+   npx prisma migrate deploy   # dev DB
+   npm run db:seed             # super admin +249900000001, broker manager +249900000101
+   npm run db:test:prepare     # test DB (refuses if DB name lacks "test")
+   npm test                    # 72 tests
+   npm run dev                 # API on :4000
+   ```
+
+> `.env.test` must keep the test-only OTP values from `.env.test.example` (`OTP_RESEND_COOLDOWN_SECONDS=1`, high OTP rate limits); with production-like values most suites fail with `429`.
+
 ---
 
 ## 2. Environment Variables Configuration

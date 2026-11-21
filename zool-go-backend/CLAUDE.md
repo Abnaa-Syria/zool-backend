@@ -22,13 +22,14 @@ npm run prisma:migrate
 npx prisma migrate dev --name <migration_name>
 
 # Testing
-npm test                             # Run full test suite (requires Docker test containers on 3307/6380)
+npm test                             # Run full test suite (requires mysql-test 3307 + redis 6380 and a .env.test; tests refuse to run against a non-test DB)
 npx vitest run tests/architecture/   # Run offline architecture tests (no DB required)
 npx vitest run tests/auth/           # Run specific domain test
 
-# Docker Services (from repo root)
-docker compose up -d mysql-dev redis-dev     # Dev DB (3308) & Redis (6379)
-docker compose up -d mysql-test redis-test   # Test DB (3307) & Redis (6380)
+# Docker Services (run inside zool-go-backend/, where docker-compose.yml lives)
+docker compose up -d mysql redis            # Dev DB (3308) & shared Redis (6380, prefix zoolgo:)
+docker compose up -d mysql-test redis       # Test DB (3307) & shared Redis (6380, prefix zoolgo_test:)
+# First time: cp .env.example .env && cp .env.test.example .env.test
 ```
 
 ## Core Architecture Invariants

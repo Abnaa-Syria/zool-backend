@@ -239,6 +239,16 @@ Also:
 
 ---
 
+## D-BROKER-CHANNEL-01 — Broker client surfaces
+
+**Status:** **LOCKED (PO)** — 2026-11-21
+
+**Locked decision:** Broker offices get **both** a desktop **web panel** and a **mobile app** (Figma "Test Design" broker screens). Both are clients of the same `/api/v1/broker/*` API; there is no separate backend. The web panel adds thermal printing, staff management and reports; the mobile app adds push notifications (device tokens).
+
+**Sequencing (PO):** finish backend + admin dashboard + broker web panel + all mobile-app APIs (customer, driver, broker) first; mobile apps start only after the v1 API contract is frozen. See `docs/MASTER_PLAN.md`.
+
+---
+
 ## D-GPS-01 — Production GPS source and protocol
 
 **Status:** **OPEN** / deferred  
@@ -360,6 +370,7 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 | D-PAY-01 Customer Bankak | OPEN | No (other vertical) |
 | D-REV-01 Carrier settlement | OUT OF SCOPE | No |
 | D-GPS-01 GPS | OPEN | No |
+| D-BROKER-CHANNEL-01 Broker web + mobile | LOCKED (PO) | No |
 
 **Genuine remaining M1 design open items:** concrete production PSP adapter (webhook port is in place); future PO commercial numbers for §7.
 

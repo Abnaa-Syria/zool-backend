@@ -58,19 +58,13 @@ Implemented in `src/modules/auth/auth.service.ts` L446–674 and verified in `te
    - Requires authenticated session.
    - Input: `{ phone, code, challengeId }`.
    - Validates that the challenge belongs to the requesting admin (`challenge.adminUserId === admin.id`). Another admin cannot consume the challenge (`tests/admin-phone-change.test.ts` L166–190).
-   - Updates `challenge.status = CONSUMED`, expires older pending phone change challenges, and updates `AdminIdentity.valueNormalized` to the new phone.
-   - Logs an audit entry: `admin.phone_changed`.
+   - In one transaction: marks the challenge `CONSUMED`, expires other pending `ADMIN_PHONE_CHANGE` **and** `ADMIN_LOGIN` challenges, updates `AdminIdentity.valueNormalized`, revokes **all** refresh sessions (`revokeReason = phone_changed`), and increments `AdminUser.authzVersion`.
+   - After commit: writes the new version to Redis `authz:version:{adminId}` and clears the permission cache, so every existing access token is rejected immediately. The admin must sign in again with the new phone.
+   - Logs an audit entry: `admin.phone_changed` (`metadata.sessionsRevoked = true`).
 
-### 2.2. Open Security Gap (Technical Debt)
+### 2.2. Session Invalidation (resolved 2026-11-21)
 
-> [!WARNING]
-> **Phone Change Session Invalidation Gap:**  
-> An inspection of `src/modules/auth/auth.service.ts` L639–674 confirms:
-> 1. `verifyPhoneChangeOtp` does **NOT** revoke active refresh sessions (`RefreshSession`).
-> 2. `verifyPhoneChangeOtp` does **NOT** increment `AdminUser.authzVersion` or update the Redis `authz:version:{adminId}` key.
-> 3. `verifyPhoneChangeOtp` expires pending challenges for `ADMIN_PHONE_CHANGE`, but does **NOT** invalidate pending `LOGIN` challenges.
->
-> **Security Impact:** If an administrator's credentials were compromised, changing the phone number does not immediately kick out an attacker holding a valid access JWT or refresh cookie. This is flagged as a high-priority security gap in [14_SECURITY_AND_OPERATIONS.md](14_SECURITY_AND_OPERATIONS.md) and scheduled for resolution in [16_NEXT_ENGINEER_PLAN.md](16_NEXT_ENGINEER_PLAN.md).
+The former gap (phone change did not revoke sessions, bump `authzVersion`, or expire pending login OTPs) is closed. `tests/admin-phone-change.test.ts` asserts that the old access token and the old refresh cookie both return `401` after the change, and that login with the new phone succeeds.
 
 ---
 

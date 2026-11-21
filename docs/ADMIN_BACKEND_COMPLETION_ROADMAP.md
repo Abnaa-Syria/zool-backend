@@ -2,7 +2,7 @@
 
 Dependency-ordered backend work so the Admin Dashboard can integrate against **approved** contracts. Frontend integration is the **last** milestone. Do not implement this roadmap in the same change as the audit.
 
-**Status (2026-10-23):** Milestone A is implemented in `zool-go-backend`. Remaining milestones below are **not** started. Original scope text is retained.
+**Status (2026-11-21):** Milestones A **and B** are implemented in `zool-go-backend` (`tests/milestone-a-admin.test.ts`, `tests/milestone-b-admin.test.ts`). Milestone C (KPIs, admin reports summary, CSV export) is **not** started. Original scope text is retained. The overall project sequence now lives in `docs/MASTER_PLAN.md`.
 
 Authority: `docs/BACKEND_DECISION_REGISTER.md` → Stage 1 / 2 / 2.6 code → Broker Journey PDF.
 
