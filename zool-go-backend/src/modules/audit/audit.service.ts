@@ -1,3 +1,5 @@
+import { env } from '../../config/env';
+import { parseDateBound } from '../../shared/utils/timezone';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { auditRepository } from './audit.repository';
 import type { AuditWriteInput } from './audit.types';
@@ -61,14 +63,15 @@ export class AuditService {
       ...(query.resourceType ? { resourceType: query.resourceType } : {}),
       ...(query.resourceId ? { resourceId: query.resourceId } : {}),
       ...(query.requestId ? { requestId: query.requestId } : {}),
-      ...(query.from ? { from: new Date(query.from) } : {}),
-      ...(query.to ? { to: new Date(query.to) } : {}),
+      ...(query.from ? { from: parseDateBound(query.from, 'from', env().PLATFORM_TIMEZONE).date } : {}),
+      ...(query.to ? { to: parseDateBound(query.to, 'to', env().PLATFORM_TIMEZONE).date } : {}),
     });
 
     return {
       items: items.map((item) => ({
         id: item.id,
         actorAdminId: item.actorAdminId,
+        actor: item.actor,
         action: item.action,
         resourceType: item.resourceType,
         resourceId: item.resourceId,

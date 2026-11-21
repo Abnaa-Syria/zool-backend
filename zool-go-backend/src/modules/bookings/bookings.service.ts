@@ -1,3 +1,4 @@
+import { newBookingRef } from '../../shared/utils/references';
 import { CSV_MAX_ROWS, toCsv } from '../../shared/http/csv';
 import {
   BookingStatus,
@@ -136,6 +137,7 @@ export function adminBookingsWhere(query: AdminBookingFilters): Prisma.BookingWh
       ? {
           OR: [
             { id: { contains: q } },
+            { bookingRef: { contains: q } },
             { tickets: { some: { ticketNumber: { contains: q } } } },
             { passengers: { some: { phone: { contains: q } } } },
             { passengers: { some: { fullName: { contains: q } } } },
@@ -331,6 +333,7 @@ export class BookingsService {
               totalAmount,
               commissionAmount,
               confirmedAt: now,
+              bookingRef: newBookingRef(env().PLATFORM_TIMEZONE, now),
             },
             tx,
           );
@@ -638,7 +641,7 @@ export class BookingsService {
       async (tx) => {
         await walletsService.lock(wallet.id, tx);
 
-        const cancelled = await bookingsRepository.cancelBooking(booking.id, tx);
+        const cancelled = await bookingsRepository.cancelBooking(booking.id, tx, input.reason);
         if (cancelled === 0) {
           const again = await bookingsRepository.findByIdUnscoped(booking.id, tx);
           if (again?.status === BookingStatus.CANCELLED) {

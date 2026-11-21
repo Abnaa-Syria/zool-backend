@@ -14,6 +14,7 @@ export const bookingInclude = {
   trip: { include: { company: true } },
   employee: { select: { id: true, displayName: true } },
   office: { select: { id: true, code: true, name: true } },
+  customer: { select: { id: true, displayName: true, identities: { where: { type: 'PHONE', isPrimary: true }, select: { valueNormalized: true } } } },
   passengers: true,
   tickets: { include: { tripSeat: true } },
   commissionAccrual: true,
@@ -99,6 +100,7 @@ export class BookingsRepository {
       totalAmount: number;
       commissionAmount: number;
       confirmedAt: Date;
+      bookingRef: string;
     },
     tx: PrismaTx,
   ) {
@@ -136,10 +138,10 @@ export class BookingsRepository {
     await tx.seatHold.deleteMany({ where: { tripSeatId: { in: seatIds } } });
   }
 
-  async cancelBooking(bookingId: string, tx: PrismaTx): Promise<number> {
+  async cancelBooking(bookingId: string, tx: PrismaTx, reason?: string): Promise<number> {
     const result = await tx.booking.updateMany({
       where: { id: bookingId, status: BookingStatus.CONFIRMED },
-      data: { status: BookingStatus.CANCELLED, cancelledAt: new Date() },
+      data: { status: BookingStatus.CANCELLED, cancelledAt: new Date(), ...(reason ? { cancelReason: reason.slice(0, 500) } : {}) },
     });
     return result.count;
   }

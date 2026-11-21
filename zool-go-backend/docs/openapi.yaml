@@ -2047,6 +2047,15 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
+  /admin/settings/{key}:
+    delete:
+      tags: [Settings (admin)]
+      summary: Remove the stored override so the .env default applies again; audited as settings.reset (settings.manage)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: key, in: path, required: true, schema: { type: string, example: booking.seatHoldTtlSeconds } }]
+      responses:
+        '200': { description: Updated settings list, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
 
 components:
   securitySchemes:

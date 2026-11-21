@@ -49,6 +49,7 @@ export class AuditRepository {
     const [items, total] = await Promise.all([
       getPrisma().auditLog.findMany({
         where,
+        include: { actor: { select: { id: true, displayName: true } } },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: params.skip,
         take: params.take,

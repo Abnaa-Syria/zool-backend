@@ -14,15 +14,28 @@ const adminInclude = {
 } satisfies Prisma.AdminUserInclude;
 
 export class AdminsRepository {
-  list(params: { skip: number; take: number }) {
+  list(params: { skip: number; take: number; q?: string; status?: 'ACTIVE' | 'SUSPENDED' }) {
+    const where: Prisma.AdminUserWhereInput = {
+      ...(params.status ? { status: params.status } : {}),
+      ...(params.q
+        ? {
+            OR: [
+              { displayName: { contains: params.q } },
+              { employeeCode: { contains: params.q } },
+              { identities: { some: { valueNormalized: { contains: params.q } } } },
+            ],
+          }
+        : {}),
+    };
     return Promise.all([
       getPrisma().adminUser.findMany({
+        where,
         include: adminInclude,
         orderBy: { createdAt: 'desc' },
         skip: params.skip,
         take: params.take,
       }),
-      getPrisma().adminUser.count(),
+      getPrisma().adminUser.count({ where }),
     ]);
   }
 

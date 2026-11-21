@@ -22,6 +22,9 @@ export const setAdminRolesSchema = z.object({
 export const listAdminsQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().max(100).optional(),
+  /** Name, employee code or phone */
+  q: z.string().trim().min(1).max(120).optional(),
+  status: z.enum(['ACTIVE', 'SUSPENDED']).optional(),
 });
 
 export const updateAdminProfileSchema = z

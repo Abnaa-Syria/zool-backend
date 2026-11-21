@@ -81,6 +81,8 @@ model Booking {
   changeCount      Int                  @default(0) @map("change_count")
   confirmedAt      DateTime?            @map("confirmed_at")
   cancelledAt      DateTime?            @map("cancelled_at")
+  /// Why it was cancelled (admin reason / trip cancellation); null for office self-cancel
+  cancelReason     String?              @map("cancel_reason") @db.VarChar(500)
   createdAt        DateTime             @default(now()) @map("created_at")
   updatedAt        DateTime             @default(now()) @updatedAt @map("updated_at")
 

@@ -52,6 +52,28 @@ export class SettingsService {
     return value;
   }
 
+  /** Remove the stored override so the .env-derived default applies again. */
+  async reset(input: { key: string; actorAdminId: string; requestId?: string }) {
+    if (!settingDefinitions.has(input.key)) throw AppError.notFound('Unknown setting');
+    const before = runtimeSettings.get(input.key as SystemSettingKey);
+    await getPrisma().$transaction(async (tx) => {
+      await tx.systemSetting.deleteMany({ where: { key: input.key } });
+      await auditService.record(
+        {
+          actorAdminId: input.actorAdminId,
+          action: 'settings.reset',
+          resourceType: 'system_settings',
+          resourceId: input.key,
+          requestId: input.requestId,
+          metadata: { key: input.key, before },
+        },
+        tx,
+      );
+    });
+    await runtimeSettings.publishChange();
+    return this.list();
+  }
+
   async update(input: { values: Record<string, unknown>; actorAdminId: string; requestId?: string }) {
     const entries = Object.entries(input.values).map(([key, value]) => [key, this.validate(key, value)] as const);
     if (entries.length === 0) throw AppError.validation('No settings provided', { field: 'values' });

@@ -186,6 +186,15 @@ export class RolesService {
     }
 
     const members = await rolesRepository.findAdminIdsWithRole(input.roleId);
+    if (members.length > 0) {
+      // Deleting would silently strip the role from admins (possibly leaving them with none).
+      throw new AppError({
+        message: 'Role is still assigned; reassign its members first',
+        statusCode: 409,
+        code: ErrorCodes.ROLE_IN_USE,
+        details: { memberCount: members.length },
+      });
+    }
     await rolesRepository.delete(input.roleId);
     await bumpAdmins(members.map((m) => m.adminUserId));
 

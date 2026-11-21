@@ -40,6 +40,7 @@ export class CarriersRepository {
     const [items, total] = await Promise.all([
       getPrisma().transportCompany.findMany({
         where,
+        include: { _count: { select: { brokerAssignments: true } } },
         orderBy: { createdAt: 'desc' },
         skip: params.skip,
         take: params.take,

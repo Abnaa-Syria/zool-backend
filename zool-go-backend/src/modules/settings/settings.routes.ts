@@ -15,6 +15,12 @@ export const adminSettingsRoutes = Router();
 
 adminSettingsRoutes.use(authenticate);
 adminSettingsRoutes.get('/', requirePermission('settings.view'), asyncHandler((req, res) => settingsController.list(req, res)));
+adminSettingsRoutes.delete(
+  '/:key',
+  requirePermission('settings.manage'),
+  validate({ params: z.object({ key: z.string().min(1).max(96) }) }),
+  asyncHandler((req, res) => settingsController.reset(req, res)),
+);
 adminSettingsRoutes.patch(
   '/',
   requirePermission('settings.manage'),
