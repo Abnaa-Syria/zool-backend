@@ -186,6 +186,8 @@ Also:
 
 **Note:** Does **not** block M1 broker-first. Broker checkout uses wallet debit, not Bankak.
 
+**2026-11-21 (PO):** the payment provider is chosen later. Until then the customer checkout is built **provider-agnostic**: `PaymentIntent` + the existing `PaymentProvider` port with the `mock` adapter, webhook confirmation, and refunds to the original method. A real adapter (Bankak / SyberPay / …) plugs in without API changes. The provider choice itself stays OPEN.
+
 **Blocks M0?** No.  
 **Blocks M1 (broker-first)?** No.
 
@@ -251,7 +253,10 @@ Also:
 
 ## D-GPS-01 — Production GPS source and protocol
 
-**Status:** **OPEN** / deferred  
+**Status:** **LOCKED (PO)** — 2026-11-21
+
+**Locked decision:** v1 GPS comes from the **driver mobile app** (phone GPS). While a trip is `IN_PROGRESS` the app posts position batches over HTTPS to a device-agnostic ingestion endpoint (`POST /driver/trips/:id/positions`); positions are stored as `VehiclePosition` and fanned out to the admin map and the customer "track trip" screen. The ingestion contract does not assume a phone, so hardware trackers can be added later without API changes.
+
 **Blocks M1 (booking/wallet)?** No.
 
 ---
@@ -331,7 +336,17 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 
 ## D-SUS-01 — Account suspension policies
 
-**Status:** **OPEN** / deferred  
+**Status:** **LOCKED (PO delegated to engineering)** — 2026-11-21
+
+**Carrier (transport company) suspension:**
+1. **Immediately:** the carrier's trips disappear from broker and customer search; no new holds, bookings or trips; active seat holds are released. Admins still see everything.
+2. **Existing confirmed bookings on future trips are NOT auto-cancelled.** Suspension is often temporary or administrative, and mass auto-cancellation moves money irreversibly. Instead they are flagged: admin gets an "affected bookings" view per suspended carrier.
+3. **Admin decides per trip:** "cancel trip" cancels every booking on it with a **100% refund and no cancellation fee** (the passenger is not at fault — overrides the D-REF-01 fee tiers): broker bookings are refunded to the office wallet with commission clawed back; direct-customer bookings are refunded to the original payment method. Passengers and offices are notified.
+4. Trips already departed / in progress continue normally.
+5. Reactivating the carrier restores search visibility. Every step is audited.
+
+**Broker office suspension:** staff cannot sign in or book; wallet top-ups and debits are frozen; already-confirmed bookings stay valid (travellers did nothing wrong) and can still be cancelled/refunded by an admin.
+
 **Blocks M0 / M1?** No.
 
 ---
@@ -367,10 +382,23 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 | D-ADMIN-BOOK-01 Admin bookings | LOCKED | No |
 | D-SET-01 Settlement record | LOCKED | No |
 | D-ADMIN-TOPUP-01 Evidence fallback | LOCKED | No |
-| D-PAY-01 Customer Bankak | OPEN | No (other vertical) |
+| D-PAY-01 Customer Bankak | OPEN (provider); mechanism provider-agnostic | No (other vertical) |
 | D-REV-01 Carrier settlement | OUT OF SCOPE | No |
-| D-GPS-01 GPS | OPEN | No |
+| D-GPS-01 GPS | LOCKED (PO) — driver phone | No |
+| D-SUS-01 Suspension | LOCKED (delegated) | No |
+| D-SET-02 Runtime settings | LOCKED (PO) — hybrid DB + .env | No |
 | D-BROKER-CHANNEL-01 Broker web + mobile | LOCKED (PO) | No |
+
+---
+
+## D-SET-02 — Runtime settings: database vs `.env`
+
+**Status:** **LOCKED (PO)** — 2026-11-21
+
+**Locked decision (hybrid):**
+- **`.env` keeps** infrastructure and secrets: DB/Redis URLs, JWT/OTP/webhook secrets, provider credentials, ports, CORS, cookie flags. Never editable from the UI.
+- **Database (`SystemSetting`) holds** business/operational settings editable from the admin dashboard: seat-hold TTL, minimum top-up, low-balance threshold, default exposure ceiling, settlement period default, cancellation windows, notification toggles, maintenance mode.
+- On first boot each DB setting is seeded from its `.env` value (the `.env` value is the default/fallback). Reads are cached in Redis and invalidated on change. Changes require `settings.manage` and are written to the audit log with before/after values.
 
 **Genuine remaining M1 design open items:** concrete production PSP adapter (webhook port is in place); future PO commercial numbers for §7.
 
