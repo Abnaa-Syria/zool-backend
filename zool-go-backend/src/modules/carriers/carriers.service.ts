@@ -1,4 +1,5 @@
-import { Prisma, type TransportCompany, type TransportCompanyStatus } from '@prisma/client';
+import { Prisma, TransportCompanyStatus, type TransportCompany } from '@prisma/client';
+import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { auditService } from '../audit/audit.service';
@@ -25,6 +26,12 @@ function toDetailDto(company: TransportCompany & { _count: { brokerAssignments: 
     key: company.key,
     name: company.name,
     status: company.status,
+    shortName: company.shortName,
+    legalName: company.legalName,
+    logoUrl: company.logoUrl,
+    rating: { average: company.ratingAvgX100 / 100, count: company.ratingCount },
+    cashEnabled: company.cashEnabled,
+    suspendedAt: company.suspendedAt?.toISOString() ?? null,
     assignmentCount: company._count.brokerAssignments,
     createdAt: company.createdAt.toISOString(),
   };
@@ -87,38 +94,89 @@ export class CarriersService {
     companyId: string;
     name?: string;
     status?: TransportCompanyStatus;
+    shortName?: string | null;
+    legalName?: string | null;
+    logoUrl?: string | null;
+    cashEnabled?: boolean;
     actorAdminId: string;
     requestId?: string;
   }) {
     const existing = await carriersRepository.findById(input.companyId);
     if (!existing) throw AppError.notFound('Transport company not found');
 
-    const nextName = input.name !== undefined ? input.name : existing.name;
     const nextStatus = input.status !== undefined ? input.status : existing.status;
-    const nameChanged = nextName !== existing.name;
     const statusChanged = nextStatus !== existing.status;
+    const suspending = statusChanged && nextStatus === TransportCompanyStatus.SUSPENDED;
+    const profile = {
+      ...(input.name !== undefined && input.name !== existing.name ? { name: input.name } : {}),
+      ...(input.shortName !== undefined ? { shortName: input.shortName } : {}),
+      ...(input.legalName !== undefined ? { legalName: input.legalName } : {}),
+      ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
+      ...(input.cashEnabled !== undefined ? { cashEnabled: input.cashEnabled } : {}),
+    };
 
-    if (!nameChanged && !statusChanged) {
+    if (!statusChanged && Object.keys(profile).length === 0) {
       return toDetailDto(existing);
     }
 
-    const company = await carriersRepository.update(input.companyId, {
-      ...(nameChanged ? { name: nextName } : {}),
-      ...(statusChanged ? { status: nextStatus } : {}),
-    });
-
-    await auditService.record({
-      actorAdminId: input.actorAdminId,
-      action: statusChanged ? 'carrier.status_changed' : 'carrier.updated',
-      resourceType: 'transport_company',
-      resourceId: company.id,
-      requestId: input.requestId,
-      metadata: {
-        before: { name: existing.name, status: existing.status },
-        after: { name: company.name, status: company.status },
-      },
+    // D-SUS-01: suspension stops sales at once (search/holds/booking filter on ACTIVE carriers)
+    // and frees every held seat. Confirmed bookings are NOT cancelled automatically: admins review
+    // GET /carriers/:id/affected-trips and cancel trips with a full refund.
+    const company = await getPrisma().$transaction(async (tx) => {
+      const updated = await carriersRepository.update(
+        input.companyId,
+        {
+          ...profile,
+          ...(statusChanged ? { status: nextStatus, suspendedAt: suspending ? new Date() : null } : {}),
+        },
+        tx,
+      );
+      const releasedHolds = suspending ? await carriersRepository.releaseFutureHolds(input.companyId, tx) : 0;
+      await auditService.record(
+        {
+          actorAdminId: input.actorAdminId,
+          action: statusChanged ? 'carrier.status_changed' : 'carrier.updated',
+          resourceType: 'transport_company',
+          resourceId: updated.id,
+          requestId: input.requestId,
+          metadata: {
+            before: { name: existing.name, status: existing.status },
+            after: { name: updated.name, status: updated.status },
+            fields: Object.keys(profile),
+            ...(suspending ? { releasedHolds } : {}),
+          },
+        },
+        tx,
+      );
+      return updated;
     });
     return toDetailDto(company);
+  }
+
+  /** D-SUS-01 review list: future trips of the carrier that still carry confirmed bookings. */
+  async listAffectedTrips(companyId: string, query: { page?: number; pageSize?: number }) {
+    const existing = await carriersRepository.findById(companyId);
+    if (!existing) throw AppError.notFound('Transport company not found');
+    const { page, pageSize, skip, take } = parsePagination(query);
+    const { items, total } = await carriersRepository.listAffectedTrips(companyId, { skip, take });
+    return {
+      items: items.map((t) => ({
+        tripId: t.id,
+        tripNumber: t.tripNumber,
+        origin: t.origin,
+        destination: t.destination,
+        departureAt: t.departureAt.toISOString(),
+        status: t.status,
+        confirmedBookings: t.bookings.length,
+        ticketCount: t.bookings.reduce((n, b) => n + b._count.tickets, 0),
+        totalAmountMinor: t.bookings.reduce((n, b) => n + b.totalAmount, 0),
+        byChannel: {
+          BROKER: t.bookings.filter((b) => b.channel === 'BROKER').length,
+          DIRECT: t.bookings.filter((b) => b.channel === 'DIRECT').length,
+        },
+      })),
+      meta: paginationMeta(page, pageSize, total),
+    };
   }
 
   /** Broker view: only companies assigned to the office, with commission percent. */

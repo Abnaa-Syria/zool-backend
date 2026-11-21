@@ -52,6 +52,10 @@ export class CarriersController {
       companyId: req.params.companyId!,
       name: req.body.name as string | undefined,
       status: req.body.status as TransportCompanyStatus | undefined,
+      shortName: req.body.shortName as string | null | undefined,
+      legalName: req.body.legalName as string | null | undefined,
+      logoUrl: req.body.logoUrl as string | null | undefined,
+      cashEnabled: req.body.cashEnabled as boolean | undefined,
       actorAdminId: req.auth!.adminId,
       requestId: req.requestId,
     });
@@ -59,6 +63,19 @@ export class CarriersController {
       statusCode: 200,
       message: 'Carrier updated successfully',
       data: carrier,
+      requestId: req.requestId,
+    });
+  }
+
+  async affectedTrips(req: Request, res: Response): Promise<Response> {
+    const result = await carriersService.listAffectedTrips(
+      req.params.companyId!,
+      req.query as { page?: number; pageSize?: number },
+    );
+    return successResponse(res, {
+      message: 'Affected trips retrieved',
+      data: result.items,
+      meta: result.meta,
       requestId: req.requestId,
     });
   }

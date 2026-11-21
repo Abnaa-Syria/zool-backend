@@ -63,6 +63,8 @@ export const patchAssignmentSchema = z
   .strict()
   .refine((v) => v.vehicleId !== undefined || v.driverId !== undefined, { message: 'vehicleId or driverId is required' });
 
+export const cancelTripSchema = z.object({ reason: z.string().trim().min(3).max(500) }).strict();
+
 export type CreateRouteInput = z.infer<typeof createRouteSchema>;
 export type PatchRouteInput = z.infer<typeof patchRouteSchema>;
 export type ScheduleTripsInput = z.infer<typeof scheduleTripsSchema>;

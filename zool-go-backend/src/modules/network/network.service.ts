@@ -7,6 +7,8 @@ import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { seatLayoutSchema } from '../../shared/utils/seat-layout';
 import { calendarDateInZone } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
+import { bookingsService } from '../bookings';
+import { notificationsService } from '../notifications';
 import { networkRepository, type RouteRow, type TripRow } from './network.repository';
 import type { CreateRouteInput, PatchAssignmentInput, PatchRouteInput, ScheduleTripsInput } from './network.validation';
 
@@ -289,6 +291,72 @@ export class NetworkService {
 
     const trips = await Promise.all(tripIds.map((id) => networkRepository.findTripById(id)));
     return trips.map((t) => toScheduledTripDto(t!));
+  }
+
+  /**
+   * D-SUS-01: cancel a trip that has not departed. The trip is marked CANCELLED first (no new
+   * sales), holds are released, then every confirmed booking is refunded in full with no fee
+   * through the existing idempotent cancellation path. Safe to re-run: already-refunded
+   * bookings are skipped, so a partial failure is completed by calling this again.
+   */
+  async cancelTrip(input: { tripId: string; reason: string } & Actor) {
+    const trip = await networkRepository.findTripById(input.tripId);
+    if (!trip) throw AppError.notFound('Trip not found');
+    if (trip.status === TripStatus.IN_PROGRESS || trip.status === TripStatus.COMPLETED) {
+      throw conflict(ErrorCodes.TRIP_NOT_CANCELLABLE, 'Departed trips cannot be cancelled', { status: trip.status });
+    }
+
+    if (trip.status !== TripStatus.CANCELLED) {
+      await getPrisma().$transaction(async (tx) => {
+        await networkRepository.updateTrip(trip.id, { status: TripStatus.CANCELLED, cancelledAt: new Date(), isActive: false }, tx);
+        await networkRepository.releaseTripHolds(trip.id, tx);
+        await auditService.record(
+          { actorAdminId: input.actorAdminId, action: 'trip.cancelled', resourceType: 'trip', resourceId: trip.id, requestId: input.requestId, metadata: { reason: input.reason } },
+          tx,
+        );
+      });
+    }
+
+    const bookings = await networkRepository.confirmedBookings(trip.id);
+    const refunded: Array<{ bookingId: string; refundedAmountMinor: number }> = [];
+    const failed: Array<{ bookingId: string; code: string; message: string }> = [];
+    const officesNotified = new Set<string>();
+
+    for (const b of bookings) {
+      try {
+        const result = await bookingsService.cancelByAdmin({
+          bookingId: b.id,
+          reason: `trip_cancelled: ${input.reason}`,
+          actorAdminId: input.actorAdminId,
+          requestId: input.requestId,
+        });
+        refunded.push({ bookingId: b.id, refundedAmountMinor: result.refundedAmountMinor });
+        if (b.officeId && !officesNotified.has(b.officeId)) officesNotified.add(b.officeId);
+      } catch (error) {
+        failed.push({
+          bookingId: b.id,
+          code: error instanceof AppError ? error.code : 'INTERNAL_SERVER_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    for (const officeId of officesNotified) {
+      const managers = await notificationsService.officeManagers(officeId);
+      await notificationsService.notify(managers, {
+        type: 'TRIP_CANCELLED',
+        title: 'تم إلغاء رحلة',
+        body: `أُلغيت الرحلة ${trip.tripNumber ?? `${trip.origin} - ${trip.destination}`} واسترُدّ المبلغ كاملًا إلى المحفظة.`,
+        data: { tripId: trip.id },
+      });
+    }
+
+    return {
+      trip: await this.getTrip(trip.id),
+      refundedBookings: refunded.length,
+      refundedAmountMinor: refunded.reduce((n, r) => n + r.refundedAmountMinor, 0),
+      failed,
+    };
   }
 
   async getTrip(id: string) {

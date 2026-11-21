@@ -1,4 +1,4 @@
-import { TripSeatStatus, TripStatus, type Prisma } from '@prisma/client';
+import { BookingStatus, TripSeatStatus, TripStatus, type Prisma } from '@prisma/client';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 
 function client(tx?: PrismaTx) {
@@ -122,6 +122,22 @@ export class NetworkRepository {
   ) {
     await tx.tripSeat.deleteMany({ where: { tripId } });
     await tx.tripSeat.createMany({ data: seats.map((s) => ({ tripId, ...s })) });
+  }
+
+  async releaseTripHolds(tripId: string, tx: PrismaTx) {
+    const holds = await tx.seatHold.findMany({ where: { tripSeat: { tripId } }, select: { id: true, tripSeatId: true } });
+    if (holds.length === 0) return 0;
+    await tx.seatHold.deleteMany({ where: { id: { in: holds.map((h) => h.id) } } });
+    await tx.tripSeat.updateMany({ where: { id: { in: holds.map((h) => h.tripSeatId) }, status: TripSeatStatus.HELD }, data: { status: TripSeatStatus.FREE } });
+    return holds.length;
+  }
+
+  confirmedBookings(tripId: string) {
+    return getPrisma().booking.findMany({
+      where: { tripId, status: BookingStatus.CONFIRMED },
+      select: { id: true, officeId: true, channel: true },
+      orderBy: { createdAt: 'asc' },
+    });
   }
 
   updateTrip(id: string, data: Prisma.TripUncheckedUpdateInput, tx: PrismaTx) {

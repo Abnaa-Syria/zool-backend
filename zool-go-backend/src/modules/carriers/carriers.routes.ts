@@ -6,6 +6,7 @@ import { requirePermission } from '../../shared/middleware/require-permission';
 import { validate } from '../../shared/middleware/validate';
 import { carriersController } from './carriers.controller';
 import {
+  affectedTripsQuerySchema,
   companyIdParamsSchema,
   createCarrierSchema,
   listCarriersQuerySchema,
@@ -36,6 +37,13 @@ carriersRoutes.get(
   requirePermission('carriers.view'),
   validate({ params: companyIdParamsSchema }),
   asyncHandler((req, res) => carriersController.get(req, res)),
+);
+
+carriersRoutes.get(
+  '/:companyId/affected-trips',
+  requirePermission('carriers.view'),
+  validate({ params: companyIdParamsSchema, query: affectedTripsQuerySchema }),
+  asyncHandler((req, res) => carriersController.affectedTrips(req, res)),
 );
 
 carriersRoutes.patch(

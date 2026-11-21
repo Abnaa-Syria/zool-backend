@@ -8,6 +8,7 @@ import { zonedDayRange } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
 import { CatalogErrors } from './catalog.errors';
 import {
+  BOOKABLE_TRIP_STATUSES,
   catalogRepository,
   type TripWithCompany,
 } from './catalog.repository';
@@ -263,6 +264,7 @@ export class CatalogService {
 
     const where: Prisma.TripWhereInput = {
       isActive: true,
+      status: { in: BOOKABLE_TRIP_STATUSES },
       departureAt,
       company: {
         status: 'ACTIVE',

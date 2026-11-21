@@ -29,6 +29,11 @@ export class NetworkController {
     return successResponse(res, { statusCode: 201, message: 'Trips scheduled', data: trips, requestId: req.requestId });
   }
 
+  async cancelTrip(req: Request, res: Response): Promise<Response> {
+    const result = await networkService.cancelTrip({ tripId: req.params.id!, reason: req.body.reason as string, ...actor(req) });
+    return successResponse(res, { message: 'Trip cancelled', data: result, requestId: req.requestId });
+  }
+
   async getTrip(req: Request, res: Response): Promise<Response> {
     return successResponse(res, { message: 'Trip retrieved', data: await networkService.getTrip(req.params.id!), requestId: req.requestId });
   }

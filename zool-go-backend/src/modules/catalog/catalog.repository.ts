@@ -2,6 +2,7 @@ import {
   Prisma,
   TransportCompanyStatus,
   TripSeatStatus,
+  TripStatus,
 } from '@prisma/client';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 
@@ -14,6 +15,9 @@ export const tripWithCompany = {
 } satisfies Prisma.TripInclude;
 
 export type TripWithCompany = Prisma.TripGetPayload<{ include: typeof tripWithCompany }>;
+
+/** Trips that can still be searched, held and booked (D-SUS-01: cancelled trips never). */
+export const BOOKABLE_TRIP_STATUSES: TripStatus[] = [TripStatus.SCHEDULED, TripStatus.BOARDING];
 
 export class CatalogRepository {
   findCompanyById(id: string) {
@@ -149,6 +153,7 @@ export class CatalogRepository {
     return client(tx).trip.findFirst({
       where: {
         id: tripId,
+        status: { in: BOOKABLE_TRIP_STATUSES },
         company: {
           status: TransportCompanyStatus.ACTIVE,
           brokerAssignments: { some: { officeId } },

@@ -943,7 +943,7 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Carriers (admin)]
-      summary: Update name and/or status (carriers.manage). Status is administrative only; no booking/trip/hold side effects.
+      summary: Update carrier profile and/or status (carriers.manage). D-SUS-01 - SUSPENDED stops sales immediately and releases held seats; confirmed bookings are kept for admin review (affected-trips).
       security: [{ bearerAuth: [] }]
       parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
       requestBody:
@@ -956,6 +956,10 @@ paths:
               properties:
                 name: { type: string }
                 status: { type: string, enum: [ACTIVE, SUSPENDED] }
+                shortName: { type: string, nullable: true }
+                legalName: { type: string, nullable: true }
+                logoUrl: { type: string, nullable: true }
+                cashEnabled: { type: boolean, description: D-CASH-01 per-carrier switch }
       responses:
         '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
@@ -1778,6 +1782,38 @@ paths:
         '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: VEHICLE_BUSY, DRIVER_BUSY, ASSIGNMENT_MISMATCH or TRIP_SEATS_TAKEN }
+  /carriers/{companyId}/affected-trips:
+    get:
+      tags: [Carriers (admin)]
+      summary: D-SUS-01 review - future, not-cancelled trips of the carrier that still carry confirmed bookings (carriers.view)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: companyId, in: path, required: true, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/trips/{id}/cancel:
+    post:
+      tags: [Network (admin)]
+      summary: D-SUS-01 cancel a trip that has not departed - stops sales, releases holds and refunds every confirmed booking in full with no fee; idempotent (catalog.manage + bookings.cancel)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 3 }
+      responses:
+        '200': { description: 'Trip cancelled; data = { trip, refundedBookings, refundedAmountMinor, failed[] }', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: TRIP_NOT_CANCELLABLE (already departed) }
 
 components:
   securitySchemes:

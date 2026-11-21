@@ -5,6 +5,7 @@ import { requirePermission } from '../../shared/middleware/require-permission';
 import { validate } from '../../shared/middleware/validate';
 import { networkController } from './network.controller';
 import {
+  cancelTripSchema,
   createRouteSchema,
   idParamsSchema,
   listRoutesQuerySchema,
@@ -25,4 +26,5 @@ adminNetworkRoutes.patch('/routes/:id', requirePermission('catalog.manage'), val
 
 adminNetworkRoutes.post('/trips/schedule', requirePermission('catalog.manage'), validate({ body: scheduleTripsSchema }), asyncHandler((req, res) => networkController.scheduleTrips(req, res)));
 adminNetworkRoutes.get('/trips/:id', requirePermission('catalog.view'), validate({ params: idParamsSchema }), asyncHandler((req, res) => networkController.getTrip(req, res)));
+adminNetworkRoutes.post('/trips/:id/cancel', requirePermission('catalog.manage'), requirePermission('bookings.cancel'), validate({ params: idParamsSchema, body: cancelTripSchema }), asyncHandler((req, res) => networkController.cancelTrip(req, res)));
 adminNetworkRoutes.patch('/trips/:id/assignment', requirePermission('catalog.manage'), validate({ params: idParamsSchema, body: patchAssignmentSchema }), asyncHandler((req, res) => networkController.updateAssignment(req, res)));

@@ -1,5 +1,5 @@
-import { TransportCompanyStatus, type Prisma } from '@prisma/client';
-import { getPrisma } from '../../infrastructure/database/prisma';
+import { BookingStatus, TransportCompanyStatus, TripSeatStatus, TripStatus, type Prisma } from '@prisma/client';
+import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 
 export class CarriersRepository {
   findByKey(key: string) {
@@ -17,8 +17,8 @@ export class CarriersRepository {
     return getPrisma().transportCompany.create({ data });
   }
 
-  update(id: string, data: { name?: string; status?: TransportCompanyStatus }) {
-    return getPrisma().transportCompany.update({
+  update(id: string, data: Prisma.TransportCompanyUpdateInput, tx?: PrismaTx) {
+    return (tx ?? getPrisma()).transportCompany.update({
       where: { id },
       data,
       include: { _count: { select: { brokerAssignments: true } } },
@@ -55,6 +55,53 @@ export class CarriersRepository {
       include: { company: true },
       orderBy: { company: { name: 'asc' } },
     });
+  }
+
+  /** D-SUS-01: free every seat held on the carrier's not-yet-departed trips. Returns released count. */
+  async releaseFutureHolds(companyId: string, tx: PrismaTx): Promise<number> {
+    const holds = await tx.seatHold.findMany({
+      where: { tripSeat: { trip: { companyId, departureAt: { gt: new Date() } } } },
+      select: { id: true, tripSeatId: true },
+    });
+    if (holds.length === 0) return 0;
+    await tx.seatHold.deleteMany({ where: { id: { in: holds.map((h) => h.id) } } });
+    await tx.tripSeat.updateMany({
+      where: { id: { in: holds.map((h) => h.tripSeatId) }, status: TripSeatStatus.HELD },
+      data: { status: TripSeatStatus.FREE },
+    });
+    return holds.length;
+  }
+
+  /** Not-yet-departed, not-cancelled trips of the carrier that still carry confirmed bookings. */
+  async listAffectedTrips(companyId: string, params: { skip: number; take: number }) {
+    const where: Prisma.TripWhereInput = {
+      companyId,
+      departureAt: { gt: new Date() },
+      status: { in: [TripStatus.SCHEDULED, TripStatus.BOARDING] },
+      bookings: { some: { status: BookingStatus.CONFIRMED } },
+    };
+    const [items, total] = await Promise.all([
+      getPrisma().trip.findMany({
+        where,
+        orderBy: { departureAt: 'asc' },
+        skip: params.skip,
+        take: params.take,
+        select: {
+          id: true,
+          tripNumber: true,
+          origin: true,
+          destination: true,
+          departureAt: true,
+          status: true,
+          bookings: {
+            where: { status: BookingStatus.CONFIRMED },
+            select: { id: true, channel: true, totalAmount: true, _count: { select: { tickets: true } } },
+          },
+        },
+      }),
+      getPrisma().trip.count({ where }),
+    ]);
+    return { items, total };
   }
 }
 
