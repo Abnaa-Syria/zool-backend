@@ -19,7 +19,9 @@ export function toBookingDto(booking: BookingRow) {
     id: booking.id,
     status: booking.status,
     officeId: booking.officeId,
-    employee: { id: booking.employee.id, displayName: booking.employee.displayName },
+    employee: booking.employee
+      ? { id: booking.employee.id, displayName: booking.employee.displayName }
+      : null,
     trip: {
       id: booking.trip.id,
       origin: booking.trip.origin,
@@ -34,7 +36,7 @@ export function toBookingDto(booking: BookingRow) {
     totalAmountMinor: booking.totalAmount,
     commissionAmountMinor: booking.commissionAmount,
     commissionStatus: booking.commissionAccrual?.status ?? null,
-    confirmedAt: booking.confirmedAt.toISOString(),
+    confirmedAt: booking.confirmedAt?.toISOString() ?? null,
     cancelledAt: booking.cancelledAt?.toISOString() ?? null,
     createdAt: booking.createdAt.toISOString(),
     passengers: booking.passengers.map((p) => ({

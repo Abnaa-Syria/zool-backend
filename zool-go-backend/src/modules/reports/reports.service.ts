@@ -113,6 +113,8 @@ export class ReportsService {
     >();
 
     for (const b of bookings) {
+      // Office-scoped query: broker bookings always carry an employee.
+      if (!b.employeeId || !b.employee) continue;
       const existing = map.get(b.employeeId) ?? {
         employeeId: b.employee.id,
         displayName: b.employee.displayName,

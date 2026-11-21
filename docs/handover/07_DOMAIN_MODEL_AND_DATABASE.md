@@ -30,6 +30,7 @@ This document details the relational database architecture, entity relationships
 3. `20261020180000_ticket_dispatch_attempts`: Ticket dispatch attempts tracking (PDF downloads and attempts).
 4. `20261023210000_stage2_6_policy_locks`: Major-to-minor money unit conversions, timezone support, and policy lock columns.
 5. `20261023220000_admin_phone_change_otp`: Phone change OTP challenges and identity verification columns.
+6. `20261121120000_phase2_data_model` (MASTER_PLAN phase 2, additive only): customers and drivers (identity/OTP/session), cities, stations, routes and stops, vehicles with seat layouts and amenities, trip stops and lifecycle status, booking channel (BROKER/DIRECT), round-trip groups, booking changes, payment intents and refunds, cash collections, boarding scans, vehicle positions, coupons, carrier ratings, notifications, device tokens, system settings, content pages. Existing broker columns were only made nullable or extended; nothing was dropped or renamed. New schema files: `customer`, `driver`, `geo`, `fleet`, `operations`, `sales`, `platform`.prisma.
 
 ---
 

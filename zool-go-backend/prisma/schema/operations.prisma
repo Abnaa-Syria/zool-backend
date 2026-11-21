@@ -1,0 +1,105 @@
+enum TripStatus {
+  SCHEDULED
+  BOARDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BoardingStatus {
+  PENDING
+  BOARDED
+  NO_SHOW
+}
+
+enum BoardingMethod {
+  QR
+  MANUAL
+}
+
+enum BoardingScanResult {
+  VALID
+  ALREADY_BOARDED
+  WRONG_TRIP
+  CANCELLED
+  INVALID
+}
+
+/// Stop on a concrete trip (copied from RouteStop when the trip is created; editable per trip).
+model TripStop {
+  id                   String    @id @default(cuid())
+  tripId               String    @map("trip_id")
+  stationId            String    @map("station_id")
+  sequence             Int
+  scheduledArrivalAt   DateTime? @map("scheduled_arrival_at")
+  scheduledDepartureAt DateTime? @map("scheduled_departure_at")
+  actualArrivalAt      DateTime? @map("actual_arrival_at")
+  actualDepartureAt    DateTime? @map("actual_departure_at")
+
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  station Station @relation(fields: [stationId], references: [id], onDelete: Restrict)
+
+  @@unique([tripId, sequence])
+  @@index([stationId])
+  @@map("trip_stops")
+}
+
+/// Every QR/manual scan attempt by a driver (valid or not) — audit trail for disputes.
+model BoardingScan {
+  id        String             @id @default(cuid())
+  tripId    String             @map("trip_id")
+  driverId  String             @map("driver_id")
+  ticketId  String?            @map("ticket_id")
+  method    BoardingMethod
+  result    BoardingScanResult
+  /// SHA-256 of the scanned payload (never store raw tokens)
+  codeHash  String?            @map("code_hash") @db.Char(64)
+  scannedAt DateTime           @default(now()) @map("scanned_at")
+
+  trip   Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  driver Driver  @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+
+  @@index([tripId, scannedAt])
+  @@index([driverId, scannedAt])
+  @@map("boarding_scans")
+}
+
+/// D-CASH-01: cash collected by the driver for an UNPAID_CASH ticket at boarding.
+model CashCollection {
+  id          String   @id @default(cuid())
+  ticketId    String   @unique @map("ticket_id")
+  tripId      String   @map("trip_id")
+  driverId    String   @map("driver_id")
+  amount      Int
+  collectedAt DateTime @default(now()) @map("collected_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Restrict)
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Restrict)
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Restrict)
+
+  @@index([tripId])
+  @@index([driverId, collectedAt])
+  @@map("cash_collections")
+}
+
+/// D-GPS-01: GPS fix sent by the driver app while the trip is in progress.
+model VehiclePosition {
+  id         String   @id @default(cuid())
+  tripId     String   @map("trip_id")
+  driverId   String   @map("driver_id")
+  vehicleId  String?  @map("vehicle_id")
+  latitude   Decimal  @db.Decimal(9, 6)
+  longitude  Decimal  @db.Decimal(9, 6)
+  speedKmh   Int?     @map("speed_kmh")
+  heading    Int?
+  recordedAt DateTime @map("recorded_at")
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  trip    Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  driver  Driver   @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([tripId, recordedAt])
+  @@map("vehicle_positions")
+}

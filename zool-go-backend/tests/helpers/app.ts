@@ -29,6 +29,19 @@ export async function shutdownTestApp(): Promise<void> {
 
 export async function resetDatabase(): Promise<void> {
   const prisma = getPrisma();
+  // Phase 2 tables (children first)
+  await prisma.cashCollection.deleteMany();
+  await prisma.boardingScan.deleteMany();
+  await prisma.vehiclePosition.deleteMany();
+  await prisma.refund.deleteMany();
+  await prisma.paymentIntent.deleteMany();
+  await prisma.couponRedemption.deleteMany();
+  await prisma.coupon.deleteMany();
+  await prisma.carrierRating.deleteMany();
+  await prisma.bookingChange.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.deviceToken.deleteMany();
+  await prisma.recentSearch.deleteMany();
   // Stage 2 (children first; bookings/payouts restrict employee/trip/admin deletes)
   await prisma.ticketDispatchAttempt.deleteMany();
   await prisma.ticket.deleteMany();
@@ -40,6 +53,14 @@ export async function resetDatabase(): Promise<void> {
   await prisma.seatHold.deleteMany();
   await prisma.tripSeat.deleteMany();
   await prisma.trip.deleteMany();
+  await prisma.bookingGroup.deleteMany();
+  await prisma.routeStop.deleteMany();
+  await prisma.route.deleteMany();
+  await prisma.vehicle.deleteMany();
+  await prisma.driverOtpChallenge.deleteMany();
+  await prisma.driverRefreshSession.deleteMany();
+  await prisma.driverIdentity.deleteMany();
+  await prisma.driver.deleteMany();
   await prisma.walletLedgerEntry.deleteMany();
   await prisma.topUpEvidence.deleteMany();
   await prisma.topUpIntent.deleteMany();
@@ -61,6 +82,11 @@ export async function resetDatabase(): Promise<void> {
   await prisma.adminUser.deleteMany();
   await prisma.role.deleteMany();
   await prisma.permission.deleteMany();
+  await prisma.customerOtpChallenge.deleteMany();
+  await prisma.customerRefreshSession.deleteMany();
+  await prisma.customerIdentity.deleteMany();
+  await prisma.customer.deleteMany();
+  await prisma.systemSetting.deleteMany();
 
   const redis = getRedis();
   const keys = await redis.keys(`${process.env.REDIS_KEY_PREFIX ?? 'zoolgo_test:'}*`);

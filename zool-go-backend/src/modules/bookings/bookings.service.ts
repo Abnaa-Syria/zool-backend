@@ -563,6 +563,7 @@ export class BookingsService {
   }) {
     const booking = await bookingsRepository.findByIdUnscoped(input.bookingId);
     if (!booking) throw BookingErrors.notFound();
+    if (!booking.officeId) throw BookingErrors.brokerChannelRequired(booking.id);
 
     const wallet = await walletsRepository.findByOfficeId(booking.officeId);
     if (!wallet) throw WalletErrors.walletNotFound();
@@ -742,6 +743,7 @@ export class BookingsService {
     ticketNumber: string;
   }): Promise<{ buffer: Buffer; filename: string }> {
     const dto = await this.getAdminById(input.bookingId);
+    if (!dto.officeId) throw BookingErrors.brokerChannelRequired(dto.id);
     return this.renderConfirmedTicketPdf(dto, dto.officeId, input.ticketNumber);
   }
 

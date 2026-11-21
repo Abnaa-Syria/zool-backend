@@ -24,6 +24,14 @@ export const BookingErrors = {
       code: ErrorCodes.BOOKING_NOT_CANCELLABLE,
       details: { status },
     }),
+  /** Broker-only flow (wallet refund, office ticket) called for a direct-customer booking. */
+  brokerChannelRequired: (bookingId: string) =>
+    new AppError({
+      message: 'This operation is only available for broker-office bookings',
+      statusCode: 409,
+      code: ErrorCodes.BOOKING_CHANNEL_UNSUPPORTED,
+      details: { bookingId },
+    }),
   idempotencyInFlight: () =>
     AppError.conflict('A request with this idempotencyKey is already being processed; retry shortly'),
   passengerSeatMismatch: () =>

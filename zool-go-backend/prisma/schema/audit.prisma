@@ -11,7 +11,7 @@ model AuditLog {
   metadataJson String?  @map("metadata_json") @db.Text
   createdAt    DateTime @default(now()) @map("created_at")
 
-  actor        AdminUser? @relation("AuditActor", fields: [actorAdminId], references: [id], onDelete: SetNull)
+  actor AdminUser? @relation("AuditActor", fields: [actorAdminId], references: [id], onDelete: SetNull)
 
   @@index([actorAdminId, createdAt])
   @@index([resourceType, resourceId])

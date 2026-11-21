@@ -1,11 +1,47 @@
 enum BookingStatus {
   CONFIRMED
   CANCELLED
+  /// Customer online payment not yet confirmed (seats held)
+  PENDING_PAYMENT
+  /// D-CHG-01: replaced by another booking (see BookingChange)
+  CHANGED
+  /// Payment not completed before PaymentIntent.expiresAt
+  EXPIRED
 }
 
 enum TicketStatus {
   CONFIRMED
   CANCELLED
+  /// Booking moved to another trip (D-CHG-01)
+  CHANGED
+}
+
+enum BookingChannel {
+  BROKER
+  DIRECT
+}
+
+enum BookingPaymentMethod {
+  /// Broker prepaid wallet
+  WALLET
+  /// Customer online (PaymentIntent)
+  ONLINE
+  /// D-CASH-01
+  CASH_ON_BOARD
+}
+
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+  UNPAID_CASH
+  PAID_CASH
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PassengerGender {
+  MALE
+  FEMALE
 }
 
 enum TicketDispatchChannel {
@@ -19,30 +55,58 @@ enum TicketDispatchStatus {
   RECORDED
 }
 
+/// One trip purchase. BROKER channel: office + employee set, paid from the wallet.
+/// DIRECT channel: customer set, paid online or cash on board.
 model Booking {
-  id               String        @id @default(cuid())
-  officeId         String        @map("office_id")
-  employeeId       String        @map("employee_id")
-  tripId           String        @map("trip_id")
-  status           BookingStatus @default(CONFIRMED)
-  totalAmount      Int           @map("total_amount")
-  commissionAmount Int           @map("commission_amount")
-  confirmedAt      DateTime      @map("confirmed_at")
-  cancelledAt      DateTime?     @map("cancelled_at")
-  createdAt        DateTime      @default(now()) @map("created_at")
+  id               String               @id @default(cuid())
+  /// Human reference shown to users, e.g. ZG-20261122-7Q4K
+  bookingRef       String?              @unique @map("booking_ref") @db.VarChar(32)
+  channel          BookingChannel       @default(BROKER)
+  officeId         String?              @map("office_id")
+  employeeId       String?              @map("employee_id")
+  customerId       String?              @map("customer_id")
+  tripId           String               @map("trip_id")
+  /// D-RT-01
+  groupId          String?              @map("group_id")
+  leg              BookingLeg?
+  status           BookingStatus        @default(CONFIRMED)
+  paymentMethod    BookingPaymentMethod @default(WALLET) @map("payment_method")
+  paymentStatus    BookingPaymentStatus @default(PAID) @map("payment_status")
+  /// Before discount (null on legacy rows = totalAmount)
+  subtotalAmount   Int?                 @map("subtotal_amount")
+  discountAmount   Int                  @default(0) @map("discount_amount")
+  totalAmount      Int                  @map("total_amount")
+  commissionAmount Int                  @map("commission_amount")
+  /// D-CHG-01: number of trip changes already applied in this booking's chain
+  changeCount      Int                  @default(0) @map("change_count")
+  confirmedAt      DateTime?            @map("confirmed_at")
+  cancelledAt      DateTime?            @map("cancelled_at")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @default(now()) @updatedAt @map("updated_at")
 
-  office           BrokerOffice  @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  employee         BrokerEmployee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  trip             Trip          @relation(fields: [tripId], references: [id], onDelete: Restrict)
-  passengers       BookingPassenger[]
-  tickets          Ticket[]
+  office            BrokerOffice?           @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  employee          BrokerEmployee?         @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  customer          Customer?               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  trip              Trip                    @relation(fields: [tripId], references: [id], onDelete: Restrict)
+  group             BookingGroup?           @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  passengers        BookingPassenger[]
+  tickets           Ticket[]
   commissionAccrual CommissionAccrual?
-  dispatchAttempts TicketDispatchAttempt[]
+  dispatchAttempts  TicketDispatchAttempt[]
+  paymentIntents    PaymentIntent[]
+  refunds           Refund[]
+  changesFrom       BookingChange[]         @relation("BookingChangeFrom")
+  changedFrom       BookingChange?          @relation("BookingChangeTo")
+  couponRedemption  CouponRedemption?
+  rating            CarrierRating?
 
   @@index([officeId, createdAt])
   @@index([employeeId, createdAt])
+  @@index([customerId, createdAt])
   @@index([tripId, status])
   @@index([status, confirmedAt])
+  @@index([groupId])
+  @@index([channel, status])
   @@map("bookings")
 }
 
@@ -57,8 +121,8 @@ model TicketDispatchAttempt {
   payloadJson Json                  @map("payload_json")
   createdAt   DateTime              @default(now()) @map("created_at")
 
-  booking     Booking               @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  employee    BrokerEmployee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  booking  Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  employee BrokerEmployee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
 
   @@index([bookingId, createdAt])
   @@index([employeeId, createdAt])
@@ -66,30 +130,40 @@ model TicketDispatchAttempt {
 }
 
 model BookingPassenger {
-  id        String   @id @default(cuid())
-  bookingId String   @map("booking_id")
-  fullName  String   @map("full_name") @db.VarChar(160)
-  phone     String   @db.VarChar(32)
-  idNumber  String?  @map("id_number") @db.VarChar(64)
+  id        String           @id @default(cuid())
+  bookingId String           @map("booking_id")
+  fullName  String           @map("full_name") @db.VarChar(160)
+  /// Required by the broker flow (validated there); optional for direct customers
+  phone     String?          @db.VarChar(32)
+  idNumber  String?          @map("id_number") @db.VarChar(64)
+  /// Required when the seat is women-only
+  gender    PassengerGender?
 
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  tickets   Ticket[]
+  booking Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
 
   @@index([bookingId])
   @@map("booking_passengers")
 }
 
 model Ticket {
-  id           String       @id @default(cuid())
-  bookingId    String       @map("booking_id")
-  tripSeatId   String?      @map("trip_seat_id")
-  passengerId  String       @map("passenger_id")
-  ticketNumber String       @unique @map("ticket_number") @db.VarChar(64)
-  status       TicketStatus @default(CONFIRMED)
+  id                String          @id @default(cuid())
+  bookingId         String          @map("booking_id")
+  tripSeatId        String?         @map("trip_seat_id")
+  passengerId       String          @map("passenger_id")
+  ticketNumber      String          @unique @map("ticket_number") @db.VarChar(64)
+  status            TicketStatus    @default(CONFIRMED)
+  boardingStatus    BoardingStatus  @default(PENDING) @map("boarding_status")
+  boardingMethod    BoardingMethod? @map("boarding_method")
+  boardedAt         DateTime?       @map("boarded_at")
+  boardedByDriverId String?         @map("boarded_by_driver_id")
 
-  booking      Booking          @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  tripSeat     TripSeat?        @relation(fields: [tripSeatId], references: [id], onDelete: SetNull)
-  passenger    BookingPassenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  booking         Booking          @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tripSeat        TripSeat?        @relation(fields: [tripSeatId], references: [id], onDelete: SetNull)
+  passenger       BookingPassenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  boardedByDriver Driver?          @relation("TicketBoardedBy", fields: [boardedByDriverId], references: [id], onDelete: SetNull)
+  boardingScans   BoardingScan[]
+  cashCollection  CashCollection?
 
   @@index([bookingId])
   @@index([tripSeatId])

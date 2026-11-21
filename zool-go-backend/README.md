@@ -34,6 +34,8 @@ npm run dev                       # http://localhost:4000/api/v1
 | Super Admin | `+249900000001` |
 | Broker office manager | `+249900000101` |
 | Broker clerk | `+249900000102` |
+| Driver (Sudan Express) | `+249900000201` |
+| Customer | `+249900000301` |
 
 With `OTP_DEV_EXPOSE=true` (never in production) the OTP request response contains `devOtp`.
 

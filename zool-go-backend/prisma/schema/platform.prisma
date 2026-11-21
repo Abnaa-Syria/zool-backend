@@ -1,0 +1,70 @@
+enum PrincipalType {
+  CUSTOMER
+  DRIVER
+  BROKER_EMPLOYEE
+  ADMIN
+}
+
+enum DevicePlatform {
+  IOS
+  ANDROID
+  WEB
+}
+
+/// D-SET-02: operational settings editable from the admin dashboard (defaults seeded from .env).
+model SystemSetting {
+  key              String   @id @db.VarChar(96)
+  value            Json
+  updatedByAdminId String?  @map("updated_by_admin_id")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  updatedByAdmin AdminUser? @relation("SystemSettingUpdatedBy", fields: [updatedByAdminId], references: [id], onDelete: SetNull)
+
+  @@map("system_settings")
+}
+
+/// Static content served to apps (privacy policy, terms, help).
+model ContentPage {
+  slug        String   @id @db.VarChar(64)
+  titleAr     String   @map("title_ar") @db.VarChar(160)
+  titleEn     String   @map("title_en") @db.VarChar(160)
+  /// [{ titleAr, titleEn, bodyAr, bodyEn }]
+  sections    Json
+  publishedAt DateTime @default(now()) @map("published_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("content_pages")
+}
+
+/// Push token of a signed-in device (FCM/APNs via FCM).
+model DeviceToken {
+  id            String         @id @default(cuid())
+  principalType PrincipalType  @map("principal_type")
+  principalId   String         @map("principal_id") @db.VarChar(64)
+  platform      DevicePlatform
+  token         String         @unique @db.VarChar(512)
+  lastSeenAt    DateTime       @default(now()) @map("last_seen_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  @@index([principalType, principalId])
+  @@map("device_tokens")
+}
+
+/// In-app notification feed entry (push delivery is a side effect).
+model Notification {
+  id            String        @id @default(cuid())
+  recipientType PrincipalType @map("recipient_type")
+  recipientId   String        @map("recipient_id") @db.VarChar(64)
+  /// TICKET_ISSUED, PAYMENT_SUCCEEDED, DEPARTURE_REMINDER, TRIP_CANCELLED, …
+  type          String        @db.VarChar(48)
+  title         String        @db.VarChar(160)
+  body          String        @db.VarChar(1000)
+  /// Deep-link payload, e.g. { bookingId }
+  data          Json?
+  readAt        DateTime?     @map("read_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  @@index([recipientType, recipientId, createdAt])
+  @@index([recipientType, recipientId, readAt])
+  @@map("notifications")
+}

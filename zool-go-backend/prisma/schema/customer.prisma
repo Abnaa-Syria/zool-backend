@@ -1,0 +1,130 @@
+enum CustomerStatus {
+  ACTIVE
+  SUSPENDED
+  /// PII anonymised; bookings kept for accounting
+  DELETED
+}
+
+enum CustomerOtpPurpose {
+  CUSTOMER_LOGIN
+  CUSTOMER_PHONE_CHANGE
+}
+
+/// Passenger account of the customer mobile app. Created on first OTP login.
+model Customer {
+  id                String         @id @default(cuid())
+  displayName       String?        @map("display_name") @db.VarChar(160)
+  email             String?        @db.VarChar(191)
+  avatarUrl         String?        @map("avatar_url") @db.VarChar(512)
+  preferredLanguage String         @default("ar") @map("preferred_language") @db.VarChar(8)
+  tripAlertsEnabled Boolean        @default(true) @map("trip_alerts_enabled")
+  status            CustomerStatus @default(ACTIVE)
+  /// D-CASH-01: unpaid cash tickets not boarded
+  cashNoShowCount   Int            @default(0) @map("cash_no_show_count")
+  authzVersion      Int            @default(1) @map("authz_version")
+  lastLoginAt       DateTime?      @map("last_login_at")
+  deletedAt         DateTime?      @map("deleted_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  identities        CustomerIdentity[]
+  refreshSessions   CustomerRefreshSession[]
+  otpChallenges     CustomerOtpChallenge[]
+  seatHolds         SeatHold[]
+  bookings          Booking[]
+  bookingGroups     BookingGroup[]
+  paymentIntents    PaymentIntent[]
+  recentSearches    RecentSearch[]
+  ratings           CarrierRating[]
+  couponRedemptions CouponRedemption[]
+
+  @@index([status])
+  @@map("customers")
+}
+
+model CustomerIdentity {
+  id              String       @id @default(cuid())
+  customerId      String       @map("customer_id")
+  type            IdentityType
+  valueNormalized String       @map("value_normalized") @db.VarChar(191)
+  isPrimary       Boolean      @default(true) @map("is_primary")
+  verifiedAt      DateTime?    @map("verified_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([type, valueNormalized])
+  @@index([customerId])
+  @@map("customer_identities")
+}
+
+model CustomerRefreshSession {
+  id           String    @id @default(cuid())
+  customerId   String    @map("customer_id")
+  /// SHA-256 hash of the opaque refresh token
+  tokenHash    String    @unique @map("token_hash") @db.Char(64)
+  familyId     String    @map("family_id") @db.VarChar(64)
+  replacedById String?   @map("replaced_by_id")
+  platform     String?   @db.VarChar(16)
+  userAgent    String?   @map("user_agent") @db.VarChar(512)
+  ipAddress    String?   @map("ip_address") @db.VarChar(64)
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  revokeReason String?   @map("revoke_reason") @db.VarChar(120)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastUsedAt   DateTime? @map("last_used_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("customer_refresh_sessions")
+}
+
+/// OTP challenge. `customerId` is null until the first login creates the account.
+model CustomerOtpChallenge {
+  id            String             @id @default(cuid())
+  customerId    String?            @map("customer_id")
+  identityType  IdentityType       @map("identity_type")
+  identityValue String             @map("identity_value") @db.VarChar(191)
+  purpose       CustomerOtpPurpose
+  /// HMAC of OTP code — never plaintext
+  codeHash      String             @map("code_hash") @db.VarChar(128)
+  status        OtpChallengeStatus @default(PENDING)
+  attemptCount  Int                @default(0) @map("attempt_count")
+  maxAttempts   Int                @map("max_attempts")
+  expiresAt     DateTime           @map("expires_at")
+  consumedAt    DateTime?          @map("consumed_at")
+  requestId     String?            @map("request_id") @db.VarChar(64)
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([identityValue, purpose, status])
+  @@index([customerId, purpose, status])
+  @@index([expiresAt])
+  @@map("customer_otp_challenges")
+}
+
+/// Server-side recent searches (one row per customer + city pair; searchedAt refreshed).
+model RecentSearch {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  fromCityId String   @map("from_city_id")
+  toCityId   String   @map("to_city_id")
+  /// Sudan calendar date YYYY-MM-DD
+  travelDate String   @map("travel_date") @db.Char(10)
+  returnDate String?  @map("return_date") @db.Char(10)
+  passengers Int      @default(1)
+  searchedAt DateTime @default(now()) @map("searched_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  fromCity City     @relation("RecentSearchFrom", fields: [fromCityId], references: [id], onDelete: Cascade)
+  toCity   City     @relation("RecentSearchTo", fields: [toCityId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, fromCityId, toCityId])
+  @@index([customerId, searchedAt])
+  @@map("recent_searches")
+}

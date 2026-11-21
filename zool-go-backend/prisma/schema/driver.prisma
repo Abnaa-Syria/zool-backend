@@ -1,0 +1,101 @@
+enum DriverStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum DriverOtpPurpose {
+  DRIVER_LOGIN
+}
+
+/// Driver / conductor of a carrier, using the driver mobile app.
+model Driver {
+  id            String       @id @default(cuid())
+  companyId     String       @map("company_id")
+  /// Human code, e.g. ZGD-7649
+  driverCode    String       @unique @map("driver_code") @db.VarChar(32)
+  displayName   String       @map("display_name") @db.VarChar(160)
+  avatarUrl     String?      @map("avatar_url") @db.VarChar(512)
+  licenseNumber String?      @map("license_number") @db.VarChar(64)
+  licenseExpiry DateTime?    @map("license_expiry") @db.Date
+  status        DriverStatus @default(ACTIVE)
+  authzVersion  Int          @default(1) @map("authz_version")
+  lastLoginAt   DateTime?    @map("last_login_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  company         TransportCompany       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  identities      DriverIdentity[]
+  refreshSessions DriverRefreshSession[]
+  otpChallenges   DriverOtpChallenge[]
+  trips           Trip[]
+  boardedTickets  Ticket[]               @relation("TicketBoardedBy")
+  boardingScans   BoardingScan[]
+  cashCollections CashCollection[]
+  positions       VehiclePosition[]
+
+  @@index([companyId, status])
+  @@map("drivers")
+}
+
+model DriverIdentity {
+  id              String       @id @default(cuid())
+  driverId        String       @map("driver_id")
+  type            IdentityType
+  valueNormalized String       @map("value_normalized") @db.VarChar(191)
+  isPrimary       Boolean      @default(true) @map("is_primary")
+  verifiedAt      DateTime?    @map("verified_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@unique([type, valueNormalized])
+  @@index([driverId])
+  @@map("driver_identities")
+}
+
+model DriverRefreshSession {
+  id           String    @id @default(cuid())
+  driverId     String    @map("driver_id")
+  tokenHash    String    @unique @map("token_hash") @db.Char(64)
+  familyId     String    @map("family_id") @db.VarChar(64)
+  replacedById String?   @map("replaced_by_id")
+  platform     String?   @db.VarChar(16)
+  userAgent    String?   @map("user_agent") @db.VarChar(512)
+  ipAddress    String?   @map("ip_address") @db.VarChar(64)
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  revokeReason String?   @map("revoke_reason") @db.VarChar(120)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastUsedAt   DateTime? @map("last_used_at")
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("driver_refresh_sessions")
+}
+
+model DriverOtpChallenge {
+  id            String             @id @default(cuid())
+  driverId      String             @map("driver_id")
+  identityType  IdentityType       @map("identity_type")
+  identityValue String             @map("identity_value") @db.VarChar(191)
+  purpose       DriverOtpPurpose
+  codeHash      String             @map("code_hash") @db.VarChar(128)
+  status        OtpChallengeStatus @default(PENDING)
+  attemptCount  Int                @default(0) @map("attempt_count")
+  maxAttempts   Int                @map("max_attempts")
+  expiresAt     DateTime           @map("expires_at")
+  consumedAt    DateTime?          @map("consumed_at")
+  requestId     String?            @map("request_id") @db.VarChar(64)
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId, purpose, status])
+  @@index([identityValue, purpose, status])
+  @@index([expiresAt])
+  @@map("driver_otp_challenges")
+}

@@ -12,18 +12,18 @@ enum CommissionSettlementStatus {
 }
 
 model CommissionAccrual {
-  id           String                   @id @default(cuid())
-  bookingId    String                   @unique @map("booking_id")
-  officeId     String                   @map("office_id")
+  id           String                  @id @default(cuid())
+  bookingId    String                  @unique @map("booking_id")
+  officeId     String                  @map("office_id")
   amount       Int
-  status       CommissionAccrualStatus  @default(UNSETTLED)
-  settlementId String?                  @map("settlement_id")
-  createdAt    DateTime                 @default(now()) @map("created_at")
-  updatedAt    DateTime                 @updatedAt @map("updated_at")
+  status       CommissionAccrualStatus @default(UNSETTLED)
+  settlementId String?                 @map("settlement_id")
+  createdAt    DateTime                @default(now()) @map("created_at")
+  updatedAt    DateTime                @updatedAt @map("updated_at")
 
-  booking      Booking                  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  office       BrokerOffice             @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  settlement   CommissionSettlement?    @relation(fields: [settlementId], references: [id], onDelete: SetNull)
+  booking    Booking               @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  office     BrokerOffice          @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  settlement CommissionSettlement? @relation(fields: [settlementId], references: [id], onDelete: SetNull)
 
   @@index([officeId, status])
   @@index([status, createdAt])
@@ -32,24 +32,24 @@ model CommissionAccrual {
 }
 
 model CommissionSettlement {
-  id                 String                      @id @default(cuid())
-  officeId           String                      @map("office_id")
-  periodFrom         DateTime                    @map("period_from")
-  periodTo           DateTime                    @map("period_to")
-  status             CommissionSettlementStatus  @default(DRAFT)
-  totalAmount        Int                         @map("total_amount")
-  initiatedByAdminId String                      @map("initiated_by_admin_id")
-  finalizedByAdminId String?                     @map("finalized_by_admin_id")
-  note               String?                     @db.VarChar(500)
-  payoutReference    String?                     @map("payout_reference") @db.VarChar(128)
-  finalizedAt        DateTime?                   @map("finalized_at")
-  createdAt          DateTime                    @default(now()) @map("created_at")
-  updatedAt          DateTime                    @updatedAt @map("updated_at")
+  id                 String                     @id @default(cuid())
+  officeId           String                     @map("office_id")
+  periodFrom         DateTime                   @map("period_from")
+  periodTo           DateTime                   @map("period_to")
+  status             CommissionSettlementStatus @default(DRAFT)
+  totalAmount        Int                        @map("total_amount")
+  initiatedByAdminId String                     @map("initiated_by_admin_id")
+  finalizedByAdminId String?                    @map("finalized_by_admin_id")
+  note               String?                    @db.VarChar(500)
+  payoutReference    String?                    @map("payout_reference") @db.VarChar(128)
+  finalizedAt        DateTime?                  @map("finalized_at")
+  createdAt          DateTime                   @default(now()) @map("created_at")
+  updatedAt          DateTime                   @updatedAt @map("updated_at")
 
-  office             BrokerOffice                @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  initiatedByAdmin   AdminUser                   @relation("SettlementInitiator", fields: [initiatedByAdminId], references: [id], onDelete: Restrict)
-  finalizedByAdmin   AdminUser?                  @relation("SettlementFinalizer", fields: [finalizedByAdminId], references: [id], onDelete: SetNull)
-  accruals           CommissionAccrual[]
+  office           BrokerOffice        @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  initiatedByAdmin AdminUser           @relation("SettlementInitiator", fields: [initiatedByAdminId], references: [id], onDelete: Restrict)
+  finalizedByAdmin AdminUser?          @relation("SettlementFinalizer", fields: [finalizedByAdminId], references: [id], onDelete: SetNull)
+  accruals         CommissionAccrual[]
 
   @@index([officeId, status])
   @@index([officeId, periodFrom, periodTo])
@@ -57,16 +57,16 @@ model CommissionSettlement {
 }
 
 model CommissionPayout {
-  id              String   @id @default(cuid())
-  officeId        String   @map("office_id")
-  amount          Int
-  actedByAdminId  String   @map("acted_by_admin_id")
-  note            String?  @db.VarChar(500)
-  settledAt       DateTime @map("settled_at")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id             String   @id @default(cuid())
+  officeId       String   @map("office_id")
+  amount         Int
+  actedByAdminId String   @map("acted_by_admin_id")
+  note           String?  @db.VarChar(500)
+  settledAt      DateTime @map("settled_at")
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  office          BrokerOffice @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  actedByAdmin    AdminUser    @relation("CommissionPayoutActor", fields: [actedByAdminId], references: [id], onDelete: Restrict)
+  office       BrokerOffice @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  actedByAdmin AdminUser    @relation("CommissionPayoutActor", fields: [actedByAdminId], references: [id], onDelete: Restrict)
 
   @@index([officeId, settledAt])
   @@index([actedByAdminId])

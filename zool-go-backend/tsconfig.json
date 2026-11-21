@@ -17,6 +17,6 @@
     "exactOptionalPropertyTypes": false,
     "types": ["node"]
   },
-  "include": ["src/**/*", "prisma/seed.ts", "tests/**/*"],
+  "include": ["src/**/*", "prisma/seed.ts", "prisma/seed-phase2.ts", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }

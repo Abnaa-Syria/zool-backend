@@ -4,27 +4,42 @@ enum TransportCompanyStatus {
 }
 
 model TransportCompany {
-  id        String                   @id @default(cuid())
-  key       String                   @unique @db.VarChar(64)
-  name      String                   @db.VarChar(160)
-  status    TransportCompanyStatus   @default(ACTIVE)
-  createdAt DateTime                 @default(now()) @map("created_at")
+  id            String                 @id @default(cuid())
+  key           String                 @unique @db.VarChar(64)
+  name          String                 @db.VarChar(160)
+  status        TransportCompanyStatus @default(ACTIVE)
+  createdAt     DateTime               @default(now()) @map("created_at")
+  shortName     String?                @map("short_name") @db.VarChar(80)
+  legalName     String?                @map("legal_name") @db.VarChar(200)
+  logoUrl       String?                @map("logo_url") @db.VarChar(512)
+  /// Aggregate of CarrierRating (avg x 100, e.g. 480 = 4.8)
+  ratingAvgX100 Int                    @default(0) @map("rating_avg_x100")
+  ratingCount   Int                    @default(0) @map("rating_count")
+  /// D-CASH-01 per-carrier switch
+  cashEnabled   Boolean                @default(true) @map("cash_enabled")
+  suspendedAt   DateTime?              @map("suspended_at")
+  updatedAt     DateTime               @default(now()) @updatedAt @map("updated_at")
 
   brokerAssignments BrokerCarrierAssignment[]
   trips             Trip[]
+  routes            Route[]
+  vehicles          Vehicle[]
+  drivers           Driver[]
+  coupons           Coupon[]
+  ratings           CarrierRating[]
 
   @@index([status])
   @@map("transport_companies")
 }
 
 model BrokerCarrierAssignment {
-  id                String           @id @default(cuid())
-  officeId          String           @map("office_id")
-  companyId         String           @map("company_id")
-  commissionPercent Decimal          @map("commission_percent") @db.Decimal(5, 2)
+  id                String  @id @default(cuid())
+  officeId          String  @map("office_id")
+  companyId         String  @map("company_id")
+  commissionPercent Decimal @map("commission_percent") @db.Decimal(5, 2)
 
-  office            BrokerOffice     @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  company           TransportCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  office  BrokerOffice     @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  company TransportCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([officeId, companyId])
   @@index([companyId])

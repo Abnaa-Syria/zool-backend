@@ -12,9 +12,9 @@ model Wallet {
   currency       String   @default("SDG") @db.Char(3)
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  brokerOffice   BrokerOffice        @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
-  ledgerEntries  WalletLedgerEntry[]
-  topUpIntents   TopUpIntent[]
+  brokerOffice  BrokerOffice        @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
+  ledgerEntries WalletLedgerEntry[]
+  topUpIntents  TopUpIntent[]
 
   @@map("wallets")
 }
@@ -31,7 +31,7 @@ model WalletLedgerEntry {
   referenceId    String?          @map("reference_id") @db.VarChar(64)
   createdAt      DateTime         @default(now()) @map("created_at")
 
-  wallet         Wallet           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
 
   @@index([walletId, createdAt])
   @@index([referenceType, referenceId])

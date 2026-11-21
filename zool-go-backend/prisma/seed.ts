@@ -9,6 +9,7 @@ import {
 } from '@prisma/client';
 import { PERMISSION_CATALOG, SUPER_ADMIN_ROLE_KEY } from '../src/shared/constants/permissions';
 import { normalizePhone } from '../src/shared/utils/phone';
+import { seedPhase2 } from './seed-phase2';
 
 const prisma = new PrismaClient();
 
@@ -243,6 +244,7 @@ async function main() {
   }
 
   await seedStage2();
+  await seedPhase2(prisma);
 
   // eslint-disable-next-line no-console
   console.log('Seed complete');

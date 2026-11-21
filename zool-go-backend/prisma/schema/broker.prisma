@@ -24,56 +24,57 @@ enum BrokerOtpPurpose {
 
 /// Broker branch / ticketing office.
 model BrokerOffice {
-  id                        String              @id @default(cuid())
-  code                      String              @unique @db.VarChar(64)
-  name                      String              @db.VarChar(160)
-  status                    BrokerOfficeStatus  @default(ACTIVE)
-  minTopUpMinorOverride           Int?                @map("min_top_up_minor_override")
-  exposureCeilingOverride         Int?                @map("exposure_ceiling_override")
+  id                               String             @id @default(cuid())
+  code                             String             @unique @db.VarChar(64)
+  name                             String             @db.VarChar(160)
+  status                           BrokerOfficeStatus @default(ACTIVE)
+  minTopUpMinorOverride            Int?               @map("min_top_up_minor_override")
+  exposureCeilingOverride          Int?               @map("exposure_ceiling_override")
   lowBalanceThresholdMinorOverride Int?               @map("low_balance_threshold_minor_override")
-  timeZone                        String?             @map("time_zone") @db.VarChar(64)
-  settlementPeriod                SettlementPeriod    @map("settlement_period")
-  lastSettledAt                   DateTime?           @map("last_settled_at")
-  createdAt                       DateTime            @default(now()) @map("created_at")
-  updatedAt                       DateTime            @updatedAt @map("updated_at")
+  timeZone                         String?            @map("time_zone") @db.VarChar(64)
+  settlementPeriod                 SettlementPeriod   @map("settlement_period")
+  lastSettledAt                    DateTime?          @map("last_settled_at")
+  createdAt                        DateTime           @default(now()) @map("created_at")
+  updatedAt                        DateTime           @updatedAt @map("updated_at")
 
-  employees                 BrokerEmployee[]
-  wallet                    Wallet?
-  carrierAssignments        BrokerCarrierAssignment[]
-  seatHolds                 SeatHold[]
-  bookings                  Booking[]
-  commissionAccruals        CommissionAccrual[]
-  commissionPayouts         CommissionPayout[]
-  commissionSettlements     CommissionSettlement[]
-  topUpIntents              TopUpIntent[]
+  employees             BrokerEmployee[]
+  wallet                Wallet?
+  carrierAssignments    BrokerCarrierAssignment[]
+  seatHolds             SeatHold[]
+  bookings              Booking[]
+  commissionAccruals    CommissionAccrual[]
+  commissionPayouts     CommissionPayout[]
+  commissionSettlements CommissionSettlement[]
+  topUpIntents          TopUpIntent[]
+  bookingGroups         BookingGroup[]
 
   @@index([status])
   @@map("broker_offices")
 }
 
 model BrokerEmployee {
-  id              String               @id @default(cuid())
-  officeId        String               @map("office_id")
-  displayName     String               @map("display_name") @db.VarChar(160)
-  role            BrokerEmployeeRole
-  status          BrokerEmployeeStatus @default(ACTIVE)
-  canBook         Boolean              @default(true) @map("can_book")
-  canTopUp        Boolean              @default(false) @map("can_top_up")
-  canViewReports  Boolean              @default(false) @map("can_view_reports")
-  canManageStaff  Boolean              @default(false) @map("can_manage_staff")
-  authzVersion    Int                  @default(1) @map("authz_version")
-  lastLoginAt     DateTime?            @map("last_login_at")
-  createdAt       DateTime             @default(now()) @map("created_at")
-  updatedAt       DateTime             @updatedAt @map("updated_at")
+  id             String               @id @default(cuid())
+  officeId       String               @map("office_id")
+  displayName    String               @map("display_name") @db.VarChar(160)
+  role           BrokerEmployeeRole
+  status         BrokerEmployeeStatus @default(ACTIVE)
+  canBook        Boolean              @default(true) @map("can_book")
+  canTopUp       Boolean              @default(false) @map("can_top_up")
+  canViewReports Boolean              @default(false) @map("can_view_reports")
+  canManageStaff Boolean              @default(false) @map("can_manage_staff")
+  authzVersion   Int                  @default(1) @map("authz_version")
+  lastLoginAt    DateTime?            @map("last_login_at")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
 
-  office          BrokerOffice         @relation(fields: [officeId], references: [id], onDelete: Cascade)
-  identities      BrokerIdentity[]
-  refreshSessions BrokerRefreshSession[]
-  otpChallenges   BrokerOtpChallenge[]
-  seatHolds       SeatHold[]
-  bookings        Booking[]
-  topUpIntentsCreated TopUpIntent[]    @relation("TopUpCreatedBy")
-  topUpEvidenceUploaded TopUpEvidence[] @relation("TopUpEvidenceEmployee")
+  office                 BrokerOffice            @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  identities             BrokerIdentity[]
+  refreshSessions        BrokerRefreshSession[]
+  otpChallenges          BrokerOtpChallenge[]
+  seatHolds              SeatHold[]
+  bookings               Booking[]
+  topUpIntentsCreated    TopUpIntent[]           @relation("TopUpCreatedBy")
+  topUpEvidenceUploaded  TopUpEvidence[]         @relation("TopUpEvidenceEmployee")
   ticketDispatchAttempts TicketDispatchAttempt[]
 
   @@index([officeId, status])
@@ -92,7 +93,7 @@ model BrokerIdentity {
   createdAt        DateTime     @default(now()) @map("created_at")
   updatedAt        DateTime     @updatedAt @map("updated_at")
 
-  brokerEmployee   BrokerEmployee @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
+  brokerEmployee BrokerEmployee @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
 
   @@unique([type, valueNormalized])
   @@index([brokerEmployeeId])
@@ -115,7 +116,7 @@ model BrokerRefreshSession {
   createdAt        DateTime  @default(now()) @map("created_at")
   lastUsedAt       DateTime? @map("last_used_at")
 
-  brokerEmployee   BrokerEmployee @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
+  brokerEmployee BrokerEmployee @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
 
   @@index([brokerEmployeeId, revokedAt])
   @@index([familyId])
@@ -139,7 +140,7 @@ model BrokerOtpChallenge {
   requestId        String?            @map("request_id") @db.VarChar(64)
   createdAt        DateTime           @default(now()) @map("created_at")
 
-  brokerEmployee   BrokerEmployee     @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
+  brokerEmployee BrokerEmployee @relation(fields: [brokerEmployeeId], references: [id], onDelete: Cascade)
 
   @@index([brokerEmployeeId, purpose, status])
   @@index([identityValue, purpose, status])

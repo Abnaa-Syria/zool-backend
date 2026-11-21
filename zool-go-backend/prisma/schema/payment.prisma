@@ -11,34 +11,34 @@ enum TopUpConfirmationPath {
 }
 
 model TopUpIntent {
-  id                         String                 @id @default(cuid())
-  brokerOfficeId             String                 @map("broker_office_id")
-  walletId                   String                 @map("wallet_id")
+  id                         String                @id @default(cuid())
+  brokerOfficeId             String                @map("broker_office_id")
+  walletId                   String                @map("wallet_id")
   amount                     Int
-  status                     TopUpIntentStatus      @default(PENDING)
-  confirmationPath           TopUpConfirmationPath  @default(AUTOMATIC) @map("confirmation_path")
-  providerRef                String?                @map("provider_ref") @db.VarChar(191)
-  provider                   String                 @default("mock") @db.VarChar(64)
-  providerEventId            String?                @unique @map("provider_event_id") @db.VarChar(191)
-  paymentReferenceNormalized String?                @map("payment_reference_normalized") @db.VarChar(128)
-  parentIntentId             String?                @map("parent_intent_id")
-  idempotencyKey             String                 @unique @map("idempotency_key") @db.VarChar(128)
-  confirmedAt                DateTime?              @map("confirmed_at")
-  failedAt                   DateTime?              @map("failed_at")
-  reviewedByAdminId          String?                @map("reviewed_by_admin_id")
-  reviewNote                 String?                @map("review_note") @db.VarChar(500)
-  createdByEmployeeId        String?                @map("created_by_employee_id")
-  createdByAdminId           String?                @map("created_by_admin_id")
-  createdAt                  DateTime               @default(now()) @map("created_at")
+  status                     TopUpIntentStatus     @default(PENDING)
+  confirmationPath           TopUpConfirmationPath @default(AUTOMATIC) @map("confirmation_path")
+  providerRef                String?               @map("provider_ref") @db.VarChar(191)
+  provider                   String                @default("mock") @db.VarChar(64)
+  providerEventId            String?               @unique @map("provider_event_id") @db.VarChar(191)
+  paymentReferenceNormalized String?               @map("payment_reference_normalized") @db.VarChar(128)
+  parentIntentId             String?               @map("parent_intent_id")
+  idempotencyKey             String                @unique @map("idempotency_key") @db.VarChar(128)
+  confirmedAt                DateTime?             @map("confirmed_at")
+  failedAt                   DateTime?             @map("failed_at")
+  reviewedByAdminId          String?               @map("reviewed_by_admin_id")
+  reviewNote                 String?               @map("review_note") @db.VarChar(500)
+  createdByEmployeeId        String?               @map("created_by_employee_id")
+  createdByAdminId           String?               @map("created_by_admin_id")
+  createdAt                  DateTime              @default(now()) @map("created_at")
 
-  brokerOffice               BrokerOffice           @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
-  wallet                     Wallet                 @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  createdByEmployee          BrokerEmployee?        @relation("TopUpCreatedBy", fields: [createdByEmployeeId], references: [id], onDelete: SetNull)
-  createdByAdmin             AdminUser?             @relation("TopUpCreatedByAdmin", fields: [createdByAdminId], references: [id], onDelete: SetNull)
-  reviewedByAdmin            AdminUser?             @relation("TopUpReviewedByAdmin", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
-  parentIntent               TopUpIntent?           @relation("TopUpParent", fields: [parentIntentId], references: [id], onDelete: SetNull)
-  childIntents               TopUpIntent[]          @relation("TopUpParent")
-  evidence                   TopUpEvidence[]
+  brokerOffice      BrokerOffice    @relation(fields: [brokerOfficeId], references: [id], onDelete: Cascade)
+  wallet            Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdByEmployee BrokerEmployee? @relation("TopUpCreatedBy", fields: [createdByEmployeeId], references: [id], onDelete: SetNull)
+  createdByAdmin    AdminUser?      @relation("TopUpCreatedByAdmin", fields: [createdByAdminId], references: [id], onDelete: SetNull)
+  reviewedByAdmin   AdminUser?      @relation("TopUpReviewedByAdmin", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+  parentIntent      TopUpIntent?    @relation("TopUpParent", fields: [parentIntentId], references: [id], onDelete: SetNull)
+  childIntents      TopUpIntent[]   @relation("TopUpParent")
+  evidence          TopUpEvidence[]
 
   @@unique([provider, paymentReferenceNormalized])
   @@index([brokerOfficeId, status])
@@ -48,21 +48,105 @@ model TopUpIntent {
 }
 
 model TopUpEvidence {
-  id                  String       @id @default(cuid())
-  intentId            String       @map("intent_id")
-  storageKey          String       @map("storage_key") @db.VarChar(255)
-  originalName        String       @map("original_name") @db.VarChar(255)
-  mimeType            String       @map("mime_type") @db.VarChar(64)
-  sizeBytes           Int          @map("size_bytes")
-  checksumSha256      String       @map("checksum_sha256") @db.Char(64)
-  uploadedByAdminId   String?      @map("uploaded_by_admin_id")
-  uploadedByEmployeeId String?     @map("uploaded_by_employee_id")
-  createdAt           DateTime     @default(now()) @map("created_at")
+  id                   String   @id @default(cuid())
+  intentId             String   @map("intent_id")
+  storageKey           String   @map("storage_key") @db.VarChar(255)
+  originalName         String   @map("original_name") @db.VarChar(255)
+  mimeType             String   @map("mime_type") @db.VarChar(64)
+  sizeBytes            Int      @map("size_bytes")
+  checksumSha256       String   @map("checksum_sha256") @db.Char(64)
+  uploadedByAdminId    String?  @map("uploaded_by_admin_id")
+  uploadedByEmployeeId String?  @map("uploaded_by_employee_id")
+  createdAt            DateTime @default(now()) @map("created_at")
 
-  intent              TopUpIntent  @relation(fields: [intentId], references: [id], onDelete: Cascade)
-  uploadedByAdmin     AdminUser?   @relation("TopUpEvidenceAdmin", fields: [uploadedByAdminId], references: [id], onDelete: SetNull)
-  uploadedByEmployee  BrokerEmployee? @relation("TopUpEvidenceEmployee", fields: [uploadedByEmployeeId], references: [id], onDelete: SetNull)
+  intent             TopUpIntent     @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  uploadedByAdmin    AdminUser?      @relation("TopUpEvidenceAdmin", fields: [uploadedByAdminId], references: [id], onDelete: SetNull)
+  uploadedByEmployee BrokerEmployee? @relation("TopUpEvidenceEmployee", fields: [uploadedByEmployeeId], references: [id], onDelete: SetNull)
 
   @@index([intentId])
   @@map("top_up_evidence")
+}
+
+enum PaymentIntentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentIntentPurpose {
+  /// Pays one booking or a round-trip group
+  BOOKING
+  /// D-CHG-01: pays the price difference + fee of a trip change
+  CHANGE_DIFFERENCE
+}
+
+enum RefundStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum RefundReason {
+  CUSTOMER_CANCEL
+  CARRIER_CANCEL
+  CHANGE_DIFFERENCE
+  ADMIN
+}
+
+/// Customer online payment (D-PAY-01: provider-agnostic; `mock` until a PSP is chosen).
+model PaymentIntent {
+  id              String               @id @default(cuid())
+  customerId      String               @map("customer_id")
+  purpose         PaymentIntentPurpose
+  /// One of bookingId / groupId is set
+  bookingId       String?              @map("booking_id")
+  groupId         String?              @map("group_id")
+  amount          Int
+  currency        String               @default("SDG") @db.Char(3)
+  status          PaymentIntentStatus  @default(PENDING)
+  provider        String               @default("mock") @db.VarChar(64)
+  providerRef     String?              @map("provider_ref") @db.VarChar(191)
+  providerEventId String?              @unique @map("provider_event_id") @db.VarChar(191)
+  idempotencyKey  String               @unique @map("idempotency_key") @db.VarChar(128)
+  /// Seats are released if not paid by then
+  expiresAt       DateTime             @map("expires_at")
+  succeededAt     DateTime?            @map("succeeded_at")
+  failedAt        DateTime?            @map("failed_at")
+  failureReason   String?              @map("failure_reason") @db.VarChar(255)
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+
+  customer Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  booking  Booking?      @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  group    BookingGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  refunds  Refund[]
+
+  @@index([customerId, createdAt])
+  @@index([status, expiresAt])
+  @@index([bookingId])
+  @@index([groupId])
+  @@map("payment_intents")
+}
+
+/// Refund of a customer online payment (broker refunds stay wallet ledger credits).
+model Refund {
+  id              String       @id @default(cuid())
+  bookingId       String       @map("booking_id")
+  paymentIntentId String?      @map("payment_intent_id")
+  amount          Int
+  reason          RefundReason
+  status          RefundStatus @default(PENDING)
+  providerRef     String?      @map("provider_ref") @db.VarChar(191)
+  idempotencyKey  String       @unique @map("idempotency_key") @db.VarChar(128)
+  processedAt     DateTime?    @map("processed_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  booking       Booking        @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  paymentIntent PaymentIntent? @relation(fields: [paymentIntentId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([status, createdAt])
+  @@map("refunds")
 }

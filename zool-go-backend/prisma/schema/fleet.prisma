@@ -1,0 +1,60 @@
+enum ServiceClass {
+  STANDARD
+  VIP
+}
+
+enum VehicleStatus {
+  ACTIVE
+  MAINTENANCE
+  RETIRED
+}
+
+/// Bus owned by a carrier. `seatLayout` is the source of seat labels for every trip it runs.
+model Vehicle {
+  id           String        @id @default(cuid())
+  companyId    String        @map("company_id")
+  plateNumber  String        @unique @map("plate_number") @db.VarChar(32)
+  model        String        @db.VarChar(120)
+  capacity     Int
+  serviceClass ServiceClass  @default(STANDARD) @map("service_class")
+  /// { rows, columns, aisleAfterColumn, driverSide, seats: [{ label, row, column, isWomenOnly }] }
+  seatLayout   Json          @map("seat_layout")
+  status       VehicleStatus @default(ACTIVE)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  company   TransportCompany  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  amenities VehicleAmenity[]
+  trips     Trip[]
+  positions VehiclePosition[]
+
+  @@index([companyId, status])
+  @@map("vehicles")
+}
+
+/// Amenity catalog (wifi, usb, ac, snack, wc, tv, vip_seats, luggage …).
+model Amenity {
+  id        String @id @default(cuid())
+  code      String @unique @db.VarChar(32)
+  nameAr    String @map("name_ar") @db.VarChar(80)
+  nameEn    String @map("name_en") @db.VarChar(80)
+  icon      String @db.VarChar(64)
+  sortOrder Int    @default(0) @map("sort_order")
+
+  vehicles VehicleAmenity[]
+
+  @@map("amenities")
+}
+
+model VehicleAmenity {
+  vehicleId String  @map("vehicle_id")
+  amenityId String  @map("amenity_id")
+  /// Optional value, e.g. "30" for luggage kg
+  value     String? @db.VarChar(32)
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Restrict)
+
+  @@id([vehicleId, amenityId])
+  @@map("vehicle_amenities")
+}

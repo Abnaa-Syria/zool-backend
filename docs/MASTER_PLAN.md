@@ -49,7 +49,8 @@
 
 **حالة المرحلة 1 (2026-11-21):** ✅ `docs/SCREEN_API_MAP.md` · ✅ `docs/API_CONVENTIONS.md` · ✅ اختبار تطابق OpenAPI · ✅ إصلاح أيام البحث والتقارير لتوقيت السودان · ✅ توحيد ملفات قواعد الـ AI مع الكود.
 
-## المرحلة 2 — توسيع نموذج البيانات (أسبوعان) — migrations **إضافية فقط**
+## المرحلة 2 — توسيع نموذج البيانات ✅ (2026-11-21) — migrations **إضافية فقط**
+> **تم:** migration `20261121120000_phase2_data_model` (31 جدول جديد، صفر حذف) · كتالوج الإعدادات `src/shared/constants/system-settings.ts` · أداة مخطط المقاعد `src/shared/utils/seat-layout.ts` · seed سوداني (11 مدينة، مسار الخرطوم–بورتسودان، حافلة 28 مقعد، سائق، عميل، رحلات الغد) · الاختبارات 85/85.
 `Customer` (+ هوية/جلسات)، `Driver`، `Vehicle`، `Station`، `Route`/`RouteStop`، `TripAssignment`، `Notification`، `DeviceToken`، `PaymentIntent`، `BoardingScan`، `VehiclePosition`؛ `Booking.channel` (`BROKER`/`DIRECT`) بمحرك حجز واحد؛ ربط `Trip` بالمسار والحافلة بحقول اختيارية. Seed بمدن ومحطات سودانية.
 
 ## المرحلة 3 — واجهات الإدارة كاملة (3 أسابيع)

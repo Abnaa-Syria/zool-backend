@@ -11,22 +11,22 @@ enum OtpChallengeStatus {
 }
 
 model RefreshSession {
-  id               String    @id @default(cuid())
-  adminUserId      String    @map("admin_user_id")
+  id           String    @id @default(cuid())
+  adminUserId  String    @map("admin_user_id")
   /// SHA-256 hash of the opaque refresh token
-  tokenHash        String    @unique @map("token_hash") @db.Char(64)
+  tokenHash    String    @unique @map("token_hash") @db.Char(64)
   /// Family id for rotation reuse detection
-  familyId         String    @map("family_id") @db.VarChar(64)
-  replacedById     String?   @map("replaced_by_id")
-  userAgent        String?   @map("user_agent") @db.VarChar(512)
-  ipAddress        String?   @map("ip_address") @db.VarChar(64)
-  expiresAt        DateTime  @map("expires_at")
-  revokedAt        DateTime? @map("revoked_at")
-  revokeReason     String?   @map("revoke_reason") @db.VarChar(120)
-  createdAt        DateTime  @default(now()) @map("created_at")
-  lastUsedAt       DateTime? @map("last_used_at")
+  familyId     String    @map("family_id") @db.VarChar(64)
+  replacedById String?   @map("replaced_by_id")
+  userAgent    String?   @map("user_agent") @db.VarChar(512)
+  ipAddress    String?   @map("ip_address") @db.VarChar(64)
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  revokeReason String?   @map("revoke_reason") @db.VarChar(120)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastUsedAt   DateTime? @map("last_used_at")
 
-  adminUser        AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
 
   @@index([adminUserId, revokedAt])
   @@index([familyId])
@@ -35,22 +35,22 @@ model RefreshSession {
 }
 
 model OtpChallenge {
-  id              String             @id @default(cuid())
-  adminUserId     String             @map("admin_user_id")
-  identityType    IdentityType       @map("identity_type")
-  identityValue   String             @map("identity_value") @db.VarChar(191)
-  purpose         OtpPurpose
+  id            String             @id @default(cuid())
+  adminUserId   String             @map("admin_user_id")
+  identityType  IdentityType       @map("identity_type")
+  identityValue String             @map("identity_value") @db.VarChar(191)
+  purpose       OtpPurpose
   /// HMAC of OTP code — never plaintext
-  codeHash        String             @map("code_hash") @db.VarChar(128)
-  status          OtpChallengeStatus @default(PENDING)
-  attemptCount    Int                @default(0) @map("attempt_count")
-  maxAttempts     Int                @map("max_attempts")
-  expiresAt       DateTime           @map("expires_at")
-  consumedAt      DateTime?          @map("consumed_at")
-  requestId       String?            @map("request_id") @db.VarChar(64)
-  createdAt       DateTime           @default(now()) @map("created_at")
+  codeHash      String             @map("code_hash") @db.VarChar(128)
+  status        OtpChallengeStatus @default(PENDING)
+  attemptCount  Int                @default(0) @map("attempt_count")
+  maxAttempts   Int                @map("max_attempts")
+  expiresAt     DateTime           @map("expires_at")
+  consumedAt    DateTime?          @map("consumed_at")
+  requestId     String?            @map("request_id") @db.VarChar(64)
+  createdAt     DateTime           @default(now()) @map("created_at")
 
-  adminUser       AdminUser          @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
 
   @@index([adminUserId, purpose, status])
   @@index([identityValue, purpose, status])

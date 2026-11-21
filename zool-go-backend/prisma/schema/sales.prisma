@@ -1,0 +1,120 @@
+enum BookingGroupType {
+  ROUND_TRIP
+}
+
+enum BookingLeg {
+  OUTBOUND
+  RETURN
+}
+
+enum BookingChangeKind {
+  SEAT
+  TRIP
+}
+
+enum CouponDiscountType {
+  PERCENT
+  FIXED
+}
+
+/// D-RT-01: two bookings (outbound + return) bought in one checkout.
+model BookingGroup {
+  id         String           @id @default(cuid())
+  type       BookingGroupType
+  channel    BookingChannel
+  customerId String?          @map("customer_id")
+  officeId   String?          @map("office_id")
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  customer       Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  office         BrokerOffice?   @relation(fields: [officeId], references: [id], onDelete: SetNull)
+  bookings       Booking[]
+  paymentIntents PaymentIntent[]
+
+  @@index([customerId, createdAt])
+  @@index([officeId, createdAt])
+  @@map("booking_groups")
+}
+
+/// D-CHG-01: history of seat and trip changes (trip change links old → new booking).
+model BookingChange {
+  id                    String            @id @default(cuid())
+  kind                  BookingChangeKind
+  bookingId             String            @map("booking_id")
+  /// Set for TRIP changes: the replacement booking
+  newBookingId          String?           @unique @map("new_booking_id")
+  fromSeatLabel         String?           @map("from_seat_label") @db.VarChar(32)
+  toSeatLabel           String?           @map("to_seat_label") @db.VarChar(32)
+  /// Positive = customer/office pays more; negative = refund
+  priceDifferenceAmount Int               @default(0) @map("price_difference_amount")
+  changeFeeAmount       Int               @default(0) @map("change_fee_amount")
+  actorType             String            @map("actor_type") @db.VarChar(32)
+  actorId               String            @map("actor_id") @db.VarChar(64)
+  createdAt             DateTime          @default(now()) @map("created_at")
+
+  booking    Booking  @relation("BookingChangeFrom", fields: [bookingId], references: [id], onDelete: Cascade)
+  newBooking Booking? @relation("BookingChangeTo", fields: [newBookingId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId, createdAt])
+  @@map("booking_changes")
+}
+
+model Coupon {
+  id                String             @id @default(cuid())
+  code              String             @unique @db.VarChar(32)
+  discountType      CouponDiscountType @map("discount_type")
+  /// PERCENT: basis points (2500 = 25%); FIXED: minor units
+  value             Int
+  maxDiscountAmount Int?               @map("max_discount_amount")
+  minSubtotalAmount Int?               @map("min_subtotal_amount")
+  /// Null = all carriers
+  companyId         String?            @map("company_id")
+  validFrom         DateTime           @map("valid_from")
+  validTo           DateTime           @map("valid_to")
+  maxRedemptions    Int?               @map("max_redemptions")
+  perCustomerLimit  Int                @default(1) @map("per_customer_limit")
+  redeemedCount     Int                @default(0) @map("redeemed_count")
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  company     TransportCompany?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  redemptions CouponRedemption[]
+
+  @@index([isActive, validFrom, validTo])
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id             String   @id @default(cuid())
+  couponId       String   @map("coupon_id")
+  customerId     String   @map("customer_id")
+  bookingId      String   @unique @map("booking_id")
+  discountAmount Int      @map("discount_amount")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  coupon   Coupon   @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([couponId, customerId])
+  @@map("coupon_redemptions")
+}
+
+/// Customer rating of the carrier after a completed trip (one per booking).
+model CarrierRating {
+  id         String   @id @default(cuid())
+  bookingId  String   @unique @map("booking_id")
+  customerId String   @map("customer_id")
+  companyId  String   @map("company_id")
+  stars      Int      @db.TinyInt
+  comment    String?  @db.VarChar(1000)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  booking  Booking          @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  customer Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  company  TransportCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+  @@map("carrier_ratings")
+}

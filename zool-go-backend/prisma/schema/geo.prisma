@@ -1,0 +1,86 @@
+/// City shown in search pickers (customer, broker) and on popular destinations.
+model City {
+  id        String   @id @default(cuid())
+  /// Stable code, e.g. "KRT"
+  code      String   @unique @db.VarChar(16)
+  nameAr    String   @map("name_ar") @db.VarChar(120)
+  nameEn    String   @map("name_en") @db.VarChar(120)
+  imageUrl  String?  @map("image_url") @db.VarChar(512)
+  isPopular Boolean  @default(false) @map("is_popular")
+  sortOrder Int      @default(0) @map("sort_order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  stations           Station[]
+  recentSearchesFrom RecentSearch[] @relation("RecentSearchFrom")
+  recentSearchesTo   RecentSearch[] @relation("RecentSearchTo")
+
+  @@index([isActive, sortOrder])
+  @@map("cities")
+}
+
+/// Bus station / boarding point inside a city.
+model Station {
+  id        String   @id @default(cuid())
+  cityId    String   @map("city_id")
+  nameAr    String   @map("name_ar") @db.VarChar(160)
+  nameEn    String   @map("name_en") @db.VarChar(160)
+  address   String?  @db.VarChar(255)
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  city       City        @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  routesFrom Route[]     @relation("RouteOrigin")
+  routesTo   Route[]     @relation("RouteDestination")
+  routeStops RouteStop[]
+  tripsFrom  Trip[]      @relation("TripOriginStation")
+  tripsTo    Trip[]      @relation("TripDestinationStation")
+  tripStops  TripStop[]
+
+  @@index([cityId, isActive])
+  @@map("stations")
+}
+
+/// Reusable line operated by a carrier (template for trips).
+model Route {
+  id                   String   @id @default(cuid())
+  companyId            String   @map("company_id")
+  code                 String?  @db.VarChar(32)
+  originStationId      String   @map("origin_station_id")
+  destinationStationId String   @map("destination_station_id")
+  /// Scheduled run time origin → destination
+  durationMinutes      Int      @map("duration_minutes")
+  isActive             Boolean  @default(true) @map("is_active")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  company            TransportCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  originStation      Station          @relation("RouteOrigin", fields: [originStationId], references: [id], onDelete: Restrict)
+  destinationStation Station          @relation("RouteDestination", fields: [destinationStationId], references: [id], onDelete: Restrict)
+  stops              RouteStop[]
+  trips              Trip[]
+
+  @@unique([companyId, code])
+  @@index([originStationId, destinationStationId])
+  @@map("routes")
+}
+
+/// Intermediate stop on a route; offset is minutes after route departure.
+model RouteStop {
+  id            String @id @default(cuid())
+  routeId       String @map("route_id")
+  stationId     String @map("station_id")
+  sequence      Int
+  offsetMinutes Int    @map("offset_minutes")
+  dwellMinutes  Int    @default(0) @map("dwell_minutes")
+
+  route   Route   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  station Station @relation(fields: [stationId], references: [id], onDelete: Restrict)
+
+  @@unique([routeId, sequence])
+  @@map("route_stops")
+}

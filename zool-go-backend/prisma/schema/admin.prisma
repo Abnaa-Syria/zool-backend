@@ -10,27 +10,28 @@ enum IdentityType {
 
 /// Central platform administrator account.
 model AdminUser {
-  id             String      @id @default(cuid())
-  employeeCode   String      @unique @map("employee_code") @db.VarChar(64)
-  displayName    String      @map("display_name") @db.VarChar(160)
-  status         AdminStatus @default(ACTIVE)
-  isBootstrap    Boolean     @default(false) @map("is_bootstrap")
-  authzVersion   Int         @default(1) @map("authz_version")
-  lastLoginAt    DateTime?   @map("last_login_at")
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
+  id           String      @id @default(cuid())
+  employeeCode String      @unique @map("employee_code") @db.VarChar(64)
+  displayName  String      @map("display_name") @db.VarChar(160)
+  status       AdminStatus @default(ACTIVE)
+  isBootstrap  Boolean     @default(false) @map("is_bootstrap")
+  authzVersion Int         @default(1) @map("authz_version")
+  lastLoginAt  DateTime?   @map("last_login_at")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  identities     AdminIdentity[]
-  userRoles      UserRole[]
-  refreshSessions RefreshSession[]
-  otpChallenges  OtpChallenge[]
-  auditLogs              AuditLog[]              @relation("AuditActor")
-  commissionPayouts      CommissionPayout[]      @relation("CommissionPayoutActor")
-  settlementsInitiated   CommissionSettlement[]  @relation("SettlementInitiator")
-  settlementsFinalized   CommissionSettlement[]  @relation("SettlementFinalizer")
-  topUpsCreated          TopUpIntent[]           @relation("TopUpCreatedByAdmin")
-  topUpsReviewed         TopUpIntent[]           @relation("TopUpReviewedByAdmin")
-  topUpEvidenceUploaded  TopUpEvidence[]         @relation("TopUpEvidenceAdmin")
+  identities            AdminIdentity[]
+  userRoles             UserRole[]
+  refreshSessions       RefreshSession[]
+  otpChallenges         OtpChallenge[]
+  auditLogs             AuditLog[]             @relation("AuditActor")
+  commissionPayouts     CommissionPayout[]     @relation("CommissionPayoutActor")
+  settlementsInitiated  CommissionSettlement[] @relation("SettlementInitiator")
+  settlementsFinalized  CommissionSettlement[] @relation("SettlementFinalizer")
+  topUpsCreated         TopUpIntent[]          @relation("TopUpCreatedByAdmin")
+  topUpsReviewed        TopUpIntent[]          @relation("TopUpReviewedByAdmin")
+  topUpEvidenceUploaded TopUpEvidence[]        @relation("TopUpEvidenceAdmin")
+  systemSettingsUpdated SystemSetting[]        @relation("SystemSettingUpdatedBy")
 
   @@index([status])
   @@map("admin_users")
@@ -38,17 +39,17 @@ model AdminUser {
 
 /// Verified login identifier bound to an admin (phone now; email later).
 model AdminIdentity {
-  id               String       @id @default(cuid())
-  adminUserId      String       @map("admin_user_id")
-  type             IdentityType
+  id              String       @id @default(cuid())
+  adminUserId     String       @map("admin_user_id")
+  type            IdentityType
   /// Normalized identifier, e.g. E.164 phone +2499...
-  valueNormalized  String       @map("value_normalized") @db.VarChar(191)
-  isPrimary        Boolean      @default(true) @map("is_primary")
-  verifiedAt       DateTime?    @map("verified_at")
-  createdAt        DateTime     @default(now()) @map("created_at")
-  updatedAt        DateTime     @updatedAt @map("updated_at")
+  valueNormalized String       @map("value_normalized") @db.VarChar(191)
+  isPrimary       Boolean      @default(true) @map("is_primary")
+  verifiedAt      DateTime?    @map("verified_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
 
-  adminUser        AdminUser    @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
 
   @@unique([type, valueNormalized])
   @@index([adminUserId])
