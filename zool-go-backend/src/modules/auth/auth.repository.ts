@@ -193,6 +193,14 @@ export class AuthRepository {
     });
   }
 
+  bumpAuthzVersion(adminUserId: string, tx?: PrismaTx) {
+    return client(tx).adminUser.update({
+      where: { id: adminUserId },
+      data: { authzVersion: { increment: 1 } },
+      select: { id: true, authzVersion: true },
+    });
+  }
+
   revokeFamily(familyId: string, reason: string, tx?: PrismaTx) {
     return client(tx).refreshSession.updateMany({
       where: { familyId, revokedAt: null },

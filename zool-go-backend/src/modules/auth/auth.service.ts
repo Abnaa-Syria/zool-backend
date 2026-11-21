@@ -636,8 +636,13 @@ export class AuthService {
       throw AuthErrors.invalidOtp();
     }
 
+    // A credential change invalidates every existing session: refresh sessions are
+    // revoked, authzVersion is bumped (kills live access tokens), and any pending
+    // login OTP sent to the old number is expired. The admin must sign in again
+    // with the new phone.
+    let authzVersion: number;
     try {
-      await getPrisma().$transaction(async (tx) => {
+      authzVersion = await getPrisma().$transaction(async (tx) => {
         await authRepository.updateOtpChallenge(
           challenge.id,
           { status: OtpChallengeStatus.CONSUMED, consumedAt: new Date() },
@@ -649,7 +654,16 @@ export class AuthService {
           challenge.id,
           tx,
         );
+        await authRepository.expirePendingOtpChallenges(
+          admin.id,
+          OtpPurpose.ADMIN_LOGIN,
+          challenge.id,
+          tx,
+        );
         await authRepository.updatePrimaryPhoneIdentity(admin.id, phone, tx);
+        await authRepository.revokeAllSessions(admin.id, 'phone_changed', undefined, tx);
+        const bumped = await authRepository.bumpAuthzVersion(admin.id, tx);
+        return bumped.authzVersion;
       });
     } catch (error) {
       if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === 'P2002') {
@@ -657,6 +671,9 @@ export class AuthService {
       }
       throw error;
     }
+
+    await setAuthzVersion(admin.id, authzVersion);
+    await invalidatePermissionCache(admin.id);
 
     const updated = await authRepository.findAdminById(admin.id);
     if (!updated) throw AppError.unauthorized();
@@ -667,7 +684,7 @@ export class AuthService {
       resourceType: 'admin_user',
       resourceId: admin.id,
       requestId: input.requestId,
-      metadata: { before: current, after: phone },
+      metadata: { before: current, after: phone, sessionsRevoked: true },
     });
 
     return mapAdminToMeDto(updated);
