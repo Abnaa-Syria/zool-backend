@@ -16,7 +16,7 @@ export class PublicAppService {
       timeZone: 'Africa/Khartoum',
       languages: ['ar', 'en'],
       defaultLanguage: 'ar',
-      otp: { length: e.OTP_LENGTH, resendAfterSeconds: e.OTP_RESEND_COOLDOWN_SECONDS, ttlSeconds: e.OTP_TTL_SECONDS },
+      otp: { length: e.OTP_LENGTH, resendAfterSeconds: runtimeSettings.number('security.otpResendCooldownSeconds'), ttlSeconds: e.OTP_TTL_SECONDS },
       minVersions: {
         customer: String(runtimeSettings.get('app.customer.minVersion')),
         driver: String(runtimeSettings.get('app.driver.minVersion')),

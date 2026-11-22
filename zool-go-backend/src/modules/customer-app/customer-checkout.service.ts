@@ -18,6 +18,7 @@ import { env } from '../../config/env';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { ErrorCodes } from '../../shared/errors/error-codes';
+import { enforceRedisRateLimit } from '../../shared/security/redis-rate-limit';
 import { assertNotInMaintenance, runtimeSettings } from '../../shared/settings/runtime-settings';
 import { compareSeatLabels } from '../../shared/utils/money';
 import { normalizePhone } from '../../shared/utils/phone';
@@ -177,6 +178,10 @@ export class CustomerCheckoutService {
 
   private async coupon(customerId: string, code: string | undefined, legs: Leg[], tx?: PrismaTx): Promise<Coupon | null> {
     if (!code) return null;
+    if (!tx) {
+      // Quotes are where codes get guessed; the create step re-checks the same code.
+      await enforceRedisRateLimit(`coupon:attempt:${customerId}`, runtimeSettings.number('security.couponAttemptsPerHour'), 3600);
+    }
     const coupon = await customerBookingsRepository.findCoupon(code.trim().toUpperCase(), tx);
     const now = Date.now();
     const subtotal = legs.reduce((a, l) => a + l.subtotalMinor, 0);

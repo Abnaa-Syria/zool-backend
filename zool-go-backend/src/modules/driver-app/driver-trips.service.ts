@@ -13,6 +13,7 @@ import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { ErrorCodes } from '../../shared/errors/error-codes';
+import { runtimeSettings } from '../../shared/settings/runtime-settings';
 import { sha256Hex } from '../../shared/security/crypto';
 import { verifyTicketQr } from '../../shared/security/ticket-qr';
 import { compareSeatLabels, splitFare } from '../../shared/utils/money';
@@ -24,8 +25,6 @@ import { notificationsService } from '../notifications/notifications.service';
 import { trackingService } from '../tracking/tracking.service';
 import { driverTripsRepository, type DriverTripRow, type ManifestTicketRow } from './driver-trips.repository';
 
-/** Boarding may open this long before departure. */
-const BOARDING_WINDOW_MS = 6 * 60 * 60 * 1000;
 
 const TRANSITIONS: Record<TripStatus, TripStatus[]> = {
   SCHEDULED: [TripStatus.BOARDING, TripStatus.IN_PROGRESS],
@@ -152,8 +151,9 @@ export class DriverTripsService {
   async setStatus(driverId: string, tripId: string, status: TripStatus, requestId?: string) {
     const trip = await this.trip(driverId, tripId);
     if (!TRANSITIONS[trip.status].includes(status)) throw stateError(`Cannot move a ${trip.status} trip to ${status}`, { from: trip.status, to: status });
-    if (status === TripStatus.BOARDING && trip.departureAt.getTime() - Date.now() > BOARDING_WINDOW_MS) {
-      throw stateError('Boarding opens 6 hours before departure', { departureAt: trip.departureAt.toISOString() });
+    const windowMinutes = runtimeSettings.number('driver.boardingWindowMinutes');
+    if (status === TripStatus.BOARDING && trip.departureAt.getTime() - Date.now() > windowMinutes * 60_000) {
+      throw stateError(`Boarding opens ${windowMinutes} minutes before departure`, { departureAt: trip.departureAt.toISOString(), windowMinutes });
     }
 
     await getPrisma().$transaction(async (tx) => {

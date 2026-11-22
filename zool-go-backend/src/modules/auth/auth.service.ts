@@ -6,6 +6,7 @@ import {
 } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { env } from '../../config/env';
+import { otpPolicy } from '../../shared/security/otp-policy';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { getRedis, redisKey } from '../../infrastructure/redis/redis';
 import { AppError } from '../../shared/errors/app-error';
@@ -100,7 +101,7 @@ export class AuthService {
     try {
       await enforceRedisRateLimit(
         OTP_REDIS.requestRate(phone),
-        e.OTP_REQUEST_RATE_LIMIT_MAX,
+        otpPolicy().requestsPerPhone,
         e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {
@@ -124,7 +125,7 @@ export class AuthService {
         metadata: { phone, reason: 'unknown_or_inactive' },
       });
       // Uniform response shape timing: still set a short cooldown to reduce enumeration usefulness
-      await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+      await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
       throw AppError.unauthorized('No active admin found for this phone');
     }
 
@@ -138,12 +139,12 @@ export class AuthService {
       identityValue: phone,
       purpose: OtpPurpose.ADMIN_LOGIN,
       codeHash,
-      maxAttempts: e.OTP_MAX_ATTEMPTS,
+      maxAttempts: otpPolicy().maxAttempts,
       expiresAt,
       ...(input.requestId ? { requestId: input.requestId } : {}),
     });
 
-    await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+    await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
     await redis.set(
       redisKey(OTP_REDIS.activeChallenge(phone)),
       challenge.id,
@@ -169,7 +170,7 @@ export class AuthService {
     const result: OtpRequestResultDto = {
       challengeId: challenge.id,
       expiresAt: expiresAt.toISOString(),
-      cooldownSeconds: e.OTP_RESEND_COOLDOWN_SECONDS,
+      cooldownSeconds: otpPolicy().cooldownSeconds,
     };
 
     if (shouldExposeDevOtp()) {
@@ -193,7 +194,7 @@ export class AuthService {
     try {
       await enforceRedisRateLimit(
         OTP_REDIS.verifyRate(phone),
-        e.OTP_VERIFY_RATE_LIMIT_MAX,
+        otpPolicy().verifiesPerPhone,
         e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {
@@ -461,12 +462,12 @@ export class AuthService {
     try {
       await enforceRedisRateLimit(
         OTP_REDIS.requestRate(adminRateIdentity),
-        e.OTP_REQUEST_RATE_LIMIT_MAX,
+        otpPolicy().requestsPerPhone,
         e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS,
       );
       await enforceRedisRateLimit(
         OTP_REDIS.requestRate(rateIdentity),
-        e.OTP_REQUEST_RATE_LIMIT_MAX,
+        otpPolicy().requestsPerPhone,
         e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {
@@ -506,12 +507,12 @@ export class AuthService {
       identityValue: phone,
       purpose: OtpPurpose.ADMIN_PHONE_CHANGE,
       codeHash,
-      maxAttempts: e.OTP_MAX_ATTEMPTS,
+      maxAttempts: otpPolicy().maxAttempts,
       expiresAt,
       ...(input.requestId ? { requestId: input.requestId } : {}),
     });
 
-    await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+    await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
     await redis.set(
       redisKey(OTP_REDIS.activeChallenge(rateIdentity)),
       challenge.id,
@@ -537,7 +538,7 @@ export class AuthService {
     const result: OtpRequestResultDto = {
       challengeId: challenge.id,
       expiresAt: expiresAt.toISOString(),
-      cooldownSeconds: e.OTP_RESEND_COOLDOWN_SECONDS,
+      cooldownSeconds: otpPolicy().cooldownSeconds,
     };
 
     if (shouldExposeDevOtp()) {
@@ -562,12 +563,12 @@ export class AuthService {
     try {
       await enforceRedisRateLimit(
         OTP_REDIS.verifyRate(adminRateIdentity),
-        e.OTP_VERIFY_RATE_LIMIT_MAX,
+        otpPolicy().verifiesPerPhone,
         e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS,
       );
       await enforceRedisRateLimit(
         OTP_REDIS.verifyRate(rateIdentity),
-        e.OTP_VERIFY_RATE_LIMIT_MAX,
+        otpPolicy().verifiesPerPhone,
         e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {

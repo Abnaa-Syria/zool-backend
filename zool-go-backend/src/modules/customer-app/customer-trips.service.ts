@@ -1,6 +1,7 @@
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
+import { ErrorCodes } from '../../shared/errors/error-codes';
 import { assertNotInMaintenance, runtimeSettings } from '../../shared/settings/runtime-settings';
 import { compareSeatLabels } from '../../shared/utils/money';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
@@ -169,6 +170,8 @@ export class CustomerTripsService {
     const labels = [...new Set(seatLabels.map((l) => l.trim()))];
     if (labels.length !== seatLabels.length) throw AppError.validation('Duplicate seat labels', { field: 'seatLabels' });
     const ttlMs = runtimeSettings.number('booking.seatHoldTtlSeconds') * 1000;
+    const perTrip = runtimeSettings.number('booking.customerMaxSeatsPerHold');
+    if (labels.length > perTrip) throw AppError.validation(`At most ${perTrip} seats per trip`, { field: 'seatLabels', max: perTrip });
 
     const created = await getPrisma().$transaction(async (tx) => {
       await catalogRepository.releaseExpiredHolds(tripId, tx);
@@ -176,6 +179,12 @@ export class CustomerTripsService {
       if (!trip) throw CatalogErrors.tripNotFound();
 
       await customerTripsRepository.releaseHolds(await customerTripsRepository.findCustomerHoldsOnTrip(customerId, tripId, tx), tx);
+      // Anti-hoarding: one customer cannot block many seats across trips at once.
+      const heldElsewhere = await customerTripsRepository.countCustomerHolds(customerId, tx);
+      const maxHeld = runtimeSettings.number('booking.customerMaxHeldSeats');
+      if (heldElsewhere + labels.length > maxHeld) {
+        throw new AppError({ statusCode: 409, code: ErrorCodes.HOLD_LIMIT_REACHED, message: 'Too many seats held at once; finish or release other selections', details: { held: heldElsewhere, max: maxHeld } });
+      }
 
       const seats = await customerTripsRepository.findSeatsByLabels(trip.id, labels, tx);
       if (seats.length !== labels.length) throw CatalogErrors.seatNotFound();

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { env } from '../../config/env';
+import { otpPolicy } from '../../shared/security/otp-policy';
 import { RateLimitError } from '../../shared/errors/app-error';
 import { asyncHandler } from '../../shared/middleware/async-handler';
 import { authenticate } from '../../shared/middleware/authenticate';
@@ -17,7 +18,7 @@ export const authRoutes = Router();
 
 const otpRequestLimiter = rateLimit({
   windowMs: env().OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS * 1000,
-  max: env().OTP_REQUEST_RATE_LIMIT_MAX,
+  max: () => otpPolicy().requestsPerIp,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req, _res, next) => {
@@ -31,7 +32,7 @@ const otpRequestLimiter = rateLimit({
 
 const otpVerifyLimiter = rateLimit({
   windowMs: env().OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS * 1000,
-  max: env().OTP_VERIFY_RATE_LIMIT_MAX,
+  max: () => otpPolicy().requestsPerIp * 2,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req, _res, next) => {

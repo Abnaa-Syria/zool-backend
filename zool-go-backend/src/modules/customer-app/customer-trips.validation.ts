@@ -32,5 +32,5 @@ export const tripIdParamsSchema = z.object({ tripId: z.string().min(1).max(64) }
 export const holdIdParamsSchema = z.object({ holdId: z.string().min(1).max(64) });
 
 export const createCustomerHoldSchema = z
-  .object({ seatLabels: z.array(z.string().trim().min(1).max(8)).min(1).max(MAX_SEATS_PER_HOLD) })
+  .object({ seatLabels: z.array(z.string().trim().min(1).max(8)).min(1).max(20) })
   .strict();

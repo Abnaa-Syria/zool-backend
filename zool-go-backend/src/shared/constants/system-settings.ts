@@ -46,6 +46,18 @@ export const SYSTEM_SETTINGS = [
   { key: 'app.customer.minVersion', type: 'string', maxLength: 16, description: 'Oldest customer app version allowed (forces update)', defaultValue: () => '1.0.0' },
   { key: 'app.driver.minVersion', type: 'string', maxLength: 16, description: 'Oldest driver app version allowed (forces update)', defaultValue: () => '1.0.0' },
   { key: 'app.broker.minVersion', type: 'string', maxLength: 16, description: 'Oldest broker app version allowed (forces update)', defaultValue: () => '1.0.0' },
+  // Security (login codes). Windows stay in .env (OTP_*_WINDOW_SECONDS); counts are editable here.
+  { key: 'security.otpRequestsPerPhone', type: 'integer', min: 1, max: 10000, description: 'Login code requests allowed per phone per window', defaultValue: (e) => e.OTP_REQUEST_RATE_LIMIT_MAX },
+  { key: 'security.otpVerifiesPerPhone', type: 'integer', min: 1, max: 10000, description: 'Login code checks allowed per phone per window', defaultValue: (e) => e.OTP_VERIFY_RATE_LIMIT_MAX },
+  { key: 'security.otpRequestsPerIp', type: 'integer', min: 1, max: 100000, description: 'Login code requests per IP per window (mobile networks share IPs: keep it high)', defaultValue: (e) => Math.max(60, e.OTP_REQUEST_RATE_LIMIT_MAX) },
+  { key: 'security.otpResendCooldownSeconds', type: 'integer', min: 1, max: 600, description: 'Wait before a new login code can be sent to the same phone', defaultValue: (e) => e.OTP_RESEND_COOLDOWN_SECONDS },
+  { key: 'security.otpMaxAttempts', type: 'integer', min: 1, max: 20, description: 'Wrong codes before a login code is locked', defaultValue: (e) => e.OTP_MAX_ATTEMPTS },
+  { key: 'security.couponAttemptsPerHour', type: 'integer', min: 1, max: 1000, description: 'Coupon codes a customer may try per hour (stops code guessing)', defaultValue: () => 20 },
+  // Customer seat holds (anti-hoarding)
+  { key: 'booking.customerMaxSeatsPerHold', type: 'integer', min: 1, max: 20, description: 'Max seats a customer can hold on one trip', defaultValue: () => 10 },
+  { key: 'booking.customerMaxHeldSeats', type: 'integer', min: 1, max: 50, description: 'Max seats a customer can hold across all trips at once', defaultValue: () => 12 },
+  // Driver operations
+  { key: 'driver.boardingWindowMinutes', type: 'integer', min: 10, max: 1440, description: 'Drivers can open boarding this long before departure', defaultValue: () => 360 },
   // Platform
   { key: 'platform.maintenanceMode', type: 'boolean', description: 'Block customer and broker bookings (admin still works)', defaultValue: () => false },
 ] as const satisfies readonly SystemSettingDefinition[];

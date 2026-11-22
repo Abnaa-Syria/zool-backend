@@ -1,6 +1,7 @@
 import { OtpChallengeStatus } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { env } from '../../config/env';
+import { otpPolicy } from '../../shared/security/otp-policy';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 import { getRedis, redisKey } from '../../infrastructure/redis/redis';
 import { AppError } from '../../shared/errors/app-error';
@@ -97,7 +98,7 @@ export class MobileAuthEngine {
     const phone = normalizePhone(input.phone);
     const e = env();
     const k = keys(this.p);
-    await enforceRedisRateLimit(k.requestRate(phone), e.OTP_REQUEST_RATE_LIMIT_MAX, e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS);
+    await enforceRedisRateLimit(k.requestRate(phone), otpPolicy().requestsPerPhone, e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS);
 
     const redis = getRedis();
     const cooldownKey = redisKey(k.cooldown(phone));
@@ -106,7 +107,7 @@ export class MobileAuthEngine {
 
     const resolved = await this.store.resolveForRequest(phone);
     if (!resolved) {
-      await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+      await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
       await auditService.record({
         action: `${this.p}.auth.otp.request_rejected`,
         resourceType: `${this.p}_identity`,
@@ -122,11 +123,11 @@ export class MobileAuthEngine {
       principalId: resolved.principalId,
       phone,
       codeHash: hmacOtp(code, e.OTP_HMAC_SECRET),
-      maxAttempts: e.OTP_MAX_ATTEMPTS,
+      maxAttempts: otpPolicy().maxAttempts,
       expiresAt,
       ...(input.requestId ? { requestId: input.requestId } : {}),
     });
-    await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+    await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
     await getOtpDeliveryProvider().sendOtp({ destination: phone, code, purpose: `${this.p.toUpperCase()}_LOGIN` });
     await auditService.record({
       action: `${this.p}.auth.otp.requested`,
@@ -139,7 +140,7 @@ export class MobileAuthEngine {
     return {
       challengeId: challenge.id,
       expiresAt: expiresAt.toISOString(),
-      cooldownSeconds: e.OTP_RESEND_COOLDOWN_SECONDS,
+      cooldownSeconds: otpPolicy().cooldownSeconds,
       ...(e.NODE_ENV !== 'production' && e.OTP_DEV_EXPOSE === true ? { devOtp: code } : {}),
     };
   }
@@ -147,7 +148,7 @@ export class MobileAuthEngine {
   async verifyOtp(input: { phone: string; code: string; challengeId?: string; requestId?: string } & SessionMeta) {
     const phone = normalizePhone(input.phone);
     const e = env();
-    await enforceRedisRateLimit(keys(this.p).verifyRate(phone), e.OTP_VERIFY_RATE_LIMIT_MAX, e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS);
+    await enforceRedisRateLimit(keys(this.p).verifyRate(phone), otpPolicy().verifiesPerPhone, e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS);
 
     const challenge = input.challengeId
       ? await this.store.findChallenge(input.challengeId)

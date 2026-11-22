@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { env } from '../../config/env';
+import { otpPolicy } from '../../shared/security/otp-policy';
 import { RateLimitError } from '../../shared/errors/app-error';
 import { asyncHandler } from '../../shared/middleware/async-handler';
 import { validate } from '../../shared/middleware/validate';
 import type { MobileAuthController } from './mobile-auth.controller';
 import { mobileLogoutSchema, mobileOtpRequestSchema, mobileOtpVerifySchema, mobileRefreshSchema } from './mobile-auth.validation';
 
-function limiter(windowSeconds: number, max: number, message: string) {
+function limiter(windowSeconds: number, max: () => number, message: string) {
   return rateLimit({
     windowMs: windowSeconds * 1000,
     max,
@@ -23,13 +24,13 @@ export function createMobileAuthRoutes(controller: MobileAuthController): Router
   const router = Router();
   router.post(
     '/otp/request',
-    limiter(e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS, e.OTP_REQUEST_RATE_LIMIT_MAX, 'Too many OTP requests'),
+    limiter(e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS, () => otpPolicy().requestsPerIp, 'Too many OTP requests'),
     validate({ body: mobileOtpRequestSchema }),
     asyncHandler((req, res) => controller.requestOtp(req, res)),
   );
   router.post(
     '/otp/verify',
-    limiter(e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS, e.OTP_VERIFY_RATE_LIMIT_MAX, 'Too many OTP verifications'),
+    limiter(e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS, () => otpPolicy().requestsPerIp * 2, 'Too many OTP verifications'),
     validate({ body: mobileOtpVerifySchema }),
     asyncHandler((req, res) => controller.verifyOtp(req, res)),
   );

@@ -63,6 +63,10 @@ export const customerTripsRepository = {
     return tx.seatHold.findMany({ where: { customerId, tripSeat: { tripId } } });
   },
 
+  countCustomerHolds(customerId: string, tx: PrismaTx) {
+    return tx.seatHold.count({ where: { customerId, expiresAt: { gt: new Date() } } });
+  },
+
   findHold(holdId: string) {
     return getPrisma().seatHold.findUnique({ where: { id: holdId }, include: { tripSeat: true } });
   },

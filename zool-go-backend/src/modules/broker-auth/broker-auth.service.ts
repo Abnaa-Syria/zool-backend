@@ -7,6 +7,7 @@ import {
 } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { env } from '../../config/env';
+import { otpPolicy } from '../../shared/security/otp-policy';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { getRedis, redisKey } from '../../infrastructure/redis/redis';
 import {
@@ -100,7 +101,7 @@ export class BrokerAuthService {
     try {
       await enforceRedisRateLimit(
         BROKER_OTP_REDIS.requestRate(phone),
-        e.OTP_REQUEST_RATE_LIMIT_MAX,
+        otpPolicy().requestsPerPhone,
         e.OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {
@@ -123,7 +124,7 @@ export class BrokerAuthService {
         requestId: input.requestId,
         metadata: { phone, reason: 'unknown_or_inactive' },
       });
-      await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+      await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
       throw AppError.unauthorized('No active broker employee found for this phone');
     }
 
@@ -137,12 +138,12 @@ export class BrokerAuthService {
       identityValue: phone,
       purpose: BrokerOtpPurpose.BROKER_LOGIN,
       codeHash,
-      maxAttempts: e.OTP_MAX_ATTEMPTS,
+      maxAttempts: otpPolicy().maxAttempts,
       expiresAt,
       ...(input.requestId ? { requestId: input.requestId } : {}),
     });
 
-    await redis.set(cooldownKey, '1', 'EX', e.OTP_RESEND_COOLDOWN_SECONDS);
+    await redis.set(cooldownKey, '1', 'EX', otpPolicy().cooldownSeconds);
     await redis.set(
       redisKey(BROKER_OTP_REDIS.activeChallenge(phone)),
       challenge.id,
@@ -167,7 +168,7 @@ export class BrokerAuthService {
     const result: BrokerOtpRequestResultDto = {
       challengeId: challenge.id,
       expiresAt: expiresAt.toISOString(),
-      cooldownSeconds: e.OTP_RESEND_COOLDOWN_SECONDS,
+      cooldownSeconds: otpPolicy().cooldownSeconds,
     };
 
     if (shouldExposeDevOtp()) {
@@ -191,7 +192,7 @@ export class BrokerAuthService {
     try {
       await enforceRedisRateLimit(
         BROKER_OTP_REDIS.verifyRate(phone),
-        e.OTP_VERIFY_RATE_LIMIT_MAX,
+        otpPolicy().verifiesPerPhone,
         e.OTP_VERIFY_RATE_LIMIT_WINDOW_SECONDS,
       );
     } catch (error) {
