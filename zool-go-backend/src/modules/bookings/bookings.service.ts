@@ -513,11 +513,22 @@ export class BookingsService {
       employeeId?: string;
       companyId?: string;
       status?: BookingStatus;
+      tab?: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+      q?: string;
       from?: string;
       to?: string;
     },
   ) {
     const { page, pageSize, skip, take } = parsePagination(query);
+    const q = query.q?.trim();
+    const tabWhere: Prisma.BookingWhereInput =
+      query.tab === 'ACTIVE'
+        ? { status: BookingStatus.CONFIRMED, trip: { status: { in: ['SCHEDULED', 'BOARDING', 'IN_PROGRESS'] } } }
+        : query.tab === 'COMPLETED'
+          ? { status: BookingStatus.CONFIRMED, trip: { status: 'COMPLETED' } }
+          : query.tab === 'CANCELLED'
+            ? { OR: [{ status: { in: [BookingStatus.CANCELLED, BookingStatus.CHANGED] } }, { trip: { status: 'CANCELLED' } }] }
+            : {};
 
     const employeeFilter = canSeeWholeOffice(actor) ? query.employeeId : actor.employeeId;
 
@@ -529,6 +540,19 @@ export class BookingsService {
       ...(query.companyId ? { trip: { companyId: query.companyId } } : {}),
       ...(query.status ? { status: query.status } : {}),
       ...(Object.keys(confirmedAt).length > 0 ? { confirmedAt } : {}),
+      AND: [
+        tabWhere,
+        q
+          ? {
+              OR: [
+                { bookingRef: { contains: q } },
+                { tickets: { some: { ticketNumber: { contains: q } } } },
+                { passengers: { some: { fullName: { contains: q } } } },
+                { passengers: { some: { phone: { contains: q } } } },
+              ],
+            }
+          : {},
+      ],
     };
 
     const { items, total } = await bookingsRepository.list({ where, skip, take });

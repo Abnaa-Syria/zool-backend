@@ -40,7 +40,11 @@ const dateInput = z
 export const listBookingsQuerySchema = paginationQuerySchema.extend({
   employeeId: z.string().min(1).max(64).optional(),
   companyId: z.string().min(1).max(64).optional(),
-  status: z.enum(['CONFIRMED', 'CANCELLED']).optional(),
+  status: z.enum(['CONFIRMED', 'CANCELLED', 'CHANGED']).optional(),
+  /** App tabs: ACTIVE (confirmed, trip not finished), COMPLETED (trip done), CANCELLED (cancelled or changed) */
+  tab: z.enum(['ACTIVE', 'COMPLETED', 'CANCELLED']).optional(),
+  /** Booking ref, ticket number, passenger name or phone */
+  q: z.string().trim().min(2).max(64).optional(),
   from: dateInput.optional(),
   to: dateInput.optional(),
 });

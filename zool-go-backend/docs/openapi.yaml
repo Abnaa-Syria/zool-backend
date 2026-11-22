@@ -1157,6 +1157,8 @@ paths:
       summary: List bookings (clerks see own; managers / reports.view see office)
       security: [{ brokerBearerAuth: [] }]
       parameters:
+        - { name: tab, in: query, schema: { type: string, enum: [ACTIVE, COMPLETED, CANCELLED] } }
+        - { name: q, in: query, description: 'Booking ref, ticket number, passenger name or phone', schema: { type: string } }
         - { name: employeeId, in: query, schema: { type: string } }
         - { name: companyId, in: query, schema: { type: string } }
         - { name: status, in: query, schema: { type: string, enum: [CONFIRMED, CANCELLED] } }

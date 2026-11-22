@@ -66,6 +66,15 @@ describe('Broker round trip (D-RT-01) and women-only seats', () => {
     expect(replay.status).toBe(200);
     expect(replay.body.data.returnBooking.id).toBe(res.body.data.returnBooking.id);
     expect((await request(app).get('/api/v1/broker/wallet').set(auth(mgr))).body.data.balanceMinor).toBe(7_000_000);
+
+    // Search and tabs on the bookings list.
+    const byName = await request(app).get('/api/v1/broker/bookings?q=Sara').set(auth(mgr));
+    expect(byName.body.meta.total).toBe(2);
+    const byRef = await request(app).get(`/api/v1/broker/bookings?q=${res.body.data.booking.bookingRef}`).set(auth(mgr));
+    expect(byRef.body.data.map((b: { id: string }) => b.id)).toEqual([res.body.data.booking.id]);
+    await request(app).post(`/api/v1/broker/bookings/${res.body.data.returnBooking.id}/cancel`).set(auth(mgr));
+    expect((await request(app).get('/api/v1/broker/bookings?tab=ACTIVE').set(auth(mgr))).body.meta.total).toBe(1);
+    expect((await request(app).get('/api/v1/broker/bookings?tab=CANCELLED').set(auth(mgr))).body.meta.total).toBe(1);
   });
 
   it('rejects a same-direction "return" and a man on a women-only seat', async () => {

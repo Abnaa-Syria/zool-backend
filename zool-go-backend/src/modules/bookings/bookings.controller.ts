@@ -59,6 +59,8 @@ export class BookingsController {
         employeeId?: string;
         companyId?: string;
         status?: BookingStatus;
+        tab?: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+        q?: string;
         from?: string;
         to?: string;
       },
