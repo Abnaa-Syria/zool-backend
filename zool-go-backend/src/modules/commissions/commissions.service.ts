@@ -64,12 +64,12 @@ export class CommissionsService {
   /** Broker view: UNSETTLED accruals + totals. */
   async listUnsettledForOffice(
     officeId: string,
-    query: { page?: number; pageSize?: number },
+    query: { page?: number; pageSize?: number; status?: CommissionAccrualStatus },
   ) {
     const { page, pageSize, skip, take } = parsePagination(query);
     const [{ items, total }, summary, office] = await Promise.all([
       commissionsRepository.listAccruals({
-        where: { officeId, status: CommissionAccrualStatus.UNSETTLED },
+        where: { officeId, status: query.status ?? CommissionAccrualStatus.UNSETTLED },
         skip,
         take,
       }),

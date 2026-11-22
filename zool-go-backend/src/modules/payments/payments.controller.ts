@@ -95,6 +95,19 @@ export class PaymentsController {
     });
   }
 
+  async listBroker(req: Request, res: Response): Promise<Response> {
+    const result = await paymentsService.listForOffice(
+      req.brokerAuth!.officeId,
+      req.query as { page?: number; pageSize?: number; status?: TopUpIntentStatus },
+    );
+    return successResponse(res, { message: 'Top-ups retrieved', data: result.items, meta: result.meta, requestId: req.requestId });
+  }
+
+  async getBroker(req: Request, res: Response): Promise<Response> {
+    const data = await paymentsService.getForOffice(req.brokerAuth!.officeId, req.params.intentId!);
+    return successResponse(res, { message: 'Top-up retrieved', data, requestId: req.requestId });
+  }
+
   async listAdmin(req: Request, res: Response): Promise<Response> {
     const result = await paymentsService.listAdmin(
       req.query as {

@@ -714,6 +714,16 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /broker/wallet/top-ups:
+    get:
+      tags: [Broker]
+      summary: The office's top-up requests with status history (broker.wallet.topup or manager)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: pageSize, in: query, schema: { type: integer, maximum: 100 } }
+        - { name: status, in: query, schema: { type: string, enum: [PENDING, PENDING_REVIEW, CONFIRMED, FAILED] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
     post:
       tags: [Broker Wallet]
       summary: Create PENDING top-up intent (broker.wallet.topup); min = office override or MIN_TOP_UP_AMOUNT
@@ -2078,6 +2088,15 @@ paths:
       security: [{ bearerAuth: [] }]
       responses:
         '200': { description: 'date, scope (OFFICE|SELF), bookingsCount, ticketsSold, grossSalesMinor, commissionAccruedMinor, currency', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /broker/wallet/top-ups/{intentId}:
+    get:
+      tags: [Broker]
+      summary: One of the office's top-up requests (broker.wallet.topup or manager)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: 'Top-up intent incl. status, hasEvidence, note, failedAt, mockConfirmAvailable', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
 
 components:
   securitySchemes:

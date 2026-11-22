@@ -9,6 +9,7 @@ import { paymentsController } from './payments.controller';
 import {
   adminTopUpsQuerySchema,
   approveTopUpSchema,
+  brokerTopUpsQuerySchema,
   createTopUpSchema,
   intentIdParamsSchema,
   officeIdParamsSchema,
@@ -27,6 +28,20 @@ brokerTopUpRoutes.post(
   requireBrokerPermission('broker.wallet.topup'),
   validate({ body: createTopUpSchema }),
   asyncHandler((req, res) => paymentsController.createTopUp(req, res)),
+);
+
+brokerTopUpRoutes.get(
+  '/',
+  requireBrokerPermission('broker.wallet.topup', { allowManager: true }),
+  validate({ query: brokerTopUpsQuerySchema }),
+  asyncHandler((req, res) => paymentsController.listBroker(req, res)),
+);
+
+brokerTopUpRoutes.get(
+  '/:intentId',
+  requireBrokerPermission('broker.wallet.topup', { allowManager: true }),
+  validate({ params: intentIdParamsSchema }),
+  asyncHandler((req, res) => paymentsController.getBroker(req, res)),
 );
 
 brokerTopUpRoutes.post(

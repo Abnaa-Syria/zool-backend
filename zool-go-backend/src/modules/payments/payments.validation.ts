@@ -23,6 +23,10 @@ export const adminTopUpsQuerySchema = paginationQuerySchema.extend({
   status: z.enum(['PENDING', 'PENDING_REVIEW', 'CONFIRMED', 'FAILED']).optional(),
 });
 
+export const brokerTopUpsQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(['PENDING', 'PENDING_REVIEW', 'CONFIRMED', 'FAILED']).optional(),
+});
+
 export const rejectTopUpSchema = z.object({
   note: z.string().trim().max(500).optional(),
 });

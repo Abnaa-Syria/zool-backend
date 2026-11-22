@@ -7,7 +7,7 @@ export class CommissionsController {
   async listBroker(req: Request, res: Response): Promise<Response> {
     const result = await commissionsService.listUnsettledForOffice(
       req.brokerAuth!.officeId,
-      req.query as { page?: number; pageSize?: number },
+      req.query as { page?: number; pageSize?: number; status?: CommissionAccrualStatus },
     );
     return successResponse(res, {
       statusCode: 200,

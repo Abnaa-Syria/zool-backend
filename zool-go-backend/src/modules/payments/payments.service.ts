@@ -38,8 +38,13 @@ export interface TopUpIntentDto {
   paymentReferenceNormalized: string | null;
   idempotencyKey: string;
   hasEvidence: boolean;
+  /** Office note on the receipt, or the platform's rejection note */
+  note: string | null;
   createdAt: string;
   confirmedAt: string | null;
+  failedAt: string | null;
+  /** True only in non-production with the mock provider while the intent is still PENDING */
+  mockConfirmAvailable: boolean;
 }
 
 function storedKey(officeId: string, idempotencyKey: string): string {
@@ -61,8 +66,12 @@ function toDto(intent: TopUpIntent & { evidence?: TopUpEvidence[] }): TopUpInten
       ? intent.idempotencyKey.slice(prefix.length)
       : intent.idempotencyKey,
     hasEvidence: (intent.evidence?.length ?? 0) > 0,
+    note: intent.reviewNote,
     createdAt: intent.createdAt.toISOString(),
     confirmedAt: intent.confirmedAt?.toISOString() ?? null,
+    failedAt: intent.failedAt?.toISOString() ?? null,
+    mockConfirmAvailable:
+      isMockPaymentEnabled() && intent.provider === 'mock' && intent.status === TopUpIntentStatus.PENDING,
   };
 }
 
@@ -344,7 +353,8 @@ export class PaymentsService {
             data: { reviewNote: input.note.slice(0, 500) },
           });
         }
-        return reviewed;
+        // Re-read so the response includes the evidence just stored (hasEvidence = true).
+        return (await paymentsRepository.findById(reviewed.id, tx)) ?? reviewed;
       });
       await auditService.record({
         action: 'wallet.topup.evidence_submitted',
@@ -456,6 +466,17 @@ export class PaymentsService {
       }
       throw error;
     }
+  }
+
+  /** Office's own top-up requests (status history incl. pending review and rejections). */
+  async listForOffice(officeId: string, query: { page?: number; pageSize?: number; status?: TopUpIntentStatus }) {
+    return this.listAdmin({ ...query, officeId });
+  }
+
+  async getForOffice(officeId: string, intentId: string) {
+    const intent = await paymentsRepository.findByIdForOffice(intentId, officeId);
+    if (!intent) throw AppError.notFound('Top-up intent not found');
+    return toDto(intent);
   }
 
   async listAdmin(query: {

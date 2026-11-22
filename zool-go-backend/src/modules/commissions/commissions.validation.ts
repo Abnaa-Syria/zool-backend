@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { paginationQuerySchema } from '../../shared/validation/common';
 
-export const brokerCommissionsQuerySchema = paginationQuerySchema;
+export const brokerCommissionsQuerySchema = paginationQuerySchema.extend({
+  /** Defaults to UNSETTLED (open commissions); pass another status for history */
+  status: z.enum(['UNSETTLED', 'RESERVED', 'SETTLED', 'CLAWED_BACK']).optional(),
+});
 
 export const adminCommissionsQuerySchema = paginationQuerySchema.extend({
   officeId: z.string().min(1).max(64).optional(),
