@@ -5,7 +5,7 @@ import { otpPolicy } from '../../shared/security/otp-policy';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
 import { getRedis, redisKey } from '../../infrastructure/redis/redis';
 import { AppError } from '../../shared/errors/app-error';
-import { generateOtp, hmacOtp, randomToken, sha256Hex, timingSafeEqualString } from '../../shared/security/crypto';
+import { hmacOtp, otpCodeFor, randomToken, sha256Hex, timingSafeEqualString } from '../../shared/security/crypto';
 import { signMobileAccessToken } from '../../shared/security/mobile-tokens';
 import { setPrincipalAuthzVersion, type MobilePrincipal } from '../../shared/security/principal-authz-cache';
 import { enforceRedisRateLimit } from '../../shared/security/redis-rate-limit';
@@ -117,7 +117,7 @@ export class MobileAuthEngine {
       throw AppError.unauthorized(`No active ${this.p} account for this phone`);
     }
 
-    const code = generateOtp(e.OTP_LENGTH);
+    const code = otpCodeFor(phone);
     const expiresAt = new Date(Date.now() + e.OTP_TTL_SECONDS * 1000);
     const challenge = await this.store.createChallenge({
       principalId: resolved.principalId,

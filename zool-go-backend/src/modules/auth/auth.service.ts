@@ -16,7 +16,7 @@ import {
   setAuthzVersion,
 } from '../../shared/security/authz-cache';
 import {
-  generateOtp,
+  otpCodeFor,
   hmacOtp,
   randomToken,
   sha256Hex,
@@ -129,7 +129,7 @@ export class AuthService {
       throw AppError.unauthorized('No active admin found for this phone');
     }
 
-    const code = generateOtp(e.OTP_LENGTH);
+    const code = otpCodeFor(phone);
     const codeHash = hmacOtp(code, e.OTP_HMAC_SECRET);
     const expiresAt = new Date(Date.now() + e.OTP_TTL_SECONDS * 1000);
 
@@ -497,7 +497,7 @@ export class AuthService {
       throw AppError.conflict('Phone identity already registered');
     }
 
-    const code = generateOtp(e.OTP_LENGTH);
+    const code = otpCodeFor(phone);
     const codeHash = hmacOtp(code, e.OTP_HMAC_SECRET);
     const expiresAt = new Date(Date.now() + e.OTP_TTL_SECONDS * 1000);
 

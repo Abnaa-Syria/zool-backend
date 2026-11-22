@@ -37,6 +37,12 @@ const envSchema = z
     OTP_RESEND_COOLDOWN_SECONDS: z.coerce.number().int().positive().default(60),
     OTP_HMAC_SECRET: z.string().min(32),
     OTP_DEV_EXPOSE: booleanFromString.default(false),
+    /**
+     * Staging/test accounts and store-review accounts: fixed login codes, no SMS needed.
+     * "+249900000001:482913,+2499000003*:771204" (a trailing * matches a phone prefix).
+     * Keep the codes secret; remove the list at public launch.
+     */
+    OTP_FIXED_CODES: z.string().optional().default(''),
     OTP_REQUEST_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
     OTP_REQUEST_RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().positive().default(600),
     OTP_VERIFY_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
@@ -52,6 +58,8 @@ const envSchema = z
     DEFAULT_SETTLEMENT_PERIOD: z.enum(['WEEKLY', 'MONTHLY']).default('MONTHLY'),
     SEAT_HOLD_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     PAYMENT_PROVIDER: z.enum(['mock']).default('mock'),
+    /** Staging only: allow the mock provider's confirm endpoints while NODE_ENV=production. */
+    PAYMENT_MOCK_IN_PRODUCTION: booleanFromString.default(false),
     /** Dev/staging: keep the demo carrier scheduled this many days ahead (0 = off). */
     DEMO_SCHEDULE_DAYS: z.coerce.number().int().min(0).max(60).default(0),
     PAYMENT_WEBHOOK_SECRET: z.string().min(16).default('change-me-payment-webhook-secret'),
@@ -65,6 +73,13 @@ const envSchema = z
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   })
   .superRefine((data, ctx) => {
+    for (const entry of data.OTP_FIXED_CODES.split(',').map((s) => s.trim()).filter(Boolean)) {
+      const [phone, code] = entry.split(':');
+      if (!phone || !/^\+\d{6,15}\*?$/.test(phone) || !code || !new RegExp(`^\\d{${data.OTP_LENGTH}}$`).test(code)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['OTP_FIXED_CODES'], message: `Invalid entry "${entry}" (expected +2499xxxxxxx[*]:${'9'.repeat(data.OTP_LENGTH)})` });
+      }
+    }
+
     if (data.NODE_ENV === 'production' && data.OTP_DEV_EXPOSE) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

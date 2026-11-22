@@ -92,7 +92,7 @@ function assertSdg(currency: string): void {
 
 export function isMockPaymentEnabled(): boolean {
   const e = env();
-  return e.PAYMENT_PROVIDER === 'mock' && e.NODE_ENV !== 'production';
+  return e.PAYMENT_PROVIDER === 'mock' && (e.NODE_ENV !== 'production' || e.PAYMENT_MOCK_IN_PRODUCTION);
 }
 
 /**

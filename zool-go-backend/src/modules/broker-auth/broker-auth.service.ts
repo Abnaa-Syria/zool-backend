@@ -18,7 +18,7 @@ import { AppError } from '../../shared/errors/app-error';
 import { setBrokerAuthzVersion } from '../../shared/security/broker-authz-cache';
 import { signBrokerAccessToken } from '../../shared/security/broker-tokens';
 import {
-  generateOtp,
+  otpCodeFor,
   hmacOtp,
   randomToken,
   sha256Hex,
@@ -128,7 +128,7 @@ export class BrokerAuthService {
       throw AppError.unauthorized('No active broker employee found for this phone');
     }
 
-    const code = generateOtp(e.OTP_LENGTH);
+    const code = otpCodeFor(phone);
     const codeHash = hmacOtp(code, e.OTP_HMAC_SECRET);
     const expiresAt = new Date(Date.now() + e.OTP_TTL_SECONDS * 1000);
 

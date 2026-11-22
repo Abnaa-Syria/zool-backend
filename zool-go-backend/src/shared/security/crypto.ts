@@ -22,6 +22,17 @@ export function randomToken(bytes = 32): string {
   return randomBytes(bytes).toString('base64url');
 }
 
+/** Login code for a phone: a configured fixed code (OTP_FIXED_CODES) or a random one. */
+export function otpCodeFor(phone: string): string {
+  for (const entry of env().OTP_FIXED_CODES.split(',')) {
+    const [pattern, code] = entry.trim().split(':');
+    if (!pattern || !code) continue;
+    const match = pattern.endsWith('*') ? phone.startsWith(pattern.slice(0, -1)) : phone === pattern;
+    if (match) return code;
+  }
+  return generateOtp();
+}
+
 export function generateOtp(length = env().OTP_LENGTH): string {
   const safeLength = Math.max(4, Math.min(8, length));
   const max = 10 ** safeLength;
