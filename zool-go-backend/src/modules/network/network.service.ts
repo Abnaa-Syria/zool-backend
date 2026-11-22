@@ -59,7 +59,15 @@ export function toScheduledTripDto(t: TripRow) {
     currency: 'SDG' as const,
     serviceClass: t.serviceClass,
     isActive: t.isActive,
-    vehicle: t.vehicle,
+    vehicle: t.vehicle
+      ? {
+          id: t.vehicle.id,
+          plateNumber: t.vehicle.plateNumber,
+          model: t.vehicle.model,
+          capacity: t.vehicle.capacity,
+          aisleAfterColumn: seatLayoutSchema.safeParse(t.vehicle.seatLayout).data?.aisleAfterColumn ?? null,
+        }
+      : null,
     driver: t.driver,
     stops: t.stops.map((s) => ({
       sequence: s.sequence,

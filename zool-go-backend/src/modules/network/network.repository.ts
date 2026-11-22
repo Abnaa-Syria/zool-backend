@@ -19,7 +19,7 @@ export const tripInclude = {
   route: { select: { id: true, code: true } },
   originStation: { select: stationSelect },
   destinationStation: { select: stationSelect },
-  vehicle: { select: { id: true, plateNumber: true, model: true, capacity: true } },
+  vehicle: { select: { id: true, plateNumber: true, model: true, capacity: true, seatLayout: true } },
   driver: { select: { id: true, driverCode: true, displayName: true } },
   stops: { orderBy: { sequence: 'asc' }, include: { station: { select: stationSelect } } },
   seats: { orderBy: { sortOrder: 'asc' }, select: { seatLabel: true, status: true, layoutRow: true, layoutColumn: true, isWomenOnly: true } },

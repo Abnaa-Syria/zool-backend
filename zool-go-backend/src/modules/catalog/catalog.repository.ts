@@ -16,6 +16,16 @@ export const tripWithCompany = {
 
 export type TripWithCompany = Prisma.TripGetPayload<{ include: typeof tripWithCompany }>;
 
+/** Admin list rows: enough to render the trips table without per-row detail requests. */
+export const adminTripListInclude = {
+  company: true,
+  route: { select: { id: true, code: true } },
+  vehicle: { select: { id: true, plateNumber: true, model: true } },
+  driver: { select: { id: true, driverCode: true, displayName: true } },
+} satisfies Prisma.TripInclude;
+
+export type AdminTripListRow = Prisma.TripGetPayload<{ include: typeof adminTripListInclude }>;
+
 /** Trips that can still be searched, held and booked (D-SUS-01: cancelled trips never). */
 export const BOOKABLE_TRIP_STATUSES: TripStatus[] = [TripStatus.SCHEDULED, TripStatus.BOARDING];
 
@@ -102,6 +112,20 @@ export class CatalogRepository {
       LIMIT ${Prisma.raw(String(limit))}
       FOR UPDATE
     `;
+  }
+
+  async listTripsAdmin(params: { skip: number; take: number; where: Prisma.TripWhereInput }) {
+    const [items, total] = await Promise.all([
+      getPrisma().trip.findMany({
+        where: params.where,
+        include: adminTripListInclude,
+        orderBy: [{ departureAt: 'asc' }, { id: 'asc' }],
+        skip: params.skip,
+        take: params.take,
+      }),
+      getPrisma().trip.count({ where: params.where }),
+    ]);
+    return { items, total };
   }
 
   async listTrips(params: {

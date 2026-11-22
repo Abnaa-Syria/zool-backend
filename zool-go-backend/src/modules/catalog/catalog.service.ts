@@ -1,4 +1,4 @@
-import { Prisma, TripSeatStatus, type TripSeat, type SeatHold } from '@prisma/client';
+import { Prisma, TripSeatStatus, type TripSeat, type SeatHold, type TripStatus } from '@prisma/client';
 import { env } from '../../config/env';
 import { runtimeSettings } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
@@ -11,6 +11,7 @@ import { CatalogErrors } from './catalog.errors';
 import {
   BOOKABLE_TRIP_STATUSES,
   catalogRepository,
+  type AdminTripListRow,
   type TripWithCompany,
 } from './catalog.repository';
 
@@ -33,9 +34,17 @@ function seatSummary(counts: SeatCounts | undefined) {
   };
 }
 
-function toAdminTripDto(trip: TripWithCompany, counts: SeatCounts | undefined) {
+function toAdminTripDto(trip: TripWithCompany | AdminTripListRow, counts: SeatCounts | undefined) {
+  const rich = 'route' in trip ? trip : null;
   return {
     id: trip.id,
+    tripNumber: trip.tripNumber,
+    status: trip.status,
+    serviceClass: trip.serviceClass,
+    arrivalAt: trip.arrivalAt?.toISOString() ?? null,
+    route: rich?.route ?? null,
+    vehicle: rich?.vehicle ?? null,
+    driver: rich?.driver ?? null,
     company: { id: trip.company.id, key: trip.company.key, name: trip.company.name },
     origin: trip.origin,
     destination: trip.destination,
@@ -123,20 +132,37 @@ export class CatalogService {
     origin?: string;
     destination?: string;
     date?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    status?: TripStatus;
+    routeId?: string;
+    vehicleId?: string;
+    driverId?: string;
+    q?: string;
   }) {
     const { page, pageSize, skip, take } = parsePagination(query);
+    let departureAt: Prisma.DateTimeFilter | undefined;
+    if (query.date) {
+      const { from, to } = platformDay(query.date);
+      departureAt = { gte: from, lt: to };
+    } else if (query.dateFrom || query.dateTo) {
+      departureAt = {
+        ...(query.dateFrom ? { gte: platformDay(query.dateFrom).from } : {}),
+        ...(query.dateTo ? { lt: platformDay(query.dateTo).to } : {}),
+      };
+    }
     const where: Prisma.TripWhereInput = {
       ...(query.companyId ? { companyId: query.companyId } : {}),
       ...(query.origin ? { origin: { contains: query.origin } } : {}),
       ...(query.destination ? { destination: { contains: query.destination } } : {}),
-      ...(query.date
-        ? (() => {
-            const { from, to } = platformDay(query.date);
-            return { departureAt: { gte: from, lt: to } };
-          })()
-        : {}),
+      ...(departureAt ? { departureAt } : {}),
+      ...(query.status ? { status: query.status } : {}),
+      ...(query.routeId ? { routeId: query.routeId } : {}),
+      ...(query.vehicleId ? { vehicleId: query.vehicleId } : {}),
+      ...(query.driverId ? { driverId: query.driverId } : {}),
+      ...(query.q ? { tripNumber: { contains: query.q } } : {}),
     };
-    const { items, total } = await catalogRepository.listTrips({ skip, take, where });
+    const { items, total } = await catalogRepository.listTripsAdmin({ skip, take, where });
     const counts = await catalogRepository.seatCountsByTrip(items.map((t) => t.id));
     return {
       items: items.map((t) => toAdminTripDto(t, counts.get(t.id))),

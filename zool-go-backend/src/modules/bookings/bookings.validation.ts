@@ -40,6 +40,7 @@ export const listBookingsQuerySchema = paginationQuerySchema.extend({
 
 export const adminListBookingsQuerySchema = listBookingsQuerySchema.extend({
   officeId: z.string().min(1).max(64).optional(),
+  customerId: z.string().min(1).max(64).optional(),
   q: z.string().trim().min(1).max(64).optional(),
 });
 

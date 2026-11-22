@@ -38,6 +38,15 @@ export const adminTripsQuerySchema = paginationQuerySchema.extend({
   origin: z.string().min(1).max(120).optional(),
   destination: z.string().min(1).max(120).optional(),
   date: isoDateSchema.optional(),
+  /** Sudan calendar days, inclusive; ignored when `date` is set */
+  dateFrom: isoDateSchema.optional(),
+  dateTo: isoDateSchema.optional(),
+  status: z.enum(['SCHEDULED', 'BOARDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  routeId: z.string().min(1).max(64).optional(),
+  vehicleId: z.string().min(1).max(64).optional(),
+  driverId: z.string().min(1).max(64).optional(),
+  /** Trip number contains */
+  q: z.string().trim().min(1).max(64).optional(),
 });
 
 export const brokerTripsQuerySchema = paginationQuerySchema
