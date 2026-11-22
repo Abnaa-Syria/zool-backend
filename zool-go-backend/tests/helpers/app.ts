@@ -9,6 +9,7 @@ import { PERMISSION_CATALOG, SUPER_ADMIN_ROLE_KEY } from '../../src/shared/const
 import { AdminStatus, IdentityType } from '@prisma/client';
 import { normalizePhone } from '../../src/shared/utils/phone';
 import { setAuthzVersion } from '../../src/shared/security/authz-cache';
+import { runtimeSettings } from '../../src/shared/settings/runtime-settings';
 
 let app: Express | null = null;
 
@@ -99,6 +100,8 @@ export async function resetDatabase(): Promise<void> {
   if (keys.length > 0) {
     await redis.del(...keys);
   }
+  // Settings rows are gone: drop the in-memory snapshot so no override leaks into the next test.
+  await runtimeSettings.reload();
 }
 
 export async function seedCatalogAndSuperAdmin(phone = '+249900000001') {

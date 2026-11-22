@@ -2417,6 +2417,98 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/bookings/{bookingId}/change-seat:
+    post:
+      tags: [Booking Changes]
+      summary: 'Move one passenger to another free seat of the same trip (same ticket number, free; women-only respected)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/bookings/{bookingId}/change-options:
+    get:
+      tags: [Booking Changes]
+      summary: 'Other trips of the same carrier and cities on ?date= with enough seats and the price difference'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/bookings/{bookingId}/change-quote:
+    post:
+      tags: [Booking Changes]
+      summary: 'Price a trip change from seat holds on the new trip: new total, fee, payMinor or refundMinor (cash: collectOnBoardMinor)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/bookings/{bookingId}/change:
+    post:
+      tags: [Booking Changes]
+      summary: 'Apply the trip change (Idempotency-Key). Higher price: new booking PENDING_PAYMENT + payment, old stays valid until paid; lower: refund; old booking becomes CHANGED'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }, { name: Idempotency-Key, in: header, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /broker/bookings/{bookingId}/change-seat:
+    post:
+      tags: [Booking Changes]
+      summary: 'Seat change on the same trip (broker.book)'
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /broker/bookings/{bookingId}/change-options:
+    get:
+      tags: [Booking Changes]
+      summary: 'Candidate trips for a trip change on ?date='
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /broker/bookings/{bookingId}/change-quote:
+    post:
+      tags: [Booking Changes]
+      summary: 'Price a trip change from held seats (tripId, seatIds): wallet payMinor/refundMinor and new commission'
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /broker/bookings/{bookingId}/change:
+    post:
+      tags: [Booking Changes]
+      summary: 'Apply the trip change: wallet debit/credit of the difference + fee, commission clawed back and re-accrued, old booking CHANGED'
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
 components:
   securitySchemes:
     bearerAuth:

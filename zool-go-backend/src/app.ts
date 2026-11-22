@@ -48,6 +48,7 @@ import {
   customerTripRoutes,
 } from './modules/customer-app';
 import { driverAuthRoutes, driverMeRoutes } from './modules/driver-app';
+import { brokerBookingChangeRoutes, customerBookingChangeRoutes } from './modules/booking-changes';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -120,6 +121,7 @@ export function createApp() {
   app.use(`${prefix}/broker/trips`, brokerTripRoutes);
   app.use(`${prefix}/broker/holds`, brokerHoldRoutes);
   app.use(`${prefix}/broker/bookings`, brokerBookingRoutes);
+  app.use(`${prefix}/broker/bookings`, brokerBookingChangeRoutes);
   app.use(`${prefix}/broker/commissions`, brokerCommissionRoutes);
   app.use(`${prefix}/broker/reports`, brokerReportsRoutes);
   app.use(`${prefix}/broker/dashboard`, brokerDashboardRoutes);
@@ -131,6 +133,7 @@ export function createApp() {
   app.use(`${prefix}/customer/holds`, customerHoldRoutes);
   app.use(`${prefix}/customer/recent-searches`, customerRecentSearchRoutes);
   app.use(`${prefix}/customer/bookings`, customerBookingRoutes);
+  app.use(`${prefix}/customer/bookings`, customerBookingChangeRoutes);
   app.use(`${prefix}/customer/tickets`, customerTicketRoutes);
   app.use(`${prefix}/customer/payments`, customerPaymentRoutes);
 

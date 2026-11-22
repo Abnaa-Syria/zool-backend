@@ -35,6 +35,7 @@ import {
   registerCustomerIntentWebhookHandler,
   type ParsedWebhookEvent,
 } from '../payments';
+import { bookingChangesRepository } from '../booking-changes/booking-changes.repository';
 import { customerBookingsRepository, type CustomerHoldRow } from './customer-bookings.repository';
 
 export interface CheckoutPassenger {
@@ -447,6 +448,11 @@ export class CustomerCheckoutService {
         where: { id: { in: bookings.map((b) => b.id) }, status: BookingStatus.PENDING_PAYMENT },
         data: { status: BookingStatus.CONFIRMED, paymentStatus: BookingPaymentStatus.PAID, confirmedAt: new Date() },
       });
+      if (intent.purpose === PaymentIntentPurpose.CHANGE_DIFFERENCE && intent.bookingId) {
+        // D-CHG-01: the difference is paid, so the old booking is replaced now.
+        const change = await bookingChangesRepository.findChangeByNewBooking(intent.bookingId, tx);
+        if (change) await bookingChangesRepository.retireChangedBooking(change.bookingId, tx);
+      }
       await notificationsService.notify(
         [{ type: PrincipalType.CUSTOMER, id: intent.customerId }],
         { type: 'PAYMENT_SUCCEEDED', title: 'تم الدفع وإصدار تذكرتك', body: 'حجزك مؤكد. تجد التذكرة في رحلاتي.', data: { bookingId: bookings[0]!.id } },
