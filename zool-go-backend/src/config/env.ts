@@ -52,6 +52,8 @@ const envSchema = z
     DEFAULT_SETTLEMENT_PERIOD: z.enum(['WEEKLY', 'MONTHLY']).default('MONTHLY'),
     SEAT_HOLD_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     PAYMENT_PROVIDER: z.enum(['mock']).default('mock'),
+    /** Dev/staging: keep the demo carrier scheduled this many days ahead (0 = off). */
+    DEMO_SCHEDULE_DAYS: z.coerce.number().int().min(0).max(60).default(0),
     PAYMENT_WEBHOOK_SECRET: z.string().min(16).default('change-me-payment-webhook-secret'),
     PAYMENT_WEBHOOK_MAX_AGE_SECONDS: z.coerce.number().int().positive().default(300),
     PLATFORM_TIMEZONE: z.string().min(1).default('Africa/Khartoum'),

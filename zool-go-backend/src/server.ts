@@ -3,6 +3,7 @@ import { createApp } from './app';
 import { connectPrisma, disconnectPrisma } from './infrastructure/database/prisma';
 import { connectRedis, disconnectRedis } from './infrastructure/redis/redis';
 import { logger } from './infrastructure/observability/logger';
+import { ensureDemoSchedule } from './dev/demo-schedule';
 import { catalogService } from './modules/catalog/catalog.service';
 import { customerCheckoutService, sendDepartureReminders } from './modules/customer-app';
 
@@ -32,9 +33,22 @@ async function main() {
   }, 30_000);
   sweeper.unref();
 
+  // Dev/staging: keep demo trips available for app developers (DEMO_SCHEDULE_DAYS > 0).
+  let demo: NodeJS.Timeout | null = null;
+  if (config.DEMO_SCHEDULE_DAYS > 0) {
+    const refresh = () =>
+      ensureDemoSchedule(config.DEMO_SCHEDULE_DAYS)
+        .then((n) => n > 0 && logger.info({ created: n }, 'Demo trips scheduled'))
+        .catch((err: unknown) => logger.warn({ err }, 'Demo schedule failed'));
+    void refresh();
+    demo = setInterval(refresh, 60 * 60 * 1000);
+    demo.unref();
+  }
+
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'Shutting down');
     clearInterval(sweeper);
+    if (demo) clearInterval(demo);
     server.close(async () => {
       try {
         await disconnectPrisma();

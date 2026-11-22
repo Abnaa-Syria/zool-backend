@@ -21,6 +21,8 @@
     "prisma:validate": "prisma validate",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:demo": "tsx scripts/demo-schedule.ts",
+    "docs:postman": "node scripts/postman.mjs",
     "db:reset": "prisma migrate reset --force",
     "db:test:prepare": "node scripts/test-db-prepare.mjs"
   },

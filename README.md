@@ -16,3 +16,5 @@ Mobile app designs (Figma): https://www.figma.com/design/sz5wZeoY4Bz4rOVhnFpkWq/
 
 - Commit and push directly to `main` (no branches / PRs). Before pushing, run lint, typecheck and tests locally; CI runs the same checks on every push.
 - Never commit `.env*` files except the `*.example` templates.
+
+**App developers:** start with `docs/APP_DEVELOPER_GUIDE.md` (accounts, Postman, auth flow) and `docs/MISSING_SCREENS.md`.
