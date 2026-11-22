@@ -97,6 +97,8 @@ export function toCustomerBookingDto(b: CustomerBookingRow, payment: ReturnType<
     rating: b.rating ? { stars: b.rating.stars, comment: b.rating.comment, createdAt: b.rating.createdAt.toISOString() } : null,
     actions: customerActions(b),
     changeCount: b.changeCount,
+    replacedByBookingId: b.changesFrom.find((c) => c.newBookingId)?.newBookingId ?? null,
+    replacesBookingId: b.changedFrom?.bookingId ?? null,
     confirmedAt: b.confirmedAt?.toISOString() ?? null,
     cancelledAt: b.cancelledAt?.toISOString() ?? null,
     cancelReason: b.cancelReason,

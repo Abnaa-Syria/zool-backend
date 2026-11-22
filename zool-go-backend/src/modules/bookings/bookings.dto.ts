@@ -59,7 +59,15 @@ export function toBookingDto(booking: BookingRow) {
       fullName: p.fullName,
       phone: p.phone,
       idNumber: p.idNumber,
+      gender: p.gender,
     })),
+    /** D-CHG-01: set on a CHANGED booking — the booking that replaced it */
+    replacedByBookingId: booking.changesFrom.find((c) => c.newBookingId)?.newBookingId ?? null,
+    /** D-CHG-01: set on a booking created by a trip change */
+    replacesBookingId: booking.changedFrom?.bookingId ?? null,
+    changeCount: booking.changeCount,
+    groupId: booking.groupId,
+    leg: booking.leg,
     tickets,
   };
 }

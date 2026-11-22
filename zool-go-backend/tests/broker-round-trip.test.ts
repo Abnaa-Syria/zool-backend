@@ -87,6 +87,8 @@ describe('Broker round trip (D-RT-01) and women-only seats', () => {
     expect(bad.body.code).toBe('ROUND_TRIP_INVALID');
 
     const w = await seatIds(out, ['11']);
+    const q = await request(app).post('/api/v1/broker/bookings/quote').set(auth(mgr)).send({ tripId: out, seatIds: w, passengers: [pax[0]] });
+    expect(q.body.code).toBe('WOMEN_ONLY_SEAT');
     const man = await request(app).post('/api/v1/broker/bookings/confirm').set(auth(mgr)).send({ tripId: out, seatIds: w, passengers: [pax[0]], idempotencyKey: 'rt-women-1' });
     expect(man.status).toBe(422);
     expect(man.body.code).toBe('WOMEN_ONLY_SEAT');

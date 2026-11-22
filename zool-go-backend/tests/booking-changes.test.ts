@@ -83,7 +83,7 @@ describe('D-CHG-01 booking changes (customer and broker)', () => {
     expect(res.body.data.booking.tickets.map((t: { passenger: { fullName: string }; seatLabel: string }) => `${t.seatLabel}:${t.passenger.fullName}`)).toEqual(['3:Ali', '4:Sara']);
     expect(res.body.data.refund).toMatchObject({ amountMinor: 1_000_000, reason: 'CHANGE_DIFFERENCE', status: 'SUCCEEDED' });
     const old = await request(app).get(`/api/v1/customer/bookings/${b.id}`).set(auth(token));
-    expect(old.body.data.status).toBe('CHANGED');
+    expect(old.body.data).toMatchObject({ status: 'CHANGED', replacedByBookingId: res.body.data.booking.id });
     expect(old.body.data.tickets[0]).toMatchObject({ status: 'CHANGED', qrPayload: null });
     const replay = await request(app).post(`/api/v1/customer/bookings/${b.id}/change`).set(auth(token)).set('Idempotency-Key', 'chg-cheap-key').send({ holdIds });
     expect(replay.status).toBe(200);
@@ -140,7 +140,7 @@ describe('D-CHG-01 booking changes (customer and broker)', () => {
     const s2 = await seatId(tDear, '2');
     await request(app).post(`/api/v1/broker/trips/${tDear}/holds`).set(auth(mgr)).send({ seatIds: [s2] });
     const quote = await request(app).post(`/api/v1/broker/bookings/${bookingId}/change-quote`).set(auth(mgr)).send({ tripId: tDear, seatIds: [s2] });
-    expect(quote.body.data).toMatchObject({ payMinor: 500_000, refundMinor: 0, commission: { newCommissionMinor: 400_000 } });
+    expect(quote.body.data).toMatchObject({ payMinor: 500_000, refundMinor: 0, commission: { newCommissionMinor: 400_000 }, newTrip: { seatsTotal: 28 } });
     const res = await request(app).post(`/api/v1/broker/bookings/${bookingId}/change`).set(auth(mgr)).send({ tripId: tDear, seatIds: [s2], idempotencyKey: 'brk-chg-key1' });
     expect(res.status).toBe(201);
     expect(res.body.data.booking).toMatchObject({ status: 'CONFIRMED', totalAmountMinor: 4_000_000, commissionAmountMinor: 400_000 });
@@ -149,7 +149,9 @@ describe('D-CHG-01 booking changes (customer and broker)', () => {
     expect(wallet.body.data.balanceMinor).toBe(20_000_000 - 3_500_000 - 500_000);
     const accruals = await getPrisma().commissionAccrual.findMany({ orderBy: { createdAt: 'asc' } });
     expect(accruals.map((a) => `${a.amount}:${a.status}`)).toEqual(['350000:CLAWED_BACK', '400000:UNSETTLED']);
-    expect((await request(app).get(`/api/v1/broker/bookings/${bookingId}`).set(auth(mgr))).body.data.status).toBe('CHANGED');
+    const oldB = (await request(app).get(`/api/v1/broker/bookings/${bookingId}`).set(auth(mgr))).body.data;
+    expect(oldB).toMatchObject({ status: 'CHANGED', replacedByBookingId: res.body.data.booking.id });
+    expect(res.body.data.booking.replacesBookingId).toBe(bookingId);
 
     // Seat change on the broker side.
     const nb = res.body.data.booking.id;

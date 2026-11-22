@@ -253,9 +253,10 @@ export class BookingChangesService {
       const percent = decimalToNumber(assignment.commissionPercent);
       commission = { percent, newCommissionMinor: computeCommission(trip.basePrice * seats.length, percent) };
     }
+    const counts = await catalogRepository.seatCountsByTrip([trip.id]);
     return {
       bookingId: b.id,
-      newTrip: toTripCardView(trip, undefined),
+      newTrip: toTripCardView(trip, counts.get(trip.id)),
       seats: seats.map((s) => s.seatLabel),
       ...this.price(scope, b, trip, seats.length),
       ...(commission ? { commission } : {}),

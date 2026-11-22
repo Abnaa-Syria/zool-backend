@@ -18,6 +18,8 @@ export const bookingInclude = {
   passengers: true,
   tickets: { include: { tripSeat: true } },
   commissionAccrual: true,
+  changesFrom: { where: { kind: 'TRIP' }, select: { newBookingId: true } },
+  changedFrom: { select: { bookingId: true } },
 } satisfies Prisma.BookingInclude;
 
 export type BookingRow = Prisma.BookingGetPayload<{ include: typeof bookingInclude }>;

@@ -20,6 +20,8 @@ export const customerBookingInclude = {
   refunds: { orderBy: { createdAt: 'desc' } },
   rating: true,
   couponRedemption: { include: { coupon: { select: { code: true } } } },
+  changesFrom: { where: { kind: 'TRIP' }, select: { newBookingId: true } },
+  changedFrom: { select: { bookingId: true } },
 } satisfies Prisma.BookingInclude;
 
 export type CustomerBookingRow = Prisma.BookingGetPayload<{ include: typeof customerBookingInclude }>;

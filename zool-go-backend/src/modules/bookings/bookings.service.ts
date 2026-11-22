@@ -190,8 +190,11 @@ export class BookingsService {
       ]);
       assertRoundTrip(t1!, t2!);
       const total = out.totalAmountMinor + back.totalAmountMinor;
+      const ex = out.exposure as { ceiling: number; usedToday: number };
+      const seatsBoth = (out.seatCount as number) + (back.seatCount as number);
       return {
         ...out,
+        exposure: { ...ex, remaining: Math.max(0, ex.ceiling - ex.usedToday), withinCeiling: ex.usedToday + seatsBoth <= ex.ceiling },
         returnLeg: back,
         combinedTotalMinor: total,
         combinedCommissionMinor: out.expectedCommissionMinor + back.expectedCommissionMinor,
@@ -232,6 +235,18 @@ export class BookingsService {
     if (unavailable.length > 0) {
       throw CatalogErrors.seatUnavailable({ unavailableSeatIds: unavailable.map((s) => s.id) });
     }
+
+    input.seatIds.forEach((seatId, i) => {
+      const seat = selected.find((s) => s.id === seatId)!;
+      if (seat.isWomenOnly && input.passengers[i]?.gender !== 'FEMALE') {
+        throw new AppError({
+          statusCode: 422,
+          code: ErrorCodes.WOMEN_ONLY_SEAT,
+          message: `Seat ${seat.seatLabel} is for women only`,
+          details: { tripId: trip.id, seatLabel: seat.seatLabel, passengerIndex: i },
+        });
+      }
+    });
 
     const seatCount = selected.length;
     const totalAmount = trip.basePrice * seatCount;
