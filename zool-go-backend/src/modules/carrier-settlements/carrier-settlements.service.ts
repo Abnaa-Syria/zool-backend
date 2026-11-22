@@ -155,7 +155,8 @@ export function toSettlementDto(s: Row, withLines = false) {
 }
 
 const include = { company: { select: { id: true, name: true, shortName: true } } } as const;
-const stateError = (message: string, details?: unknown) => new AppError({ statusCode: 409, code: ErrorCodes.SETTLEMENT_OVERLAP, message, ...(details ? { details } : {}) });
+const overlapError = (message: string, details?: unknown) => new AppError({ statusCode: 409, code: ErrorCodes.SETTLEMENT_OVERLAP, message, ...(details ? { details } : {}) });
+const stateError = (message: string, details?: unknown) => new AppError({ statusCode: 409, code: ErrorCodes.SETTLEMENT_STATE_INVALID, message, ...(details ? { details } : {}) });
 
 /** Admin-managed carrier settlement statements (DRAFT → FINALIZED → PAID, or CANCELLED). */
 export class CarrierSettlementsService {
@@ -184,7 +185,7 @@ export class CarrierSettlementsService {
       where: { companyId: input.companyId, status: { not: CarrierSettlementStatus.CANCELLED }, periodFrom: { lt: to }, periodTo: { gt: from } },
       select: { id: true, periodFrom: true, periodTo: true },
     });
-    if (overlap) throw stateError('A settlement already covers part of this period', { settlementId: overlap.id });
+    if (overlap) throw overlapError('A settlement already covers part of this period', { settlementId: overlap.id });
     const cfg = await this.config(input.companyId);
     const st = await computeCarrierStatement(input.companyId, from, to, cfg);
     const { lines, ...totals } = st;

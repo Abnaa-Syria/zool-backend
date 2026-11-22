@@ -1,3 +1,4 @@
+import { ErrorCodes } from '../../shared/errors/error-codes';
 import type { CommissionBearer, PlatformFeeType } from '@prisma/client';
 import { normalizePhone } from '../../shared/utils/phone';
 import { carrierPortalRepository } from '../carrier-portal/carrier-portal.repository';
@@ -45,9 +46,9 @@ function toDetailDto(company: TransportCompany & { _count: { brokerAssignments: 
 export class CarriersService {
   async create(input: { key: string; name: string; manager?: { displayName: string; phone: string }; actorAdminId: string; requestId?: string }) {
     const existing = await carriersRepository.findByKey(input.key);
-    if (existing) throw AppError.conflict('Transport company key already exists');
+    if (existing) throw new AppError({ statusCode: 409, code: ErrorCodes.CARRIER_KEY_EXISTS, message: 'Transport company key already exists' });
     if (input.manager && (await carrierPortalRepository.findIdentityByPhone(normalizePhone(input.manager.phone)))) {
-      throw AppError.conflict('Phone identity already registered');
+      throw new AppError({ statusCode: 409, code: ErrorCodes.PHONE_ALREADY_REGISTERED, message: 'Phone identity already registered' });
     }
 
     try {

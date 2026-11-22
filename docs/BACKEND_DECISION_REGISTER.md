@@ -228,7 +228,7 @@ Also:
 **Status:** **LOCKED as configurable; values OPEN (PO)** — 2026-11-22. Replaces the D-REV-01 "out of scope" posture.
 
 - Per carrier, set from the admin dashboard: **platform fee** (`NONE` | `PERCENT` basis points | `FIXED` minor units per ticket; default `NONE`) and **broker commission bearer** (`CARRIER` | `PLATFORM`; default `PLATFORM` = today's behaviour).
-- Periodic statement per carrier: tickets sold (online, broker wallet, cash) − refunds − platform fee − broker commissions (when the carrier bears them) − cash already collected by its drivers = **net payable** (positive: platform pays the carrier; negative: carrier owes the platform). Admin drafts, reviews, finalizes and records the payment reference; finalized statements are immutable.
+- Periodic statement per carrier: **net payable** = online sales + broker wallet sales + platform-funded coupon discounts − refunds − platform fee (on every ticket, any channel) − broker commissions (only when the carrier bears them). Cash collected by its drivers is already held by the carrier: shown for information, not part of the net. Positive: platform pays the carrier; negative: carrier owes the platform. Admin drafts, reviews, finalizes and records the payment reference; finalized statements are immutable.
 
 ## D-REV-01 — Platform take-rate and carrier settlement
 

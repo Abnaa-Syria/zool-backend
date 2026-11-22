@@ -3,6 +3,7 @@ import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { carrierPermissions } from '../../shared/constants/carrier-permissions';
 import { AppError } from '../../shared/errors/app-error';
+import { ErrorCodes } from '../../shared/errors/error-codes';
 import { setPrincipalAuthzVersion } from '../../shared/security/principal-authz-cache';
 import { normalizePhone } from '../../shared/utils/phone';
 import { calendarDateInZone, zonedDayRange } from '../../shared/utils/timezone';
@@ -62,7 +63,7 @@ export class CarrierPortalService {
   /** Used by the carrier manager and by the platform admin (actorAdminId). */
   async createStaff(input: { companyId: string; displayName: string; phone: string; role?: 'MANAGER' | 'STAFF'; flags?: StaffFlags; actor: { actorAdminId?: string; actorType?: string; actorId?: string; requestId?: string } }) {
     const phone = normalizePhone(input.phone);
-    if (await carrierPortalRepository.findIdentityByPhone(phone)) throw AppError.conflict('Phone identity already registered');
+    if (await carrierPortalRepository.findIdentityByPhone(phone)) throw new AppError({ statusCode: 409, code: ErrorCodes.PHONE_ALREADY_REGISTERED, message: 'Phone identity already registered' });
     const role = input.role ?? 'STAFF';
     const created = await getPrisma().$transaction(async (tx) => {
       const e = await carrierPortalRepository.createEmployee(
@@ -105,7 +106,7 @@ export class CarrierPortalService {
     }
     const demotingLastManager =
       e.role === 'MANAGER' && (input.patch.role === 'STAFF' || input.patch.status === 'SUSPENDED') && (await carrierPortalRepository.countManagers(e.companyId)) <= 1;
-    if (demotingLastManager) throw AppError.conflict('The company needs at least one active manager');
+    if (demotingLastManager) throw new AppError({ statusCode: 409, code: ErrorCodes.LAST_MANAGER, message: 'The company needs at least one active manager' });
 
     const authChange = input.patch.role !== undefined || input.patch.status !== undefined || input.patch.flags !== undefined;
     const updated = await getPrisma().$transaction(async (tx) => {
