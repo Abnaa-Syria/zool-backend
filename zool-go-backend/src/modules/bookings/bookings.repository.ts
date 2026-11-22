@@ -101,6 +101,8 @@ export class BookingsRepository {
       commissionAmount: number;
       confirmedAt: Date;
       bookingRef: string;
+      groupId?: string;
+      leg?: 'OUTBOUND' | 'RETURN' | null;
     },
     tx: PrismaTx,
   ) {
@@ -108,7 +110,7 @@ export class BookingsRepository {
   }
 
   createPassenger(
-    data: { bookingId: string; fullName: string; phone: string; idNumber?: string },
+    data: { bookingId: string; fullName: string; phone: string; idNumber?: string; gender?: 'MALE' | 'FEMALE' },
     tx: PrismaTx,
   ) {
     return tx.bookingPassenger.create({ data });

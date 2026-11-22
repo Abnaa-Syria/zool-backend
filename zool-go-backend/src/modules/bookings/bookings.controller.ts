@@ -21,6 +21,7 @@ export class BookingsController {
       tripId: req.body.tripId as string,
       seatIds: req.body.seatIds as string[],
       passengers: req.body.passengers as PassengerInput[],
+      ...(req.body.returnTrip ? { returnTrip: req.body.returnTrip as { tripId: string; seatIds: string[] } } : {}),
     });
     return successResponse(res, {
       statusCode: 200,
@@ -35,6 +36,7 @@ export class BookingsController {
       tripId: req.body.tripId as string,
       seatIds: req.body.seatIds as string[],
       passengers: req.body.passengers as PassengerInput[],
+      ...(req.body.returnTrip ? { returnTrip: req.body.returnTrip as { tripId: string; seatIds: string[] } } : {}),
       idempotencyKey: req.body.idempotencyKey as string,
       requestId: req.requestId,
     });
@@ -43,7 +45,7 @@ export class BookingsController {
       message: result.replayed
         ? 'Booking already confirmed for this idempotency key'
         : 'Booking confirmed successfully',
-      data: { booking: result.booking, balanceAfterMinor: result.balanceAfterMinor },
+      data: { booking: result.booking, returnBooking: result.returnBooking, balanceAfterMinor: result.balanceAfterMinor },
       requestId: req.requestId,
     });
   }

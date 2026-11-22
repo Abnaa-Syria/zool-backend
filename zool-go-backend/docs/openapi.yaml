@@ -1122,7 +1122,7 @@ paths:
   /broker/bookings/quote:
     post:
       tags: [Broker Bookings]
-      summary: Quote total, expected commission and balanceAfter (broker.book)
+      summary: 'Price a booking; with returnTrip both legs are priced and the wallet check covers combinedTotalMinor'
       security: [{ brokerBearerAuth: [] }]
       requestBody:
         required: true
@@ -1134,7 +1134,7 @@ paths:
   /broker/bookings/confirm:
     post:
       tags: [Broker Bookings]
-      summary: Atomic confirm - holds owned, exposure ceiling, wallet debit, seats SOLD, tickets, commission UNSETTLED (broker.book)
+      summary: 'Confirm and pay from the wallet (Idempotency via idempotencyKey). D-RT-01: optional returnTrip {tripId, seatIds} books both legs atomically (two debits, one group; response returnBooking). Passengers may carry gender; women-only seats need FEMALE (422 WOMEN_ONLY_SEAT)'
       security: [{ brokerBearerAuth: [] }]
       requestBody:
         required: true

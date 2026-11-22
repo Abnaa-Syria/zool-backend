@@ -2,6 +2,8 @@ import { newBookingRef } from '../../shared/utils/references';
 import { CSV_MAX_ROWS, toCsv } from '../../shared/http/csv';
 import {
   BookingChannel,
+  BookingGroupType,
+  BookingLeg,
   BookingStatus,
   CommissionAccrualStatus,
   Prisma,
@@ -68,6 +70,23 @@ export interface PassengerInput {
   fullName: string;
   phone: string;
   idNumber?: string;
+  /** Required for women-only seats */
+  gender?: 'MALE' | 'FEMALE';
+}
+
+/** D-RT-01: the return leg goes back between the same cities after the outbound arrives. */
+function assertRoundTrip(
+  out: { originStationId: string | null; destinationStationId: string | null; origin: string; destination: string; departureAt: Date; arrivalAt: Date | null },
+  back: { originStationId: string | null; destinationStationId: string | null; origin: string; destination: string; departureAt: Date },
+): void {
+  const mirrored = out.origin === back.destination && out.destination === back.origin;
+  if (!mirrored || back.departureAt.getTime() < (out.arrivalAt ?? out.departureAt).getTime()) {
+    throw new AppError({
+      statusCode: 422,
+      code: ErrorCodes.ROUND_TRIP_INVALID,
+      message: 'The return trip must go back between the same cities after the outbound trip arrives',
+    });
+  }
 }
 
 const ISOLATION = Prisma.TransactionIsolationLevel.ReadCommitted;
@@ -158,8 +177,28 @@ export class BookingsService {
 
   async quote(
     actor: BrokerActor,
-    input: { tripId: string; seatIds: string[]; passengers: PassengerInput[] },
-  ) {
+    input: { tripId: string; seatIds: string[]; passengers: PassengerInput[]; returnTrip?: { tripId: string; seatIds: string[] } },
+  ): Promise<Record<string, unknown> & { totalAmountMinor: number; expectedCommissionMinor: number; walletBalanceMinor: number }> {
+    if (input.returnTrip) {
+      // D-RT-01: price both legs; the wallet must cover the sum.
+      const { returnTrip, ...outbound } = input;
+      const out = await this.quote(actor, outbound);
+      const back = await this.quote(actor, { tripId: returnTrip.tripId, seatIds: returnTrip.seatIds, passengers: input.passengers });
+      const [t1, t2] = await Promise.all([
+        catalogRepository.findTripForBroker(input.tripId, actor.officeId),
+        catalogRepository.findTripForBroker(returnTrip.tripId, actor.officeId),
+      ]);
+      assertRoundTrip(t1!, t2!);
+      const total = out.totalAmountMinor + back.totalAmountMinor;
+      return {
+        ...out,
+        returnLeg: back,
+        combinedTotalMinor: total,
+        combinedCommissionMinor: out.expectedCommissionMinor + back.expectedCommissionMinor,
+        balanceAfterMinor: out.walletBalanceMinor - total,
+        sufficientBalance: out.walletBalanceMinor >= total,
+      };
+    }
     assertLines(input.seatIds, input.passengers);
 
     await catalogService.releaseExpiredHolds(input.tripId);
@@ -239,11 +278,14 @@ export class BookingsService {
       tripId: string;
       seatIds: string[];
       passengers: PassengerInput[];
+      /** D-RT-01: return leg with the same passengers (passenger i in returnTrip.seatIds[i]) */
+      returnTrip?: { tripId: string; seatIds: string[] };
       idempotencyKey: string;
       requestId?: string;
     },
   ) {
     assertLines(input.seatIds, input.passengers);
+    if (input.returnTrip) assertLines(input.returnTrip.seatIds, input.passengers);
     assertNotInMaintenance();
 
     const ledgerKey = `booking:${actor.officeId}:${input.idempotencyKey}`;
@@ -257,8 +299,16 @@ export class BookingsService {
 
     // Expired holds are released (and committed) before the atomic section.
     await catalogService.releaseExpiredHolds(input.tripId);
+    if (input.returnTrip) await catalogService.releaseExpiredHolds(input.returnTrip.tripId);
 
-    let result: { bookingId: string; balanceAfter: number };
+    const legs: Array<{ tripId: string; seatIds: string[]; leg: BookingLeg | null; key: string }> = input.returnTrip
+      ? [
+          { tripId: input.tripId, seatIds: input.seatIds, leg: BookingLeg.OUTBOUND, key: ledgerKey },
+          { tripId: input.returnTrip.tripId, seatIds: input.returnTrip.seatIds, leg: BookingLeg.RETURN, key: `${ledgerKey}:return` },
+        ]
+      : [{ tripId: input.tripId, seatIds: input.seatIds, leg: null, key: ledgerKey }];
+
+    let result: { bookingIds: string[]; balanceAfter: number };
     try {
       result = await getPrisma().$transaction(
         async (tx) => {
@@ -268,151 +318,152 @@ export class BookingsService {
           const office = await bookingsRepository.findOffice(actor.officeId, tx);
           if (!office) throw WalletErrors.walletNotFound();
           const policy = resolveOfficePolicy(office);
+          const now = new Date();
 
-          const trip = await catalogRepository.findTripForBroker(input.tripId, actor.officeId, tx);
-          if (!trip) throw CatalogErrors.tripNotFound();
-          if (!trip.isActive || trip.departureAt.getTime() <= Date.now()) {
-            throw CatalogErrors.tripNotBookable();
+          // Exposure ceiling: confirmed tickets issued today by this office (both legs count).
+          const { from, to } = officeDayBounds(now, policy.timeZone);
+          const usedToday = await bookingsRepository.countConfirmedTickets(actor.officeId, from, to, tx);
+          const requested = legs.reduce((n, l) => n + l.seatIds.length, 0);
+          if (usedToday + requested > policy.exposureCeiling) {
+            throw BookingErrors.exposureCeilingExceeded({ ceiling: policy.exposureCeiling, usedToday, requested });
           }
 
-          const assignment = await catalogRepository.findAssignment(
-            actor.officeId,
-            trip.companyId,
-            tx,
-          );
-          if (!assignment) throw CatalogErrors.tripNotFound();
+          const trips = [];
+          for (const l of legs) {
+            const trip = await catalogRepository.findTripForBroker(l.tripId, actor.officeId, tx);
+            if (!trip) throw CatalogErrors.tripNotFound();
+            if (!trip.isActive || trip.departureAt.getTime() <= Date.now()) throw CatalogErrors.tripNotBookable();
+            trips.push(trip);
+          }
+          if (trips.length === 2) assertRoundTrip(trips[0]!, trips[1]!);
 
-          const seats = await bookingsRepository.seatsWithHolds(trip.id, input.seatIds, tx);
-          if (seats.length !== input.seatIds.length) throw CatalogErrors.seatNotFound();
+          const group =
+            legs.length === 2
+              ? await tx.bookingGroup.create({ data: { type: BookingGroupType.ROUND_TRIP, channel: BookingChannel.BROKER, officeId: actor.officeId } })
+              : null;
 
-          const now = new Date();
-          const badSeats: string[] = [];
-          let seatTaken = false;
-          for (const seat of seats) {
-            const ownedHold =
-              seat.status === TripSeatStatus.HELD &&
-              seat.hold !== null &&
-              seat.hold.employeeId === actor.employeeId &&
-              seat.hold.officeId === actor.officeId &&
-              seat.hold.expiresAt.getTime() > now.getTime();
-            if (!ownedHold) {
-              badSeats.push(seat.id);
-              if (seat.status === TripSeatStatus.SOLD || seat.status === TripSeatStatus.HELD) {
-                seatTaken = true;
+          const bookingIds: string[] = [];
+          let balanceAfter = wallet.balance;
+          for (const [li, l] of legs.entries()) {
+            const trip = trips[li]!;
+            const assignment = await catalogRepository.findAssignment(actor.officeId, trip.companyId, tx);
+            if (!assignment) throw CatalogErrors.tripNotFound();
+
+            const seats = await bookingsRepository.seatsWithHolds(trip.id, l.seatIds, tx);
+            if (seats.length !== l.seatIds.length) throw CatalogErrors.seatNotFound();
+
+            const badSeats: string[] = [];
+            let seatTaken = false;
+            for (const seat of seats) {
+              const ownedHold =
+                seat.status === TripSeatStatus.HELD &&
+                seat.hold !== null &&
+                seat.hold.employeeId === actor.employeeId &&
+                seat.hold.officeId === actor.officeId &&
+                seat.hold.expiresAt.getTime() > now.getTime();
+              if (!ownedHold) {
+                badSeats.push(seat.id);
+                if (seat.status === TripSeatStatus.SOLD || seat.status === TripSeatStatus.HELD) seatTaken = true;
               }
             }
-          }
-          if (badSeats.length > 0) {
-            if (seatTaken) {
-              throw CatalogErrors.seatUnavailable({ unavailableSeatIds: badSeats });
+            if (badSeats.length > 0) {
+              if (seatTaken) throw CatalogErrors.seatUnavailable({ unavailableSeatIds: badSeats });
+              throw BookingErrors.holdRequired({ seatIds: badSeats });
             }
-            throw BookingErrors.holdRequired({ seatIds: badSeats });
-          }
 
-          // Exposure ceiling: confirmed tickets issued today (UTC) by this office.
-          const { from, to } = officeDayBounds(now, policy.timeZone);
-          const usedToday = await bookingsRepository.countConfirmedTickets(
-            actor.officeId,
-            from,
-            to,
-            tx,
-          );
-          const ceiling = policy.exposureCeiling;
-          if (usedToday + seats.length > ceiling) {
-            throw BookingErrors.exposureCeilingExceeded({
-              ceiling,
-              usedToday,
-              requested: seats.length,
+            // Women-only seats need a passenger declared FEMALE.
+            const seatById = new Map(seats.map((s) => [s.id, s]));
+            l.seatIds.forEach((seatId, i) => {
+              const seat = seatById.get(seatId)!;
+              if (seat.isWomenOnly && input.passengers[i]!.gender !== 'FEMALE') {
+                throw new AppError({
+                  statusCode: 422,
+                  code: ErrorCodes.WOMEN_ONLY_SEAT,
+                  message: `Seat ${seat.seatLabel} is for women only`,
+                  details: { tripId: trip.id, seatLabel: seat.seatLabel, passengerIndex: i },
+                });
+              }
             });
-          }
 
-          const totalAmount = trip.basePrice * seats.length;
-          const commissionAmount = computeCommission(
-            totalAmount,
-            decimalToNumber(assignment.commissionPercent),
-          );
+            const totalAmount = trip.basePrice * seats.length;
+            const commissionAmount = computeCommission(totalAmount, decimalToNumber(assignment.commissionPercent));
 
-          const booking = await bookingsRepository.createBooking(
-            {
-              officeId: actor.officeId,
-              employeeId: actor.employeeId,
-              tripId: trip.id,
-              totalAmount,
-              commissionAmount,
-              confirmedAt: now,
-              bookingRef: newBookingRef(env().PLATFORM_TIMEZONE, now),
-            },
-            tx,
-          );
-
-          const debit = await walletsService.debit(tx, {
-            walletId: wallet.id,
-            amount: totalAmount,
-            type: WalletLedgerType.DEBIT_BOOKING,
-            idempotencyKey: ledgerKey,
-            referenceType: 'booking',
-            referenceId: booking.id,
-          });
-          if (debit.replayed) throw BookingErrors.idempotencyInFlight();
-
-          const seatsByLabel = [...seats].sort((a, b) => compareSeatLabels(a.seatLabel, b.seatLabel));
-          // Pair passengers with seats in the order the client supplied the seatIds.
-          const seatById = new Map(seats.map((s) => [s.id, s]));
-          for (const [index, seatId] of input.seatIds.entries()) {
-            const seat = seatById.get(seatId);
-            const passenger = input.passengers[index];
-            if (!seat || !passenger) throw BookingErrors.passengerSeatMismatch();
-            const createdPassenger = await bookingsRepository.createPassenger(
+            const booking = await bookingsRepository.createBooking(
               {
-                bookingId: booking.id,
-                fullName: passenger.fullName,
-                phone: normalizePassengerPhone(passenger.phone),
-                ...(passenger.idNumber ? { idNumber: passenger.idNumber } : {}),
-              },
-              tx,
-            );
-            await bookingsRepository.createTicket(
-              {
-                bookingId: booking.id,
-                tripSeatId: seat.id,
-                passengerId: createdPassenger.id,
-                ticketNumber: ticketNumber(now),
-              },
-              tx,
-            );
-          }
-
-          const sold = await bookingsRepository.markSeatsSold(input.seatIds, tx);
-          if (sold !== input.seatIds.length) {
-            throw CatalogErrors.seatUnavailable();
-          }
-          await bookingsRepository.deleteHoldsForSeats(input.seatIds, tx);
-
-          await commissionsRepository.createAccrual(
-            { bookingId: booking.id, officeId: actor.officeId, amount: commissionAmount },
-            tx,
-          );
-
-          await auditService.record(
-            {
-              action: 'booking.confirmed',
-              resourceType: 'booking',
-              resourceId: booking.id,
-              requestId: input.requestId,
-              metadata: {
                 officeId: actor.officeId,
                 employeeId: actor.employeeId,
                 tripId: trip.id,
-                seatLabels: seatsByLabel.map((s) => s.seatLabel),
                 totalAmount,
                 commissionAmount,
-                balanceAfter: debit.entry.balanceAfter,
+                confirmedAt: now,
+                bookingRef: newBookingRef(env().PLATFORM_TIMEZONE, now),
+                ...(group ? { groupId: group.id, leg: l.leg } : {}),
               },
-            },
-            tx,
-          );
+              tx,
+            );
 
-          return { bookingId: booking.id, balanceAfter: debit.entry.balanceAfter };
+            const debit = await walletsService.debit(tx, {
+              walletId: wallet.id,
+              amount: totalAmount,
+              type: WalletLedgerType.DEBIT_BOOKING,
+              idempotencyKey: l.key,
+              referenceType: 'booking',
+              referenceId: booking.id,
+            });
+            if (debit.replayed) throw BookingErrors.idempotencyInFlight();
+            balanceAfter = debit.entry.balanceAfter;
+
+            // Pair passengers with seats in the order the client supplied the seatIds.
+            for (const [index, seatId] of l.seatIds.entries()) {
+              const seat = seatById.get(seatId);
+              const passenger = input.passengers[index];
+              if (!seat || !passenger) throw BookingErrors.passengerSeatMismatch();
+              const createdPassenger = await bookingsRepository.createPassenger(
+                {
+                  bookingId: booking.id,
+                  fullName: passenger.fullName,
+                  phone: normalizePassengerPhone(passenger.phone),
+                  ...(passenger.idNumber ? { idNumber: passenger.idNumber } : {}),
+                  ...(passenger.gender ? { gender: passenger.gender } : {}),
+                },
+                tx,
+              );
+              await bookingsRepository.createTicket(
+                { bookingId: booking.id, tripSeatId: seat.id, passengerId: createdPassenger.id, ticketNumber: ticketNumber(now) },
+                tx,
+              );
+            }
+
+            const sold = await bookingsRepository.markSeatsSold(l.seatIds, tx);
+            if (sold !== l.seatIds.length) throw CatalogErrors.seatUnavailable();
+            await bookingsRepository.deleteHoldsForSeats(l.seatIds, tx);
+
+            await commissionsRepository.createAccrual({ bookingId: booking.id, officeId: actor.officeId, amount: commissionAmount }, tx);
+
+            await auditService.record(
+              {
+                action: 'booking.confirmed',
+                resourceType: 'booking',
+                resourceId: booking.id,
+                requestId: input.requestId,
+                metadata: {
+                  officeId: actor.officeId,
+                  employeeId: actor.employeeId,
+                  tripId: trip.id,
+                  leg: l.leg,
+                  groupId: group?.id ?? null,
+                  seatLabels: [...seats].sort((a, b) => compareSeatLabels(a.seatLabel, b.seatLabel)).map((s) => s.seatLabel),
+                  totalAmount,
+                  commissionAmount,
+                  balanceAfter,
+                },
+              },
+              tx,
+            );
+            bookingIds.push(booking.id);
+          }
+
+          return { bookingIds, balanceAfter };
         },
         { isolationLevel: ISOLATION, maxWait: 10_000, timeout: 20_000 },
       );
@@ -424,9 +475,15 @@ export class BookingsService {
       throw error;
     }
 
-    const booking = await bookingsRepository.findById(result.bookingId, actor.officeId);
+    const booking = await bookingsRepository.findById(result.bookingIds[0]!, actor.officeId);
     if (!booking) throw BookingErrors.notFound();
-    return { booking: toBookingDto(booking), balanceAfterMinor: result.balanceAfter, replayed: false };
+    const returnBooking = result.bookingIds[1] ? await bookingsRepository.findById(result.bookingIds[1], actor.officeId) : null;
+    return {
+      booking: toBookingDto(booking),
+      returnBooking: returnBooking ? toBookingDto(returnBooking) : null,
+      balanceAfterMinor: result.balanceAfter,
+      replayed: false,
+    };
   }
 
   private async findReplay(ledgerKey: string, officeId: string, tripId: string) {
@@ -437,7 +494,13 @@ export class BookingsService {
     if (booking.tripId !== tripId) {
       throw AppError.conflict('Idempotency key was already used with a different request');
     }
-    return { booking: toBookingDto(booking), balanceAfterMinor: entry.balanceAfter };
+    const returnLeg = await walletsRepository.findLedgerByKey(`${ledgerKey}:return`);
+    const returnBooking = returnLeg?.referenceId ? await bookingsRepository.findById(returnLeg.referenceId, officeId) : null;
+    return {
+      booking: toBookingDto(booking),
+      returnBooking: returnBooking ? toBookingDto(returnBooking) : null,
+      balanceAfterMinor: returnLeg?.balanceAfter ?? entry.balanceAfter,
+    };
   }
 
   // ----------------------------------------------------------------- read

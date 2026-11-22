@@ -5,6 +5,8 @@ const passengerSchema = z.object({
   fullName: z.string().trim().min(2).max(160),
   phone: z.string().trim().min(7).max(32),
   idNumber: z.string().trim().min(1).max(64).optional(),
+  /** Required to book a women-only seat */
+  gender: z.enum(['MALE', 'FEMALE']).optional(),
 });
 
 const seatIdsSchema = z
@@ -19,10 +21,15 @@ const bookingLinesShape = {
   passengers: z.array(passengerSchema).min(1).max(20),
 };
 
-export const quoteBookingSchema = z.object(bookingLinesShape);
+export const quoteBookingSchema = z.object({
+  ...bookingLinesShape,
+  returnTrip: z.object({ tripId: z.string().min(1).max(64), seatIds: seatIdsSchema }).optional(),
+});
 
 export const confirmBookingSchema = z.object({
   ...bookingLinesShape,
+  /** D-RT-01 round trip: return trip seats (same passengers, same order) */
+  returnTrip: z.object({ tripId: z.string().min(1).max(64), seatIds: seatIdsSchema }).optional(),
   idempotencyKey: z.string().min(1).max(64),
 });
 
