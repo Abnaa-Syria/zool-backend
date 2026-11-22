@@ -145,7 +145,7 @@ export class CustomerBookingsService {
     if (booking.status !== BookingStatus.CONFIRMED || ticket.status !== TicketStatus.CONFIRMED || !ticket.qrPayload) {
       throw AppError.conflict('Only valid confirmed tickets can be downloaded', { status: booking.status });
     }
-    const city = (p: { city: { nameEn: string } }) => p.city.nameEn;
+    const city = (p: { city: { nameAr: string } }) => p.city.nameAr;
     const buffer = await pdfTicketRenderer.renderPdf({
       bookingId: booking.bookingRef ?? booking.id,
       issuedAt: new Date().toISOString(),
