@@ -1,1 +1,11 @@
-export { customerAuthRoutes, customerHoldRoutes, customerMeRoutes, customerRecentSearchRoutes, customerTripRoutes } from './customer-app.routes';
+export {
+  customerAuthRoutes,
+  customerBookingRoutes,
+  customerHoldRoutes,
+  customerMeRoutes,
+  customerPaymentRoutes,
+  customerRecentSearchRoutes,
+  customerTicketRoutes,
+  customerTripRoutes,
+} from './customer-app.routes';
+export { customerCheckoutService } from './customer-checkout.service';

@@ -5,7 +5,9 @@ import { ErrorCodes } from '../../shared/errors/error-codes';
 
 export interface CreateChargeInput {
   intentId: string;
-  officeId: string;
+  /** Broker top-up: the office; customer payment: the customer */
+  officeId?: string;
+  customerId?: string;
   amount: number;
   currency: string;
 }

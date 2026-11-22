@@ -4,16 +4,19 @@ export type TicketDocumentPassenger = {
   seatLabel: string;
   ticketNumber: string;
   fareAmountMinor: number;
+  /** Signed boarding code (shared/security/ticket-qr) drawn as a QR code */
+  qrPayload: string;
 };
 
 export type TicketDocument = {
   bookingId: string;
   issuedAt: string;
+  /** Selling office (broker channel) or null for app (direct) bookings */
   office: {
     id: string;
     name: string;
     code: string;
-  };
+  } | null;
   carrier: {
     id: string;
     name: string;

@@ -2297,6 +2297,84 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/bookings/quote:
+    post:
+      tags: [Customer Bookings]
+      summary: 'Price a checkout from seat holds of one trip or a round trip (holdIds, passengers with gender, couponCode): legs, subtotal, discount, total, cashAllowed + cashBlockedReason; WOMEN_ONLY_SEAT, ROUND_TRIP_INVALID, COUPON_INVALID, HOLD_EXPIRED'
+      security: [{ customerBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/bookings:
+    post:
+      tags: [Customer Bookings]
+      summary: 'Create the booking(s) with paymentMethod ONLINE (PENDING_PAYMENT + payment.nextAction) or CASH_ON_BOARD (CONFIRMED, UNPAID_CASH; CASH_NOT_ALLOWED with reason). Idempotent per Idempotency-Key'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: Idempotency-Key, in: header, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    get:
+      tags: [Customer Bookings]
+      summary: 'My trips by tab=UPCOMING'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/bookings/{bookingId}:
+    get:
+      tags: [Customer Bookings]
+      summary: 'Booking detail (poll after payment); unpaid online checkouts past their window become EXPIRED'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/tickets/{ticketNumber}:
+    get:
+      tags: [Customer Bookings]
+      summary: 'One ticket with its booking'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: ticketNumber, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/tickets/{ticketNumber}/pdf:
+    get:
+      tags: [Customer Bookings]
+      summary: 'Ticket PDF with the boarding QR code (binary)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: ticketNumber, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/payments/{intentId}:
+    get:
+      tags: [Customer Bookings]
+      summary: 'Payment status (PENDING'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/payments/{intentId}/mock-confirm:
+    post:
+      tags: [Customer Bookings]
+      summary: 'Non-production mock provider only: simulate a successful payment (403 MOCK_PAYMENT_DISABLED otherwise)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     bearerAuth:

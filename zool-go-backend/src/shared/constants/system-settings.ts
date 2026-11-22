@@ -32,6 +32,9 @@ export const SYSTEM_SETTINGS = [
   { key: 'cash.maxOpenBookingsPerCustomer', type: 'integer', min: 1, max: 10, description: 'Max unpaid cash bookings a customer may hold', defaultValue: () => 2 },
   { key: 'cash.cutoffMinutesBeforeDeparture', type: 'integer', min: 0, max: 1440, description: 'Cash checkout closes this long before departure', defaultValue: () => 60 },
   { key: 'cash.noShowLimit', type: 'integer', min: 1, max: 10, description: 'Cash no-shows after which a customer loses cash eligibility', defaultValue: () => 2 },
+  // Customer cancellation (D-REF-02 engineering default: full refund until the cutoff; PO may set a fee)
+  { key: 'refund.customerCutoffMinutesBeforeDeparture', type: 'integer', min: 0, max: 10080, description: 'Customers can cancel until this long before departure', defaultValue: () => 60 },
+  { key: 'refund.customerFeeBasisPoints', type: 'integer', min: 0, max: 10000, description: 'Cancellation fee kept from customer refunds (basis points, 1000 = 10%)', defaultValue: () => 0 },
   // Booking changes (D-CHG-01)
   { key: 'change.cutoffMinutesBeforeDeparture', type: 'integer', min: 0, max: 10080, description: 'Trip changes close this long before departure', defaultValue: () => 360 },
   { key: 'change.maxChangesPerBooking', type: 'integer', min: 0, max: 10, description: 'Max trip changes per booking chain', defaultValue: () => 2 },

@@ -83,6 +83,8 @@ model Booking {
   cancelledAt      DateTime?            @map("cancelled_at")
   /// Why it was cancelled (admin reason / trip cancellation); null for office self-cancel
   cancelReason     String?              @map("cancel_reason") @db.VarChar(500)
+  /// Customer checkout idempotency: `<customerId>:<Idempotency-Key>:<leg>`
+  checkoutKey      String?              @unique @map("checkout_key") @db.VarChar(191)
   createdAt        DateTime             @default(now()) @map("created_at")
   updatedAt        DateTime             @default(now()) @updatedAt @map("updated_at")
 

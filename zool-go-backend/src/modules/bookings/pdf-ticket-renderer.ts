@@ -1,74 +1,66 @@
 import PDFDocument from 'pdfkit';
+import QRCode from 'qrcode';
 import type { TicketDocument } from './ticket-document.js';
 
 export interface TicketDispatchPort {
   renderPdf(document: TicketDocument): Promise<Buffer>;
 }
 
+function sdg(minor: number): string {
+  return `${(minor / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} SDG`;
+}
+
 /**
- * Print-ready PDF for broker ticket download / future WhatsApp-SMS providers.
- * Uses built-in fonts (Latin + digit layout); Arabic text is emitted as UTF-8
- * where the font supports it — layout stays clean and printable.
+ * Print-ready passenger ticket: one block per passenger with the signed boarding QR code the
+ * driver app scans. Passenger-facing, so it never shows broker commission. Built-in fonts are
+ * Latin-only; Arabic names print as-is where the font has glyphs (an embedded Arabic font with
+ * shaping is a phase 7 item).
  */
 export class PdfTicketRenderer implements TicketDispatchPort {
   async renderPdf(document: TicketDocument): Promise<Buffer> {
+    const qrImages = await Promise.all(
+      document.passengers.map((p) => QRCode.toBuffer(p.qrPayload, { type: 'png', errorCorrectionLevel: 'M', margin: 1, width: 220 })),
+    );
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ size: 'A4', margin: 50 });
       const chunks: Buffer[] = [];
-
       doc.on('data', (chunk: Buffer) => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      doc.fontSize(18).text('Zool Go — Travel Ticket', { align: 'center' });
-      doc.moveDown(0.5);
-      doc.fontSize(10).fillColor('#555555').text(`Issued: ${document.issuedAt}`, {
-        align: 'center',
-      });
-      doc.fillColor('#000000');
-      doc.moveDown();
-
-      doc.fontSize(12).text(`Booking: ${document.bookingId}`);
-      doc.text(`Office: ${document.office.name} (${document.office.code})`);
-      doc.text(`Carrier: ${document.carrier.name} (${document.carrier.code})`);
-      doc.moveDown(0.5);
-
-      doc.fontSize(12).text('Trip', { underline: true });
-      doc.fontSize(11).text(`${document.trip.origin} → ${document.trip.destination}`);
-      doc.text(`Departure: ${document.trip.departureAt}`);
-      doc.text(`Base fare: ${document.trip.basePriceMinor} ${document.totals.currency}`);
-      doc.moveDown();
-
-      doc.fontSize(12).text('Passengers / Seats', { underline: true });
+      doc.fontSize(18).text('Zool Go - Travel Ticket', { align: 'center' });
       doc.moveDown(0.3);
+      doc.fontSize(9).fillColor('#555555').text(`Issued ${document.issuedAt}`, { align: 'center' });
+      doc.fillColor('#000000').moveDown();
 
-      for (const p of document.passengers) {
+      doc.fontSize(11).text(`Carrier: ${document.carrier.name}`);
+      doc.text(`Route: ${document.trip.origin} -> ${document.trip.destination}`);
+      doc.text(`Departure: ${document.trip.departureAt}`);
+      doc.text(`Sold by: ${document.office ? `${document.office.name} (${document.office.code})` : 'Zool Go app'}`);
+      doc.moveDown();
+
+      document.passengers.forEach((p, i) => {
+        if (doc.y > 600) doc.addPage();
+        const top = doc.y;
+        doc.roundedRect(50, top, 495, 150, 8).strokeColor('#cccccc').stroke();
+        doc.image(qrImages[i]!, 60, top + 10, { width: 130, height: 130 });
         doc
+          .fontSize(13)
+          .fillColor('#000000')
+          .text(p.name, 205, top + 20, { width: 330 })
           .fontSize(11)
-          .text(
-            `${p.ticketNumber}  |  Seat ${p.seatLabel}  |  ${p.name}` +
-              (p.phone ? `  |  ${p.phone}` : '') +
-              `  |  ${p.fareAmountMinor} ${document.totals.currency}`,
-          );
-      }
+          .text(`Ticket ${p.ticketNumber}`, 205, top + 50)
+          .text(`Seat ${p.seatLabel}`, 205, top + 70)
+          .text(`Fare ${sdg(p.fareAmountMinor)}`, 205, top + 90);
+        if (p.phone) doc.text(p.phone, 205, top + 110);
+        doc.x = 50;
+        doc.y = top + 165;
+      });
 
       doc.moveDown();
-      doc.fontSize(12).text('Totals', { underline: true });
-      doc
-        .fontSize(11)
-        .text(`Gross: ${document.totals.totalAmountMinor} ${document.totals.currency}`);
-      doc.text(
-        `Commission: ${document.totals.commissionAmountMinor} ${document.totals.currency}`,
-      );
-
+      doc.fontSize(11).text(`Total paid: ${sdg(document.totals.totalAmountMinor)}`, 50);
       doc.moveDown(2);
-      doc
-        .fontSize(9)
-        .fillColor('#666666')
-        .text('This document is a print-ready ticket record. Present at boarding.', {
-          align: 'center',
-        });
-
+      doc.fontSize(9).fillColor('#666666').text('Show the QR code to the driver at boarding.', 50, doc.y, { align: 'center', width: 495 });
       doc.end();
     });
   }

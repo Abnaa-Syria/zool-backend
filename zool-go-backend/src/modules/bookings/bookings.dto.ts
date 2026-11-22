@@ -1,3 +1,4 @@
+import { ticketQrPayload } from '../../shared/security/ticket-qr';
 import { compareSeatLabels } from '../../shared/utils/money';
 import type { BookingRow } from './bookings.repository';
 
@@ -12,6 +13,10 @@ export function toBookingDto(booking: BookingRow) {
       seatLabel: t.tripSeat?.seatLabel ?? null,
       passengerId: t.passengerId,
       passengerName: passengerById.get(t.passengerId)?.fullName ?? null,
+      boardingStatus: t.boardingStatus,
+      /** Signed boarding code for the QR (null unless the booking and ticket are confirmed) */
+      qrPayload:
+        booking.status === 'CONFIRMED' && t.status === 'CONFIRMED' ? ticketQrPayload(t.ticketNumber, booking.tripId) : null,
     }))
     .sort((a, b) => compareSeatLabels(a.seatLabel ?? '', b.seatLabel ?? ''));
 

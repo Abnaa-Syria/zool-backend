@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
 import { env } from '../../config/env';
+import { ticketQrPayload } from '../../shared/security/ticket-qr';
 import { assertNotInMaintenance } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
@@ -855,6 +856,7 @@ export class BookingsService {
           seatLabel: t.seatLabel ?? '—',
           ticketNumber: t.ticketNumber,
           fareAmountMinor: unitPrice,
+          qrPayload: ticketQrPayload(t.ticketNumber, dto.trip.id),
         };
       })
       .sort((a, b) => compareSeatLabels(a.seatLabel, b.seatLabel));

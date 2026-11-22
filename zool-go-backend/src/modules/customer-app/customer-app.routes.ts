@@ -3,6 +3,15 @@ import { asyncHandler } from '../../shared/middleware/async-handler';
 import { authenticateCustomer } from '../../shared/middleware/authenticate-mobile';
 import { validate } from '../../shared/middleware/validate';
 import { createMobileAuthRoutes, customerAuthStore, MobileAuthController, MobileAuthEngine } from '../mobile-auth';
+import { customerBookingsController } from './customer-bookings.controller';
+import {
+  bookingIdParamsSchema,
+  bookingsListQuerySchema,
+  checkoutCreateSchema,
+  checkoutQuoteSchema,
+  intentParamsSchema,
+  ticketParamsSchema,
+} from './customer-bookings.validation';
 import { customerProfileController } from './customer-profile.controller';
 import { customerTripsController } from './customer-trips.controller';
 import {
@@ -59,3 +68,27 @@ export const customerRecentSearchRoutes = Router();
 customerRecentSearchRoutes.use(authenticateCustomer);
 customerRecentSearchRoutes.get('/', asyncHandler((req, res) => customerTripsController.recentSearches(req, res)));
 customerRecentSearchRoutes.delete('/', asyncHandler((req, res) => customerTripsController.clearRecentSearches(req, res)));
+
+/** Mounted at `${API_PREFIX}/customer/bookings`. */
+export const customerBookingRoutes = Router();
+customerBookingRoutes.use(authenticateCustomer);
+customerBookingRoutes.post('/quote', validate({ body: checkoutQuoteSchema }), asyncHandler((req, res) => customerBookingsController.quote(req, res)));
+customerBookingRoutes.post('/', validate({ body: checkoutCreateSchema }), asyncHandler((req, res) => customerBookingsController.create(req, res)));
+customerBookingRoutes.get('/', validate({ query: bookingsListQuerySchema }), asyncHandler((req, res) => customerBookingsController.list(req, res)));
+customerBookingRoutes.get('/:bookingId', validate({ params: bookingIdParamsSchema }), asyncHandler((req, res) => customerBookingsController.get(req, res)));
+
+/** Mounted at `${API_PREFIX}/customer/tickets`. */
+export const customerTicketRoutes = Router();
+customerTicketRoutes.use(authenticateCustomer);
+customerTicketRoutes.get('/:ticketNumber', validate({ params: ticketParamsSchema }), asyncHandler((req, res) => customerBookingsController.ticket(req, res)));
+customerTicketRoutes.get('/:ticketNumber/pdf', validate({ params: ticketParamsSchema }), asyncHandler((req, res) => customerBookingsController.ticketPdf(req, res)));
+
+/** Mounted at `${API_PREFIX}/customer/payments`. */
+export const customerPaymentRoutes = Router();
+customerPaymentRoutes.use(authenticateCustomer);
+customerPaymentRoutes.get('/:intentId', validate({ params: intentParamsSchema }), asyncHandler((req, res) => customerBookingsController.payment(req, res)));
+customerPaymentRoutes.post(
+  '/:intentId/mock-confirm',
+  validate({ params: intentParamsSchema }),
+  asyncHandler((req, res) => customerBookingsController.mockConfirm(req, res)),
+);

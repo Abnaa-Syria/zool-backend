@@ -24,7 +24,7 @@ import { auditService } from '../audit/audit.service';
 import { WalletErrors } from '../wallets/wallets.errors';
 import { walletsRepository } from '../wallets/wallets.repository';
 import { walletsService } from '../wallets/wallets.service';
-import { getPaymentProvider } from './payment-provider';
+import { getPaymentProvider, type ParsedWebhookEvent } from './payment-provider';
 import { paymentsRepository } from './payments.repository';
 
 export interface TopUpIntentDto {
@@ -93,6 +93,16 @@ function assertSdg(currency: string): void {
 export function isMockPaymentEnabled(): boolean {
   const e = env();
   return e.PAYMENT_PROVIDER === 'mock' && e.NODE_ENV !== 'production';
+}
+
+/**
+ * Webhook dispatch for customer PaymentIntents (registered by the customer checkout module so the
+ * payments module does not depend on it). A handler returns null when the intent is not its own.
+ */
+export type CustomerIntentWebhookHandler = (event: ParsedWebhookEvent) => Promise<Record<string, unknown> | null>;
+const customerIntentHandlers: CustomerIntentWebhookHandler[] = [];
+export function registerCustomerIntentWebhookHandler(handler: CustomerIntentWebhookHandler): void {
+  if (!customerIntentHandlers.includes(handler)) customerIntentHandlers.push(handler);
 }
 
 export class PaymentsService {
@@ -217,7 +227,14 @@ export class PaymentsService {
     }
 
     const intent = await paymentsRepository.findById(event.intentId);
-    if (!intent) throw AppError.notFound('Top-up intent not found');
+    if (!intent) {
+      // Not a broker top-up: let the customer checkout handle its own PaymentIntent.
+      for (const handler of customerIntentHandlers) {
+        const handled = await handler(event);
+        if (handled) return handled;
+      }
+      throw AppError.notFound('Payment intent not found');
+    }
 
     try {
       const attached = await getPrisma().topUpIntent.updateMany({
