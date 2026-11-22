@@ -36,6 +36,9 @@ import { adminInsightsRoutes } from './modules/insights';
 import { adminCustomersRoutes } from './modules/customers';
 import { adminCouponsRoutes } from './modules/coupons';
 import { adminContentRoutes, publicContentRoutes } from './modules/content';
+import { publicAppRoutes } from './modules/public-app';
+import { customerAuthRoutes, customerMeRoutes } from './modules/customer-app';
+import { driverAuthRoutes, driverMeRoutes } from './modules/driver-app';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -112,6 +115,14 @@ export function createApp() {
   app.use(`${prefix}/broker/reports`, brokerReportsRoutes);
   app.use(`${prefix}/broker/dashboard`, brokerDashboardRoutes);
 
+  // Phase 6 — customer app principal
+  app.use(`${prefix}/customer/auth`, customerAuthRoutes);
+  app.use(`${prefix}/customer/me`, customerMeRoutes);
+
+  // Phase 6 — driver app principal
+  app.use(`${prefix}/driver/auth`, driverAuthRoutes);
+  app.use(`${prefix}/driver/me`, driverMeRoutes);
+
   // Stage 2 — admin principal
   app.use(`${prefix}/brokers`, brokersRoutes);
   app.use(`${prefix}/carriers`, carriersRoutes);
@@ -127,6 +138,7 @@ export function createApp() {
   app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
   app.use(`${prefix}/admin/content`, adminContentRoutes);
   app.use(`${prefix}/public/content`, publicContentRoutes);
+  app.use(`${prefix}/public`, publicAppRoutes);
   app.use(`${prefix}/admin`, adminInsightsRoutes);
   app.use(`${prefix}/admin`, adminNetworkRoutes);
 

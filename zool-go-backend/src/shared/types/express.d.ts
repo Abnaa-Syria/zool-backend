@@ -17,12 +17,27 @@ export interface BrokerAuthContext {
   role: 'MANAGER' | 'CLERK';
 }
 
+export interface CustomerAuthContext {
+  customerId: string;
+  sessionId: string;
+  authzVersion: number;
+}
+
+export interface DriverAuthContext {
+  driverId: string;
+  companyId: string;
+  sessionId: string;
+  authzVersion: number;
+}
+
 declare global {
   namespace Express {
     interface Request {
       requestId: string;
       auth?: AuthContext;
       brokerAuth?: BrokerAuthContext;
+      customerAuth?: CustomerAuthContext;
+      driverAuth?: DriverAuthContext;
       rawBody?: Buffer;
     }
   }

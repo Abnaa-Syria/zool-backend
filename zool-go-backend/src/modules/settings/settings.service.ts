@@ -26,6 +26,7 @@ export class SettingsService {
         ...('min' in def ? { min: def.min } : {}),
         ...('max' in def ? { max: def.max } : {}),
         ...('options' in def ? { options: def.options } : {}),
+        ...('maxLength' in def ? { maxLength: def.maxLength } : {}),
         updatedAt: row?.updatedAt.toISOString() ?? null,
         updatedBy: row?.updatedByAdmin ?? null,
       };
@@ -46,6 +47,9 @@ export class SettingsService {
       return value;
     }
     if (typeof value !== 'string') throw AppError.validation('Expected a string', { field: key });
+    if (def.maxLength !== undefined && value.length > def.maxLength) {
+      throw AppError.validation(`At most ${def.maxLength} characters`, { field: key });
+    }
     if (def.options && !def.options.includes(value)) {
       throw AppError.validation(`Must be one of ${def.options.join(', ')}`, { field: key });
     }

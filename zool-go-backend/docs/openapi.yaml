@@ -495,7 +495,7 @@ paths:
   /broker/auth/refresh:
     post:
       tags: [Broker Auth]
-      summary: Rotate broker refresh cookie and issue a new access token
+      summary: 'Rotate the broker refresh token and issue a new access token. Web: HttpOnly cookie. Mobile (X-Client-Platform: ios|android): refreshToken in the request and response body'
       responses:
         '200': { description: Refreshed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
@@ -2098,6 +2098,130 @@ paths:
         '200': { description: 'Top-up intent incl. status, hasEvidence, note, failedAt, mockConfirmAvailable', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /customer/auth/otp/request:
+    post:
+      tags: [Customer Auth]
+      summary: 'Request a login code for a phone (no account needed: the first verify creates it); returns challengeId, cooldownSeconds'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/auth/otp/verify:
+    post:
+      tags: [Customer Auth]
+      summary: 'Verify the code; returns accessToken, refreshToken (body, store in secure storage), isNewCustomer, customer'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/auth/refresh:
+    post:
+      tags: [Customer Auth]
+      summary: 'Rotate the refresh token sent in the body (single use, reuse revokes the family)'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/auth/logout:
+    post:
+      tags: [Customer Auth]
+      summary: 'Revoke the refresh session whose token is in the body'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/me:
+    get:
+      tags: [Customer]
+      summary: 'Profile with preferences, cash eligibility and stats (tripsCount, destinationsCount)'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    patch:
+      tags: [Customer]
+      summary: 'Update displayName / email'
+      security: [{ customerBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Customer]
+      summary: 'Delete account (PII removed, bookings kept; 409 ACCOUNT_HAS_ACTIVE_BOOKINGS while a trip is ahead)'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/me/preferences:
+    patch:
+      tags: [Customer]
+      summary: 'Update language (ar/en) and trip alerts'
+      security: [{ customerBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/auth/otp/request:
+    post:
+      tags: [Driver Auth]
+      summary: 'Request a login code (only drivers created by an admin)'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/auth/otp/verify:
+    post:
+      tags: [Driver Auth]
+      summary: 'Verify the code; returns accessToken, refreshToken (body) and driver'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/auth/refresh:
+    post:
+      tags: [Driver Auth]
+      summary: 'Rotate the refresh token sent in the body'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/auth/logout:
+    post:
+      tags: [Driver Auth]
+      summary: 'Revoke the refresh session whose token is in the body'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/me:
+    get:
+      tags: [Driver]
+      summary: 'Driver profile: code, company, license status'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /public/app-config:
+    get:
+      tags: [Public]
+      summary: 'Start-up config: country code, currency, OTP timing, min app versions, support contacts, feature flags'
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /public/cities:
+    get:
+      tags: [Public]
+      summary: 'Active cities with their active stations (?q= search)'
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /public/destinations/popular:
+    get:
+      tags: [Public]
+      summary: 'Popular cities with the cheapest upcoming fare (fromPriceMinor, null when nothing on sale)'
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
 components:
   securitySchemes:
     bearerAuth:

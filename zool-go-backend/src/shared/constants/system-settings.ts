@@ -13,6 +13,7 @@ export type SystemSettingDefinition = {
   min?: number;
   max?: number;
   options?: readonly string[];
+  maxLength?: number;
 };
 
 export const SYSTEM_SETTINGS = [
@@ -35,6 +36,13 @@ export const SYSTEM_SETTINGS = [
   { key: 'change.cutoffMinutesBeforeDeparture', type: 'integer', min: 0, max: 10080, description: 'Trip changes close this long before departure', defaultValue: () => 360 },
   { key: 'change.maxChangesPerBooking', type: 'integer', min: 0, max: 10, description: 'Max trip changes per booking chain', defaultValue: () => 2 },
   { key: 'change.feeMinor', type: 'integer', min: 0, description: 'Fee per trip change (minor units)', defaultValue: () => 0 },
+  // Apps (GET /public/app-config)
+  { key: 'support.phone', type: 'string', maxLength: 32, description: 'Support phone shown in the apps', defaultValue: () => '' },
+  { key: 'support.whatsapp', type: 'string', maxLength: 32, description: 'Support WhatsApp number shown in the apps', defaultValue: () => '' },
+  { key: 'support.email', type: 'string', maxLength: 191, description: 'Support email shown in the apps', defaultValue: () => '' },
+  { key: 'app.customer.minVersion', type: 'string', maxLength: 16, description: 'Oldest customer app version allowed (forces update)', defaultValue: () => '1.0.0' },
+  { key: 'app.driver.minVersion', type: 'string', maxLength: 16, description: 'Oldest driver app version allowed (forces update)', defaultValue: () => '1.0.0' },
+  { key: 'app.broker.minVersion', type: 'string', maxLength: 16, description: 'Oldest broker app version allowed (forces update)', defaultValue: () => '1.0.0' },
   // Platform
   { key: 'platform.maintenanceMode', type: 'boolean', description: 'Block customer and broker bookings (admin still works)', defaultValue: () => false },
 ] as const satisfies readonly SystemSettingDefinition[];
