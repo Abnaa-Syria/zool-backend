@@ -103,11 +103,12 @@ class RefundsController {
 
   /** Records a refund paid outside the provider (e.g. bank transfer) with its reference. */
   async markPaid(req: Request, res: Response): Promise<Response> {
+    if (!(await getPrisma().refund.findUnique({ where: { id: req.params.id! }, select: { id: true } }))) throw AppError.notFound('Refund not found');
     const updated = await getPrisma().refund.updateMany({
       where: { id: req.params.id!, status: { not: RefundStatus.SUCCEEDED } },
       data: { status: RefundStatus.SUCCEEDED, processedAt: new Date(), providerRef: `manual:${req.body.reference as string}`.slice(0, 191) },
     });
-    if (updated.count === 0) throw AppError.conflict('Refund not found or already completed');
+    if (updated.count === 0) throw AppError.conflict('Refund already completed');
     await auditService.record({
       actorAdminId: req.auth!.adminId,
       action: 'refund.marked_paid',

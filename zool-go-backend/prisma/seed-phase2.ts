@@ -17,17 +17,17 @@ import { zonedDayRange, calendarDateInZone } from '../src/shared/utils/timezone'
  */
 
 const CITIES = [
-  { code: 'KRT', nameAr: 'الخرطوم', nameEn: 'Khartoum', isPopular: false, station: { ar: 'الميناء البري', en: 'Al-Mina Al-Barri' } },
-  { code: 'PZU', nameAr: 'بورتسودان', nameEn: 'Port Sudan', isPopular: true, station: { ar: 'موقف بورتسودان السفري', en: 'Port Sudan Bus Terminal' } },
-  { code: 'KSL', nameAr: 'كسلا', nameEn: 'Kassala', isPopular: true, station: { ar: 'موقف كسلا السفري', en: 'Kassala Bus Terminal' } },
-  { code: 'ATB', nameAr: 'عطبرة', nameEn: 'Atbara', isPopular: true, station: { ar: 'موقف عطبرة', en: 'Atbara Terminal' } },
-  { code: 'SHD', nameAr: 'شندي', nameEn: 'Shendi', isPopular: false, station: { ar: 'موقف شندي', en: 'Shendi Terminal' } },
-  { code: 'MWE', nameAr: 'مروي', nameEn: 'Merowe', isPopular: false, station: { ar: 'موقف مروي', en: 'Merowe Terminal' } },
-  { code: 'WDM', nameAr: 'ود مدني', nameEn: 'Wad Madani', isPopular: true, station: { ar: 'موقف ود مدني السفري', en: 'Wad Madani Terminal' } },
-  { code: 'GDR', nameAr: 'القضارف', nameEn: 'Gedaref', isPopular: false, station: { ar: 'موقف القضارف', en: 'Gedaref Terminal' } },
-  { code: 'KST', nameAr: 'كوستي', nameEn: 'Kosti', isPopular: false, station: { ar: 'موقف كوستي', en: 'Kosti Terminal' } },
-  { code: 'EBD', nameAr: 'الأبيض', nameEn: 'El Obeid', isPopular: false, station: { ar: 'موقف الأبيض', en: 'El Obeid Terminal' } },
-  { code: 'DOG', nameAr: 'دنقلا', nameEn: 'Dongola', isPopular: false, station: { ar: 'موقف دنقلا', en: 'Dongola Terminal' } },
+  { code: 'KRT', nameAr: 'الخرطوم', nameEn: 'Khartoum', isPopular: false, lat: 15.5007, lng: 32.5599, station: { ar: 'الميناء البري', en: 'Al-Mina Al-Barri' } },
+  { code: 'PZU', nameAr: 'بورتسودان', nameEn: 'Port Sudan', isPopular: true, lat: 19.6158, lng: 37.2164, station: { ar: 'موقف بورتسودان السفري', en: 'Port Sudan Bus Terminal' } },
+  { code: 'KSL', nameAr: 'كسلا', nameEn: 'Kassala', isPopular: true, lat: 15.451, lng: 36.4, station: { ar: 'موقف كسلا السفري', en: 'Kassala Bus Terminal' } },
+  { code: 'ATB', nameAr: 'عطبرة', nameEn: 'Atbara', isPopular: true, lat: 17.7022, lng: 33.9864, station: { ar: 'موقف عطبرة', en: 'Atbara Terminal' } },
+  { code: 'SHD', nameAr: 'شندي', nameEn: 'Shendi', isPopular: false, lat: 16.6915, lng: 33.4341, station: { ar: 'موقف شندي', en: 'Shendi Terminal' } },
+  { code: 'MWE', nameAr: 'مروي', nameEn: 'Merowe', isPopular: false, lat: 18.4833, lng: 31.8167, station: { ar: 'موقف مروي', en: 'Merowe Terminal' } },
+  { code: 'WDM', nameAr: 'ود مدني', nameEn: 'Wad Madani', isPopular: true, lat: 14.4012, lng: 33.5199, station: { ar: 'موقف ود مدني السفري', en: 'Wad Madani Terminal' } },
+  { code: 'GDR', nameAr: 'القضارف', nameEn: 'Gedaref', isPopular: false, lat: 14.035, lng: 35.3833, station: { ar: 'موقف القضارف', en: 'Gedaref Terminal' } },
+  { code: 'KST', nameAr: 'كوستي', nameEn: 'Kosti', isPopular: false, lat: 13.1629, lng: 32.6635, station: { ar: 'موقف كوستي', en: 'Kosti Terminal' } },
+  { code: 'EBD', nameAr: 'الأبيض', nameEn: 'El Obeid', isPopular: false, lat: 13.1843, lng: 30.2167, station: { ar: 'موقف الأبيض', en: 'El Obeid Terminal' } },
+  { code: 'DOG', nameAr: 'دنقلا', nameEn: 'Dongola', isPopular: false, lat: 19.1781, lng: 30.4767, station: { ar: 'موقف دنقلا', en: 'Dongola Terminal' } },
 ] as const;
 
 const AMENITIES = [
@@ -65,6 +65,10 @@ export async function seedPhase2(prisma: PrismaClient): Promise<void> {
     const station =
       existing ??
       (await prisma.station.create({ data: { cityId: city.id, nameAr: c.station.ar, nameEn: c.station.en } }));
+    // Approximate city-centre coordinates so live tracking can draw stations and remaining km.
+    if (station.latitude === null) {
+      await prisma.station.update({ where: { id: station.id }, data: { latitude: c.lat, longitude: c.lng } });
+    }
     stationByCity.set(c.code, station.id);
   }
 
@@ -152,6 +156,13 @@ export async function seedPhase2(prisma: PrismaClient): Promise<void> {
     const tripNumber = `KRT-PZU-${tomorrow.replace(/-/g, '')}-${suffix}`;
     if (await prisma.trip.findUnique({ where: { tripNumber } })) continue;
     const departureAt = new Date(zonedDayRange(tomorrow, tz).from.getTime() + hour * 3_600_000);
+    // Never double-book the demo bus: skip when it already runs a trip in this window.
+    const arrival = new Date(departureAt.getTime() + route.durationMinutes * 60_000);
+    const busy = await prisma.trip.findFirst({
+      where: { vehicleId: vehicle.id, status: { not: 'CANCELLED' }, departureAt: { lt: arrival }, arrivalAt: { gt: departureAt } },
+      select: { id: true },
+    });
+    if (busy) continue;
     await prisma.trip.create({
       data: {
         tripNumber,
