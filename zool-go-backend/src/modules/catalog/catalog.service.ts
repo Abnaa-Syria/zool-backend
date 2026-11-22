@@ -1,6 +1,6 @@
 import { Prisma, TripSeatStatus, type TripSeat, type SeatHold, type TripStatus } from '@prisma/client';
 import { env } from '../../config/env';
-import { runtimeSettings } from '../../shared/settings/runtime-settings';
+import { assertNotInMaintenance, runtimeSettings } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { computeCommission, compareSeatLabels, decimalToNumber } from '../../shared/utils/money';
@@ -8,6 +8,7 @@ import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { zonedDayRange } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
 import { CatalogErrors } from './catalog.errors';
+import { toSeatMapView, toTripDetailView, type TripViewRow } from './trip-view';
 import {
   BOOKABLE_TRIP_STATUSES,
   catalogRepository,
@@ -57,17 +58,17 @@ function toAdminTripDto(trip: TripWithCompany | AdminTripListRow, counts: SeatCo
 }
 
 function toBrokerTripDto(
-  trip: TripWithCompany,
+  trip: TripViewRow,
   counts: SeatCounts | undefined,
   commissionPercent: number,
 ) {
   const seats = seatSummary(counts);
   return {
-    id: trip.id,
+    // Structured app view (carrier, stations, arrival, duration, stops, amenities, class),
+    // identical to the customer app's trip detail.
+    ...toTripDetailView(trip, counts),
     company: { id: trip.company.id, key: trip.company.key, name: trip.company.name },
-    origin: trip.origin,
-    destination: trip.destination,
-    departureAt: trip.departureAt.toISOString(),
+    /** Same as priceMinor (kept for the web panel) */
     basePrice: trip.basePrice,
     commissionPercent,
     expectedCommissionPerSeat: computeCommission(trip.basePrice, commissionPercent),
@@ -262,6 +263,8 @@ export class CatalogService {
     query: {
       page?: number;
       pageSize?: number;
+      fromCityId?: string;
+      toCityId?: string;
       origin?: string;
       destination?: string;
       date?: string;
@@ -297,11 +300,13 @@ export class CatalogService {
         status: 'ACTIVE',
         brokerAssignments: { some: { officeId } },
       },
+      ...(query.fromCityId ? { originStation: { cityId: query.fromCityId } } : {}),
+      ...(query.toCityId ? { destinationStation: { cityId: query.toCityId } } : {}),
       ...(query.origin ? { origin: { contains: query.origin } } : {}),
       ...(query.destination ? { destination: { contains: query.destination } } : {}),
     };
 
-    const { items, total } = await catalogRepository.listTrips({ skip, take, where });
+    const { items, total } = await catalogRepository.listTripViews({ skip, take, where });
     const [counts, assignments] = await Promise.all([
       catalogRepository.seatCountsByTrip(items.map((t) => t.id)),
       catalogRepository.assignmentsForOffice(officeId),
@@ -354,7 +359,7 @@ export class CatalogService {
   async getTripForBroker(input: { tripId: string; officeId: string; employeeId: string }) {
     await this.releaseExpiredHolds(input.tripId);
 
-    const trip = await catalogRepository.findTripForBroker(input.tripId, input.officeId);
+    const trip = await catalogRepository.findTripViewForBroker(input.tripId, input.officeId);
     if (!trip) throw CatalogErrors.tripNotFound();
 
     const assignment = await catalogRepository.findAssignment(input.officeId, trip.companyId);
@@ -366,9 +371,15 @@ export class CatalogService {
     const counts: SeatCounts = { FREE: 0, HELD: 0, SOLD: 0 };
     for (const seat of seats) counts[seat.status] += 1;
 
+    const map = toSeatMapView(trip, seats, (h) => h.employeeId === input.employeeId);
+    const extra = new Map(map.seats.map((m) => [m.id, m]));
     return {
       ...toBrokerTripDto(trip, counts, percent),
-      seats: seats.map((seat) => this.toSeatDto(seat, input.employeeId)),
+      layout: map.layout,
+      seats: seats.map((seat) => {
+        const m = extra.get(seat.id)!;
+        return { ...this.toSeatDto(seat, input.employeeId), row: m.row, column: m.column, isWomenOnly: m.isWomenOnly };
+      }),
     };
   }
 
@@ -406,6 +417,7 @@ export class CatalogService {
     seatCount?: number;
     requestId?: string;
   }) {
+    assertNotInMaintenance();
     const mode = input.mode ?? (input.seatCount && !input.seatIds ? 'AUTO' : 'MANUAL');
     const ttlMs = runtimeSettings.number('booking.seatHoldTtlSeconds') * 1000;
 

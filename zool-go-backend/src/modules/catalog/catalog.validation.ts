@@ -51,6 +51,9 @@ export const adminTripsQuerySchema = paginationQuerySchema.extend({
 
 export const brokerTripsQuerySchema = paginationQuerySchema
   .extend({
+    /** Structured search (same cities as GET /public/cities); preferred over origin/destination text */
+    fromCityId: z.string().min(1).max(64).optional(),
+    toCityId: z.string().min(1).max(64).optional(),
     origin: z.string().min(1).max(120).optional(),
     destination: z.string().min(1).max(120).optional(),
     date: isoDateSchema.optional(),

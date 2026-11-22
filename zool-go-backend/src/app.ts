@@ -37,7 +37,7 @@ import { adminCustomersRoutes } from './modules/customers';
 import { adminCouponsRoutes } from './modules/coupons';
 import { adminContentRoutes, publicContentRoutes } from './modules/content';
 import { publicAppRoutes } from './modules/public-app';
-import { customerAuthRoutes, customerMeRoutes } from './modules/customer-app';
+import { customerAuthRoutes, customerHoldRoutes, customerMeRoutes, customerRecentSearchRoutes, customerTripRoutes } from './modules/customer-app';
 import { driverAuthRoutes, driverMeRoutes } from './modules/driver-app';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
@@ -118,6 +118,9 @@ export function createApp() {
   // Phase 6 — customer app principal
   app.use(`${prefix}/customer/auth`, customerAuthRoutes);
   app.use(`${prefix}/customer/me`, customerMeRoutes);
+  app.use(`${prefix}/customer/trips`, customerTripRoutes);
+  app.use(`${prefix}/customer/holds`, customerHoldRoutes);
+  app.use(`${prefix}/customer/recent-searches`, customerRecentSearchRoutes);
 
   // Phase 6 — driver app principal
   app.use(`${prefix}/driver/auth`, driverAuthRoutes);

@@ -1,6 +1,8 @@
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { getRedis, redisKey } from '../../infrastructure/redis/redis';
+import { AppError } from '../errors/app-error';
+import { ErrorCodes } from '../errors/error-codes';
 import { SYSTEM_SETTINGS, type SystemSettingDefinition, type SystemSettingKey } from '../constants/system-settings';
 
 export type SettingValue = number | boolean | string;
@@ -73,3 +75,14 @@ class RuntimeSettings {
 }
 
 export const runtimeSettings = new RuntimeSettings();
+
+/** D-SET-02 `platform.maintenanceMode`: blocks new customer and broker holds/bookings (admin unaffected). */
+export function assertNotInMaintenance(): void {
+  if (runtimeSettings.boolean('platform.maintenanceMode')) {
+    throw new AppError({
+      statusCode: 503,
+      code: ErrorCodes.PLATFORM_MAINTENANCE,
+      message: 'Bookings are paused for maintenance; please try again later',
+    });
+  }
+}

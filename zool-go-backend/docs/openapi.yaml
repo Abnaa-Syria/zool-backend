@@ -1071,9 +1071,11 @@ paths:
   /broker/trips:
     get:
       tags: [Broker Catalog]
-      summary: Search trips of assigned carriers only
+      summary: 'Search trips of assigned carriers only. Items use the app trip view (carrier, origin/destination {station, city}, arrivalAt, durationMinutes, stops, amenities, serviceClass, priceMinor) plus company, basePrice, commissionPercent, availability'
       security: [{ brokerBearerAuth: [] }]
       parameters:
+        - { name: fromCityId, in: query, schema: { type: string } }
+        - { name: toCityId, in: query, schema: { type: string } }
         - { name: origin, in: query, schema: { type: string } }
         - { name: destination, in: query, schema: { type: string } }
         - { name: date, in: query, schema: { type: string, format: date } }
@@ -2222,6 +2224,79 @@ paths:
       summary: 'Popular cities with the cheapest upcoming fare (fromPriceMinor, null when nothing on sale)'
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /customer/trips:
+    get:
+      tags: [Customer Trips]
+      summary: 'Search one route on one Sudan day: fromCityId, toCityId, date, passengers, sort (recommended'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/trips/filters:
+    get:
+      tags: [Customer Trips]
+      summary: 'Filter-sheet data for the same route/day: carriers, price range, amenities, classes, departure windows'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/trips/{tripId}:
+    get:
+      tags: [Customer Trips]
+      summary: 'Trip detail: carrier + rating, class, stations, stops timeline, amenities, seats available, price, cashAvailable'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/trips/{tripId}/seats:
+    get:
+      tags: [Customer Trips]
+      summary: 'Seat map: layout grid (rows, columns, aisle, driver side) and seats with state AVAILABLE/HELD/SOLD, isWomenOnly, heldByMe'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/trips/{tripId}/holds:
+    post:
+      tags: [Customer Trips]
+      summary: 'Hold seats by label (replaces this customer''s previous selection on the trip); 409 SEAT_UNAVAILABLE, 503 PLATFORM_MAINTENANCE'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/holds/{holdId}:
+    delete:
+      tags: [Customer Trips]
+      summary: 'Release one of my seat holds'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: holdId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/recent-searches:
+    get:
+      tags: [Customer Trips]
+      summary: 'Last 10 searches (server-side)'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      tags: [Customer Trips]
+      summary: 'Clear recent searches'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
 components:
   securitySchemes:
     bearerAuth:

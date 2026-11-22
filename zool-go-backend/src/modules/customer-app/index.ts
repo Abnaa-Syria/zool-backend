@@ -1,1 +1,1 @@
-export { customerAuthRoutes, customerMeRoutes } from './customer-app.routes';
+export { customerAuthRoutes, customerHoldRoutes, customerMeRoutes, customerRecentSearchRoutes, customerTripRoutes } from './customer-app.routes';

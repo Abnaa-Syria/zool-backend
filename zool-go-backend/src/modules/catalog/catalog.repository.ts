@@ -5,6 +5,7 @@ import {
   TripStatus,
 } from '@prisma/client';
 import { getPrisma, type PrismaTx } from '../../infrastructure/database/prisma';
+import { tripViewInclude } from './trip-view';
 
 function client(tx?: PrismaTx) {
   return tx ?? getPrisma();
@@ -144,6 +145,32 @@ export class CatalogRepository {
       getPrisma().trip.count({ where: params.where }),
     ]);
     return { items, total };
+  }
+
+  /** Broker search with the structured app view (stations, stops, amenities, layout). */
+  async listTripViews(params: { skip: number; take: number; where: Prisma.TripWhereInput }) {
+    const [items, total] = await Promise.all([
+      getPrisma().trip.findMany({
+        where: params.where,
+        include: tripViewInclude,
+        orderBy: [{ departureAt: 'asc' }, { id: 'asc' }],
+        skip: params.skip,
+        take: params.take,
+      }),
+      getPrisma().trip.count({ where: params.where }),
+    ]);
+    return { items, total };
+  }
+
+  findTripViewForBroker(tripId: string, officeId: string) {
+    return getPrisma().trip.findFirst({
+      where: {
+        id: tripId,
+        status: { in: BOOKABLE_TRIP_STATUSES },
+        company: { status: TransportCompanyStatus.ACTIVE, brokerAssignments: { some: { officeId } } },
+      },
+      include: tripViewInclude,
+    });
   }
 
   async seatCountsByTrip(tripIds: string[]) {

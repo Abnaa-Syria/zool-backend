@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
 import { env } from '../../config/env';
+import { assertNotInMaintenance } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
 import { ErrorCodes } from '../../shared/errors/error-codes';
@@ -240,6 +241,7 @@ export class BookingsService {
     },
   ) {
     assertLines(input.seatIds, input.passengers);
+    assertNotInMaintenance();
 
     const ledgerKey = `booking:${actor.officeId}:${input.idempotencyKey}`;
 

@@ -85,6 +85,8 @@ export class CatalogController {
       req.query as {
         page?: number;
         pageSize?: number;
+        fromCityId?: string;
+        toCityId?: string;
         origin?: string;
         destination?: string;
         date?: string;
