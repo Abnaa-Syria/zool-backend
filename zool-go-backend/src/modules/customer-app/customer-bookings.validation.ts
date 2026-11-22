@@ -36,6 +36,12 @@ export const bookingsListQuerySchema = paginationQuerySchema.extend({
   tab: z.enum(['UPCOMING', 'ONGOING', 'PAST', 'CANCELLED']).optional(),
 });
 
+export const cancelBookingSchema = z.object({ reason: z.string().trim().min(2).max(500).optional() }).strict();
+
+export const rateBookingSchema = z
+  .object({ stars: z.number().int().min(1).max(5), comment: z.string().trim().max(1000).optional() })
+  .strict();
+
 export const bookingIdParamsSchema = z.object({ bookingId: z.string().min(1).max(64) });
 export const ticketParamsSchema = z.object({ ticketNumber: z.string().min(4).max(64) });
 export const intentParamsSchema = z.object({ intentId: z.string().min(1).max(64) });

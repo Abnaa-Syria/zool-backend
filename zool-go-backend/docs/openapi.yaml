@@ -2375,6 +2375,48 @@ paths:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /customer/bookings/{bookingId}/cancellation-quote:
+    get:
+      tags: [Customer Bookings]
+      summary: 'Whether the booking can still be cancelled, refundableMinor, feeMinor (refund.customerFeeBasisPoints), method and deadline'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/bookings/{bookingId}/cancel:
+    post:
+      tags: [Customer Bookings]
+      summary: 'Cancel: paid online refunded to the original method (minus fee); unpaid cash no refund; unpaid online checkout voided (both legs); 409 BOOKING_NOT_CANCELLABLE after the cutoff'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/bookings/{bookingId}/rating:
+    post:
+      tags: [Customer Bookings]
+      summary: 'Rate the carrier once after a completed trip (stars 1-5, comment); 409 RATING_NOT_ALLOWED'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/payments/methods:
+    get:
+      tags: [Customer Bookings]
+      summary: 'Checkout options: ONLINE (provider) and CASH_ON_BOARD with eligibility and limits'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
 components:
   securitySchemes:
     bearerAuth:

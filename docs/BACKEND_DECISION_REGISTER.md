@@ -205,6 +205,16 @@ Also:
 
 ---
 
+## D-REF-02 — Customer cancellation and refunds (direct channel)
+
+**Status:** **ENGINEERING DEFAULT** — 2026-11-22 (PO may change the numbers in admin settings at any time; no code change).
+
+1. A customer may cancel until `refund.customerCutoffMinutesBeforeDeparture` (default 60 min) before departure, if no passenger boarded.
+2. Fee kept: `refund.customerFeeBasisPoints` (default **0** = full refund) of the paid amount. Admin cancellations and trips cancelled by the carrier/admin (D-SUS-01) never charge a fee.
+3. Paid online bookings are refunded to the original method through the payment provider port (`refundCharge`). A refund the provider does not confirm stays `PENDING` in the admin refunds queue. Unpaid cash bookings need no refund. An unpaid online checkout is voided as a whole (both legs of a round trip).
+4. A payment that arrives after its checkout expired is recorded and queued as a full refund (`late-payment`).
+
+
 ## D-REV-01 — Platform take-rate and carrier settlement
 
 **Status:** **OUT OF SCOPE** for M1 (PDF)
@@ -390,6 +400,7 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 | D-CASH-01 Cash to driver | LOCKED (PO) — v1 | No |
 | D-RT-01 Round trip | LOCKED (PO) — v1 | No |
 | D-CHG-01 Modify booking | LOCKED (PO) — v1 | No |
+| D-REF-02 Customer cancellation/refunds | ENGINEERING DEFAULT (settings) | No |
 | D-BROKER-CHANNEL-01 Broker web + mobile | LOCKED (PO) | No |
 
 ---

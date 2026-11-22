@@ -2,6 +2,8 @@ import type { Request, Response } from 'express';
 import { AppError } from '../../shared/errors/app-error';
 import { successResponse } from '../../shared/http/success-response';
 import { customerBookingsService, type BookingTab } from './customer-bookings.service';
+import { customerCancellationService } from './customer-cancellation.service';
+import { customerRatingService } from './customer-rating.service';
 import { customerCheckoutService, type CheckoutInput } from './customer-checkout.service';
 
 function idempotencyKey(req: Request): string {
@@ -67,6 +69,33 @@ class CustomerBookingsController {
   async payment(req: Request, res: Response): Promise<Response> {
     const data = await customerCheckoutService.getPayment(req.customerAuth!.customerId, req.params.intentId!);
     return successResponse(res, { message: 'Payment retrieved', data, requestId: req.requestId });
+  }
+
+  async cancellationQuote(req: Request, res: Response): Promise<Response> {
+    const data = await customerCancellationService.quote(req.customerAuth!.customerId, req.params.bookingId!);
+    return successResponse(res, { message: 'Cancellation quote', data, requestId: req.requestId });
+  }
+
+  async cancel(req: Request, res: Response): Promise<Response> {
+    const customerId = req.customerAuth!.customerId;
+    const result = await customerCancellationService.cancel({
+      bookingId: req.params.bookingId!,
+      actor: { type: 'CUSTOMER', customerId },
+      ...(req.body?.reason ? { reason: req.body.reason as string } : {}),
+      requestId: req.requestId,
+    });
+    const booking = await customerBookingsService.get(customerId, req.params.bookingId!);
+    return successResponse(res, { message: 'Booking cancelled', data: { booking, refund: result.refund, replayed: result.replayed }, requestId: req.requestId });
+  }
+
+  async rate(req: Request, res: Response): Promise<Response> {
+    const data = await customerRatingService.rate(req.customerAuth!.customerId, req.params.bookingId!, req.body as { stars: number; comment?: string });
+    return successResponse(res, { statusCode: 201, message: 'Thanks for rating', data, requestId: req.requestId });
+  }
+
+  async paymentMethods(req: Request, res: Response): Promise<Response> {
+    const data = await customerRatingService.paymentMethods(req.customerAuth!.customerId);
+    return successResponse(res, { message: 'Payment methods', data, requestId: req.requestId });
   }
 
   async mockConfirm(req: Request, res: Response): Promise<Response> {

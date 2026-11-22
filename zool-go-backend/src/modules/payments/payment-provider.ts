@@ -26,6 +26,20 @@ export interface ConfirmChargeResult {
   providerRef: string;
 }
 
+export interface RefundChargeInput {
+  refundId: string;
+  intentId: string;
+  providerRef: string | null;
+  amount: number;
+  currency: string;
+}
+
+export interface RefundChargeResult {
+  /** SUCCEEDED when the provider confirmed synchronously; PENDING when it confirms later */
+  status: 'SUCCEEDED' | 'PENDING';
+  providerRef: string;
+}
+
 export interface ParsedWebhookEvent {
   providerEventId: string;
   intentId: string;
@@ -40,6 +54,8 @@ export interface PaymentProvider {
   readonly name: string;
   createCharge(input: CreateChargeInput): Promise<CreateChargeResult>;
   confirmCharge(input: ConfirmChargeInput): Promise<ConfirmChargeResult>;
+  /** Refund (part of) a captured customer payment to the original method. */
+  refundCharge(input: RefundChargeInput): Promise<RefundChargeResult>;
   verifyWebhook(rawBody: Buffer, headers: Record<string, string | undefined>): ParsedWebhookEvent;
 }
 
@@ -56,6 +72,10 @@ export class MockPaymentProvider implements PaymentProvider {
 
   async confirmCharge(input: ConfirmChargeInput): Promise<ConfirmChargeResult> {
     return { confirmed: true, providerRef: input.providerRef ?? `mock_${randomUUID()}` };
+  }
+
+  async refundCharge(_input: RefundChargeInput): Promise<RefundChargeResult> {
+    return { status: 'SUCCEEDED', providerRef: `mock_refund_${randomUUID()}` };
   }
 
   verifyWebhook(rawBody: Buffer, headers: Record<string, string | undefined>): ParsedWebhookEvent {

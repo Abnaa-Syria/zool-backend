@@ -134,8 +134,9 @@ export class NetworkRepository {
 
   confirmedBookings(tripId: string) {
     return getPrisma().booking.findMany({
-      where: { tripId, status: BookingStatus.CONFIRMED },
-      select: { id: true, officeId: true, channel: true },
+      // Unpaid online checkouts are cancelled too (their payment window is voided).
+      where: { tripId, status: { in: [BookingStatus.CONFIRMED, BookingStatus.PENDING_PAYMENT] } },
+      select: { id: true, officeId: true, channel: true, customerId: true },
       orderBy: { createdAt: 'asc' },
     });
   }

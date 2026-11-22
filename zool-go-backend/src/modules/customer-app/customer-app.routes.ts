@@ -7,9 +7,11 @@ import { customerBookingsController } from './customer-bookings.controller';
 import {
   bookingIdParamsSchema,
   bookingsListQuerySchema,
+  cancelBookingSchema,
   checkoutCreateSchema,
   checkoutQuoteSchema,
   intentParamsSchema,
+  rateBookingSchema,
   ticketParamsSchema,
 } from './customer-bookings.validation';
 import { customerProfileController } from './customer-profile.controller';
@@ -76,6 +78,21 @@ customerBookingRoutes.post('/quote', validate({ body: checkoutQuoteSchema }), as
 customerBookingRoutes.post('/', validate({ body: checkoutCreateSchema }), asyncHandler((req, res) => customerBookingsController.create(req, res)));
 customerBookingRoutes.get('/', validate({ query: bookingsListQuerySchema }), asyncHandler((req, res) => customerBookingsController.list(req, res)));
 customerBookingRoutes.get('/:bookingId', validate({ params: bookingIdParamsSchema }), asyncHandler((req, res) => customerBookingsController.get(req, res)));
+customerBookingRoutes.get(
+  '/:bookingId/cancellation-quote',
+  validate({ params: bookingIdParamsSchema }),
+  asyncHandler((req, res) => customerBookingsController.cancellationQuote(req, res)),
+);
+customerBookingRoutes.post(
+  '/:bookingId/cancel',
+  validate({ params: bookingIdParamsSchema, body: cancelBookingSchema }),
+  asyncHandler((req, res) => customerBookingsController.cancel(req, res)),
+);
+customerBookingRoutes.post(
+  '/:bookingId/rating',
+  validate({ params: bookingIdParamsSchema, body: rateBookingSchema }),
+  asyncHandler((req, res) => customerBookingsController.rate(req, res)),
+);
 
 /** Mounted at `${API_PREFIX}/customer/tickets`. */
 export const customerTicketRoutes = Router();
@@ -86,6 +103,7 @@ customerTicketRoutes.get('/:ticketNumber/pdf', validate({ params: ticketParamsSc
 /** Mounted at `${API_PREFIX}/customer/payments`. */
 export const customerPaymentRoutes = Router();
 customerPaymentRoutes.use(authenticateCustomer);
+customerPaymentRoutes.get('/methods', asyncHandler((req, res) => customerBookingsController.paymentMethods(req, res)));
 customerPaymentRoutes.get('/:intentId', validate({ params: intentParamsSchema }), asyncHandler((req, res) => customerBookingsController.payment(req, res)));
 customerPaymentRoutes.post(
   '/:intentId/mock-confirm',

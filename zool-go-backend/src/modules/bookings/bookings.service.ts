@@ -1,6 +1,7 @@
 import { newBookingRef } from '../../shared/utils/references';
 import { CSV_MAX_ROWS, toCsv } from '../../shared/http/csv';
 import {
+  BookingChannel,
   BookingStatus,
   CommissionAccrualStatus,
   Prisma,
@@ -27,6 +28,7 @@ import { normalizePhone } from '../../shared/utils/phone';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { officeDayBounds, parseDateBound } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
+import { customerCancellationService } from '../customer-app/customer-cancellation.service';
 import { catalogRepository } from '../catalog/catalog.repository';
 import { catalogService } from '../catalog/catalog.service';
 import { CatalogErrors } from '../catalog/catalog.errors';
@@ -619,10 +621,31 @@ export class BookingsService {
     bookingId: string;
     reason: string;
     actorAdminId: string;
+    /** Trip cancelled by the carrier/admin (D-SUS-01): customer refunds are labelled CARRIER_CANCEL */
+    carrierCancelled?: boolean;
     requestId?: string;
   }) {
     const booking = await bookingsRepository.findByIdUnscoped(input.bookingId);
     if (!booking) throw BookingErrors.notFound();
+    if (booking.channel === BookingChannel.DIRECT) {
+      // Customer app booking: refund to the original payment method, never a fee (admin action).
+      const result = await customerCancellationService.cancel({
+        bookingId: booking.id,
+        actor: { type: 'ADMIN', adminId: input.actorAdminId },
+        reason: input.reason,
+        carrierCancelled: input.carrierCancelled ?? false,
+        ...(input.requestId ? { requestId: input.requestId } : {}),
+      });
+      const updated = await bookingsRepository.findByIdUnscoped(booking.id);
+      return {
+        booking: toBookingDto(updated!),
+        refundedAmountMinor: result.refund?.amountMinor ?? 0,
+        commissionClawedBackMinor: 0,
+        balanceAfterMinor: null,
+        refund: result.refund,
+        replayed: result.replayed,
+      };
+    }
     if (!booking.officeId) throw BookingErrors.brokerChannelRequired(booking.id);
 
     const wallet = await walletsRepository.findByOfficeId(booking.officeId);

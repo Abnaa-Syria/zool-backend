@@ -335,6 +335,7 @@ export class NetworkService {
         const result = await bookingsService.cancelByAdmin({
           bookingId: b.id,
           reason: `trip_cancelled: ${input.reason}`,
+          carrierCancelled: true,
           actorAdminId: input.actorAdminId,
           requestId: input.requestId,
         });
