@@ -208,9 +208,12 @@ export class CarrierSettlementsService {
     return toSettlementDto(row, true);
   }
 
-  async list(query: { page?: number; pageSize?: number; companyId?: string; status?: CarrierSettlementStatus }) {
+  async list(query: { page?: number; pageSize?: number; companyId?: string; status?: CarrierSettlementStatus; visibleToCarrier?: boolean }) {
     const { page, pageSize, skip, take } = parsePagination(query);
-    const where: Prisma.CarrierSettlementWhereInput = { ...(query.companyId ? { companyId: query.companyId } : {}), ...(query.status ? { status: query.status } : {}) };
+    const where: Prisma.CarrierSettlementWhereInput = {
+      ...(query.companyId ? { companyId: query.companyId } : {}),
+      ...(query.status ? { status: query.status } : query.visibleToCarrier ? { status: { not: CarrierSettlementStatus.DRAFT } } : {}),
+    };
     const [rows, total] = await Promise.all([
       getPrisma().carrierSettlement.findMany({ where, include, orderBy: [{ periodFrom: 'desc' }, { id: 'desc' }], skip, take }),
       getPrisma().carrierSettlement.count({ where }),
@@ -220,7 +223,8 @@ export class CarrierSettlementsService {
 
   async get(id: string, companyId?: string) {
     const row = await getPrisma().carrierSettlement.findUnique({ where: { id }, include });
-    if (!row || (companyId && row.companyId !== companyId)) throw AppError.notFound('Settlement not found');
+    // A carrier (companyId given) sees its own statements once they leave DRAFT.
+    if (!row || (companyId && (row.companyId !== companyId || row.status === CarrierSettlementStatus.DRAFT))) throw AppError.notFound('Settlement not found');
     return toSettlementDto(row, true);
   }
 

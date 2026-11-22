@@ -23,7 +23,11 @@ import { carrierActor, carrierPortalService, type CarrierScope } from './carrier
 
 const idParams = z.object({ id: z.string().min(1).max(64) });
 const ymd = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
-const rangeQuery = z.object({ from: ymd, to: ymd });
+/** Sudan days, inclusive, at most 92 days (a quarter). */
+const rangeQuery = z
+  .object({ from: ymd, to: ymd })
+  .refine((v) => v.from <= v.to, { message: 'from must be on or before to', path: ['from'] })
+  .refine((v) => (Date.parse(v.to) - Date.parse(v.from)) / 86_400_000 <= 92, { message: 'At most 92 days', path: ['to'] });
 const staffFlags = z
   .object({ canManageFleet: z.boolean().optional(), canManageSchedule: z.boolean().optional(), canViewFinance: z.boolean().optional(), canManageStaff: z.boolean().optional() })
   .strict();
@@ -51,7 +55,7 @@ const bookingsQuery = paginationQuerySchema.extend({
   to: z.string().max(32).optional(),
   q: z.string().trim().max(64).optional(),
 });
-const settlementsQuery = paginationQuerySchema.extend({ status: z.enum(['DRAFT', 'FINALIZED', 'PAID', 'CANCELLED']).optional() });
+const settlementsQuery = paginationQuerySchema.extend({ status: z.enum(['FINALIZED', 'PAID', 'CANCELLED']).optional() });
 
 const scope = (req: Request): CarrierScope => ({ companyId: req.carrierAuth!.companyId, employeeId: req.carrierAuth!.employeeId, ...(req.requestId ? { requestId: req.requestId } : {}) });
 const ok = (req: Request, res: Response, message: string, data: unknown, statusCode = 200, meta?: unknown) =>
@@ -195,6 +199,10 @@ class CarrierPortalController {
   }
 
   // ---- finance
+  async amenities(req: Request, res: Response) {
+    const rows = await getPrisma().amenity.findMany({ orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }], select: { code: true, nameAr: true, nameEn: true, icon: true } });
+    return ok(req, res, 'Amenities', rows);
+  }
   async statement(req: Request, res: Response) {
     const q = req.query as { from: string; to: string };
     return ok(req, res, 'Statement', await carrierSettlementsService.preview(scope(req).companyId, q.from, q.to));
@@ -214,8 +222,10 @@ class CarrierPortalController {
       .sort((a, b) => b.collectedMinor - a.collectedMinor);
     return ok(req, res, 'Cash by driver', data, 200, { totalMinor: data.reduce((n, d) => n + d.collectedMinor, 0) });
   }
+  /** Carriers see statements once the platform finalized them (drafts can still change). */
   async settlements(req: Request, res: Response) {
-    const r = await carrierSettlementsService.list({ ...(req.query as object), companyId: scope(req).companyId });
+    const q = req.query as { status?: 'FINALIZED' | 'PAID' | 'CANCELLED' };
+    const r = await carrierSettlementsService.list({ ...q, companyId: scope(req).companyId, visibleToCarrier: true });
     return ok(req, res, 'Settlements', r.items, 200, r.meta);
   }
   async settlement(req: Request, res: Response) {
@@ -245,6 +255,7 @@ export const carrierPortalRoutes = Router();
 carrierPortalRoutes.use(authenticateCarrier);
 carrierPortalRoutes.get('/dashboard', h(c.dashboard));
 carrierPortalRoutes.get('/brokers', h(c.brokers));
+carrierPortalRoutes.get('/amenities', h(c.amenities));
 
 carrierPortalRoutes.get('/staff', staff, h(c.listStaff));
 carrierPortalRoutes.post('/staff', staff, validate({ body: createStaffSchema }), h(c.createStaff));
