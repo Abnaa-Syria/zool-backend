@@ -2071,6 +2071,13 @@ paths:
       responses:
         '200': { description: Updated settings list, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '404': { $ref: '#/components/responses/NotFound' }
+  /broker/dashboard:
+    get:
+      tags: [Broker]
+      summary: Broker home KPIs for today (Sudan day) - office-wide for managers/report viewers, own sales for other clerks (any authenticated employee)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: 'date, scope (OFFICE|SELF), bookingsCount, ticketsSold, grossSalesMinor, commissionAccruedMinor, currency', content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
 
 components:
   securitySchemes:

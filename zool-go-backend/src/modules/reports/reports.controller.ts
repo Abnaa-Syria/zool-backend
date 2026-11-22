@@ -13,6 +13,11 @@ function actorOf(req: Request): BrokerActor {
 }
 
 export class ReportsController {
+  async dashboard(req: Request, res: Response): Promise<Response> {
+    const data = await reportsService.dashboard(actorOf(req));
+    return successResponse(res, { message: 'Broker dashboard retrieved', data, requestId: req.requestId });
+  }
+
   async summary(req: Request, res: Response): Promise<Response> {
     const data = await reportsService.summary(
       actorOf(req),

@@ -35,3 +35,13 @@ brokerReportsRoutes.get(
   validate({ query: reportsRangeQuerySchema }),
   asyncHandler((req, res) => reportsController.walletActivity(req, res)),
 );
+
+/** Broker home KPIs for every employee (own sales for clerks). Mounted at `${API_PREFIX}/broker/dashboard` */
+export const brokerDashboardRoutes = Router();
+
+brokerDashboardRoutes.use(authenticateBroker);
+
+brokerDashboardRoutes.get(
+  '/',
+  asyncHandler((req, res) => reportsController.dashboard(req, res)),
+);

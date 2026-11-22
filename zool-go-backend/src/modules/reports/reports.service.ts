@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
-import { parseDateBound } from '../../shared/utils/timezone';
+import { calendarDateInZone, parseDateBound, zonedDayRange } from '../../shared/utils/timezone';
 
 export interface BrokerActor {
   employeeId: string;
@@ -27,6 +27,38 @@ function parseRange(query: { from?: string; to?: string }): { from: Date; to: Da
 }
 
 export class ReportsService {
+  /**
+   * Broker home screen (SCREEN_API_MAP §3): today's sales in Sudan time. Managers and employees
+   * with reports access see the whole office; other clerks see only their own sales, so the
+   * screen works for every employee without widening report access.
+   */
+  async dashboard(actor: BrokerActor) {
+    const tz = env().PLATFORM_TIMEZONE;
+    const { from, to } = zonedDayRange(calendarDateInZone(new Date(), tz), tz);
+    const scope: 'OFFICE' | 'SELF' =
+      actor.role === 'MANAGER' || actor.permissions.includes('broker.reports.view') ? 'OFFICE' : 'SELF';
+    const where: Prisma.BookingWhereInput = {
+      officeId: actor.officeId,
+      ...(scope === 'SELF' ? { employeeId: actor.employeeId } : {}),
+      status: BookingStatus.CONFIRMED,
+      confirmedAt: { gte: from, lt: to },
+    };
+    const prisma = getPrisma();
+    const [ticketsSold, agg] = await Promise.all([
+      prisma.ticket.count({ where: { status: TicketStatus.CONFIRMED, booking: where } }),
+      prisma.booking.aggregate({ where, _count: { _all: true }, _sum: { totalAmount: true, commissionAmount: true } }),
+    ]);
+    return {
+      date: calendarDateInZone(from, tz),
+      scope,
+      bookingsCount: agg._count._all,
+      ticketsSold,
+      grossSalesMinor: agg._sum.totalAmount ?? 0,
+      commissionAccruedMinor: agg._sum.commissionAmount ?? 0,
+      currency: 'SDG' as const,
+    };
+  }
+
   async summary(actor: BrokerActor, query: { from?: string; to?: string }) {
     const { from, to } = parseRange(query);
     const prisma = getPrisma();

@@ -27,7 +27,7 @@ import { brokerCarrierRoutes, carriersRoutes } from './modules/carriers';
 import { brokerHoldRoutes, brokerTripRoutes, catalogRoutes } from './modules/catalog';
 import { adminBookingRoutes, brokerBookingRoutes } from './modules/bookings';
 import { adminCommissionRoutes, brokerCommissionRoutes } from './modules/commissions';
-import { brokerReportsRoutes } from './modules/reports';
+import { brokerDashboardRoutes, brokerReportsRoutes } from './modules/reports';
 import { adminGeoRoutes } from './modules/geo';
 import { adminFleetRoutes } from './modules/fleet';
 import { adminNetworkRoutes } from './modules/network';
@@ -110,6 +110,7 @@ export function createApp() {
   app.use(`${prefix}/broker/bookings`, brokerBookingRoutes);
   app.use(`${prefix}/broker/commissions`, brokerCommissionRoutes);
   app.use(`${prefix}/broker/reports`, brokerReportsRoutes);
+  app.use(`${prefix}/broker/dashboard`, brokerDashboardRoutes);
 
   // Stage 2 — admin principal
   app.use(`${prefix}/brokers`, brokersRoutes);

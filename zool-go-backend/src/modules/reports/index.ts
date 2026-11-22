@@ -1,2 +1,2 @@
-export { brokerReportsRoutes } from './reports.routes';
+export { brokerDashboardRoutes, brokerReportsRoutes } from './reports.routes';
 export { reportsService } from './reports.service';
