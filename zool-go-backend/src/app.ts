@@ -47,7 +47,8 @@ import {
   customerTicketRoutes,
   customerTripRoutes,
 } from './modules/customer-app';
-import { driverAuthRoutes, driverMeRoutes } from './modules/driver-app';
+import { driverAuthRoutes, driverDashboardRoutes, driverMeRoutes, driverTripRoutes } from './modules/driver-app';
+import { adminTrackingRoutes, customerLiveRoutes } from './modules/tracking';
 import { brokerBookingChangeRoutes, customerBookingChangeRoutes } from './modules/booking-changes';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
@@ -134,12 +135,15 @@ export function createApp() {
   app.use(`${prefix}/customer/recent-searches`, customerRecentSearchRoutes);
   app.use(`${prefix}/customer/bookings`, customerBookingRoutes);
   app.use(`${prefix}/customer/bookings`, customerBookingChangeRoutes);
+  app.use(`${prefix}/customer/bookings`, customerLiveRoutes);
   app.use(`${prefix}/customer/tickets`, customerTicketRoutes);
   app.use(`${prefix}/customer/payments`, customerPaymentRoutes);
 
   // Phase 6 — driver app principal
   app.use(`${prefix}/driver/auth`, driverAuthRoutes);
   app.use(`${prefix}/driver/me`, driverMeRoutes);
+  app.use(`${prefix}/driver/dashboard`, driverDashboardRoutes);
+  app.use(`${prefix}/driver/trips`, driverTripRoutes);
 
   // Stage 2 — admin principal
   app.use(`${prefix}/brokers`, brokersRoutes);
@@ -152,6 +156,7 @@ export function createApp() {
   app.use(`${prefix}/admin`, adminGeoRoutes);
   app.use(`${prefix}/admin`, adminFleetRoutes);
   app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
+  app.use(`${prefix}/admin/tracking`, adminTrackingRoutes);
   app.use(`${prefix}/admin/customers`, adminCustomersRoutes);
   app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
   app.use(`${prefix}/admin/content`, adminContentRoutes);

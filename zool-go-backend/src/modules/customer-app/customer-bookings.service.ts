@@ -2,7 +2,7 @@ import { BookingPaymentStatus, BookingStatus, TicketStatus, TripStatus, type Pri
 import { AppError } from '../../shared/errors/app-error';
 import { ticketQrPayload } from '../../shared/security/ticket-qr';
 import { runtimeSettings } from '../../shared/settings/runtime-settings';
-import { compareSeatLabels } from '../../shared/utils/money';
+import { compareSeatLabels, splitFare } from '../../shared/utils/money';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { BookingErrors } from '../bookings/bookings.errors';
 import { pdfTicketRenderer } from '../bookings/pdf-ticket-renderer';
@@ -32,13 +32,6 @@ function tabWhere(tab: BookingTab): Prisma.BookingWhereInput {
   }
 }
 
-/** Fare per ticket: the booking total split evenly; the remainder goes to the first seat. */
-function fares(total: number, count: number): number[] {
-  if (count === 0) return [];
-  const base = Math.floor(total / count);
-  return Array.from({ length: count }, (_, i) => (i === 0 ? total - base * (count - 1) : base));
-}
-
 export function customerActions(b: CustomerBookingRow) {
   const minutesLeft = (b.trip.departureAt.getTime() - Date.now()) / 60_000;
   const anyBoarded = b.tickets.some((t) => t.boardingStatus === 'BOARDED');
@@ -61,7 +54,7 @@ export function customerActions(b: CustomerBookingRow) {
 export function toCustomerBookingDto(b: CustomerBookingRow, payment: ReturnType<typeof customerCheckoutService.paymentView> | null) {
   const passengers = new Map(b.passengers.map((p) => [p.id, p]));
   const tickets = [...b.tickets].sort((x, y) => compareSeatLabels(x.tripSeat?.seatLabel ?? '', y.tripSeat?.seatLabel ?? ''));
-  const fare = fares(b.totalAmount, tickets.length);
+  const fare = splitFare(b.totalAmount, tickets.length);
   const boardable = b.status === BookingStatus.CONFIRMED && LIVE_TRIP.concat(TripStatus.IN_PROGRESS).includes(b.trip.status);
   const unpaidCash = b.paymentStatus === BookingPaymentStatus.UNPAID_CASH;
   return {

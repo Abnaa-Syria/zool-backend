@@ -2509,6 +2509,152 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/dashboard:
+    get:
+      tags: [Driver Trips]
+      summary: 'Today (Sudan day): KPIs, current trip, next trip and today''s trips'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /driver/trips:
+    get:
+      tags: [Driver Trips]
+      summary: 'My assigned trips by tab=UPCOMING'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /driver/trips/{tripId}:
+    get:
+      tags: [Driver Trips]
+      summary: 'Trip detail: stops, vehicle, booked/boarded/no-show counts, cash, allowedTransitions, live state'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /driver/trips/{tripId}/status:
+    post:
+      tags: [Driver Trips]
+      summary: 'Lifecycle SCHEDULED to BOARDING (6 h window) to IN_PROGRESS (pending tickets become NO_SHOW; unpaid cash no-shows count) to COMPLETED (rate-trip notifications); 409 TRIP_STATE_INVALID'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/stops/{stopId}:
+    post:
+      tags: [Driver Trips]
+      summary: 'Record ARRIVED or DEPARTED at an intermediate stop (in progress only)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }, { name: stopId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/positions:
+    post:
+      tags: [Driver Trips]
+      summary: 'Batched GPS fixes (max 100, D-GPS-01) while boarding or in progress; returns accepted/rejected (202)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/manifest:
+    get:
+      tags: [Driver Trips]
+      summary: 'Passengers by seat with boarding status, channel and cash to collect'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /driver/trips/{tripId}/scan:
+    post:
+      tags: [Driver Trips]
+      summary: 'Verify a ticket QR without boarding: VALID, ALREADY_BOARDED, WRONG_TRIP, CANCELLED or INVALID (every scan is logged)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/boardings:
+    post:
+      tags: [Driver Trips]
+      summary: 'Board a passenger (QR or MANUAL), idempotent; unpaid cash tickets need cashCollectedMinor equal to the fare (422 CASH_AMOUNT_MISMATCH)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/no-shows:
+    post:
+      tags: [Driver Trips]
+      summary: 'Mark a passenger as no-show during boarding or after departure'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/trips/{tripId}/cash:
+    get:
+      tags: [Driver Trips]
+      summary: 'Cash expected vs collected for the trip (D-CASH-01 reconciliation)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/bookings/{bookingId}/live:
+    get:
+      tags: [Live Tracking]
+      summary: 'Live trip state of a confirmed booking: position, progress, ETA, delay, next stop, timeline (poll every pollSeconds)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: bookingId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/tracking/live:
+    get:
+      tags: [Live Tracking]
+      summary: 'All trips boarding or in progress with their latest position (catalog.view)'
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /admin/tracking/trips/{tripId}:
+    get:
+      tags: [Live Tracking]
+      summary: 'One trip live state plus its GPS trail (catalog.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     bearerAuth:

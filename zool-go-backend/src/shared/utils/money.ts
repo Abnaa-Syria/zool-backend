@@ -18,3 +18,10 @@ export function computeCommission(totalAmount: number, percent: number): number 
 export function compareSeatLabels(a: string, b: string): number {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
 }
+
+/** Fare per ticket: a booking total split evenly; the remainder goes to the first seat (exact sum). */
+export function splitFare(total: number, count: number): number[] {
+  if (count === 0) return [];
+  const base = Math.floor(total / count);
+  return Array.from({ length: count }, (_, i) => (i === 0 ? total - base * (count - 1) : base));
+}
