@@ -50,6 +50,8 @@ import {
 import { driverAuthRoutes, driverDashboardRoutes, driverMeRoutes, driverTripRoutes } from './modules/driver-app';
 import { adminTrackingRoutes, customerLiveRoutes } from './modules/tracking';
 import { brokerBookingChangeRoutes, customerBookingChangeRoutes } from './modules/booking-changes';
+import { brokerNotificationRoutes, customerNotificationRoutes, driverNotificationRoutes } from './modules/notifications';
+import { adminRefundRoutes } from './modules/refunds';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -126,6 +128,8 @@ export function createApp() {
   app.use(`${prefix}/broker/commissions`, brokerCommissionRoutes);
   app.use(`${prefix}/broker/reports`, brokerReportsRoutes);
   app.use(`${prefix}/broker/dashboard`, brokerDashboardRoutes);
+  app.use(`${prefix}/broker/notifications`, brokerNotificationRoutes.feed);
+  app.use(`${prefix}/broker/devices`, brokerNotificationRoutes.devices);
 
   // Phase 6 — customer app principal
   app.use(`${prefix}/customer/auth`, customerAuthRoutes);
@@ -138,12 +142,16 @@ export function createApp() {
   app.use(`${prefix}/customer/bookings`, customerLiveRoutes);
   app.use(`${prefix}/customer/tickets`, customerTicketRoutes);
   app.use(`${prefix}/customer/payments`, customerPaymentRoutes);
+  app.use(`${prefix}/customer/notifications`, customerNotificationRoutes.feed);
+  app.use(`${prefix}/customer/devices`, customerNotificationRoutes.devices);
 
   // Phase 6 — driver app principal
   app.use(`${prefix}/driver/auth`, driverAuthRoutes);
   app.use(`${prefix}/driver/me`, driverMeRoutes);
   app.use(`${prefix}/driver/dashboard`, driverDashboardRoutes);
   app.use(`${prefix}/driver/trips`, driverTripRoutes);
+  app.use(`${prefix}/driver/notifications`, driverNotificationRoutes.feed);
+  app.use(`${prefix}/driver/devices`, driverNotificationRoutes.devices);
 
   // Stage 2 — admin principal
   app.use(`${prefix}/brokers`, brokersRoutes);
@@ -157,6 +165,7 @@ export function createApp() {
   app.use(`${prefix}/admin`, adminFleetRoutes);
   app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
   app.use(`${prefix}/admin/tracking`, adminTrackingRoutes);
+  app.use(`${prefix}/admin/refunds`, adminRefundRoutes);
   app.use(`${prefix}/admin/customers`, adminCustomersRoutes);
   app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
   app.use(`${prefix}/admin/content`, adminContentRoutes);

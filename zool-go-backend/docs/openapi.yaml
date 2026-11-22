@@ -2655,6 +2655,208 @@ paths:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /customer/notifications:
+    get:
+      tags: [Notifications]
+      summary: 'My notification feed (newest first; meta.unread)'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: 'Unread badge count'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: 'Mark every notification as read'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: 'Mark one notification as read'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /customer/devices:
+    post:
+      tags: [Notifications]
+      summary: 'Register a push token (platform IOS, ANDROID or WEB); a token belongs to one principal'
+      security: [{ customerBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /customer/devices/{token}:
+    delete:
+      tags: [Notifications]
+      summary: 'Remove a push token (logout)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: token, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /driver/notifications:
+    get:
+      tags: [Notifications]
+      summary: 'My notification feed (newest first; meta.unread)'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /driver/notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: 'Unread badge count'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /driver/notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: 'Mark every notification as read'
+      security: [{ driverBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /driver/notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: 'Mark one notification as read'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /driver/devices:
+    post:
+      tags: [Notifications]
+      summary: 'Register a push token (platform IOS, ANDROID or WEB); a token belongs to one principal'
+      security: [{ driverBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /driver/devices/{token}:
+    delete:
+      tags: [Notifications]
+      summary: 'Remove a push token (logout)'
+      security: [{ driverBearerAuth: [] }]
+      parameters: [{ name: token, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /broker/notifications:
+    get:
+      tags: [Notifications]
+      summary: 'My notification feed (newest first; meta.unread)'
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /broker/notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: 'Unread badge count'
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /broker/notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: 'Mark every notification as read'
+      security: [{ brokerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /broker/notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: 'Mark one notification as read'
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /broker/devices:
+    post:
+      tags: [Notifications]
+      summary: 'Register a push token (platform IOS, ANDROID or WEB); a token belongs to one principal'
+      security: [{ brokerBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /broker/devices/{token}:
+    delete:
+      tags: [Notifications]
+      summary: 'Remove a push token (logout)'
+      security: [{ brokerBearerAuth: [] }]
+      parameters: [{ name: token, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/refunds:
+    get:
+      tags: [Refunds (admin)]
+      summary: 'Customer refunds queue (status, reason, q) with pendingCount and pendingAmountMinor (bookings.view)'
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /admin/refunds/{id}:
+    get:
+      tags: [Refunds (admin)]
+      summary: 'One refund with booking, trip, customer and payment (bookings.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/refunds/{id}/retry:
+    post:
+      tags: [Refunds (admin)]
+      summary: 'Re-send a pending refund to the payment provider (bookings.cancel)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/refunds/{id}/mark-paid:
+    post:
+      tags: [Refunds (admin)]
+      summary: 'Record a refund paid outside the provider with its reference (bookings.cancel)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
 components:
   securitySchemes:
     bearerAuth:

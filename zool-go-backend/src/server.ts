@@ -4,7 +4,7 @@ import { connectPrisma, disconnectPrisma } from './infrastructure/database/prism
 import { connectRedis, disconnectRedis } from './infrastructure/redis/redis';
 import { logger } from './infrastructure/observability/logger';
 import { catalogService } from './modules/catalog/catalog.service';
-import { customerCheckoutService } from './modules/customer-app';
+import { customerCheckoutService, sendDepartureReminders } from './modules/customer-app';
 
 async function main() {
   loadEnv();
@@ -18,12 +18,13 @@ async function main() {
     logger.info({ port: config.PORT }, `${config.APP_NAME} listening`);
   });
 
-  // Housekeeping: free expired seat holds and expire unpaid online checkouts (also done lazily on reads).
+  // Housekeeping: free expired seat holds, expire unpaid online checkouts (both also lazily on
+  // reads) and send departure reminders.
   let sweeping = false;
   const sweeper = setInterval(() => {
     if (sweeping) return;
     sweeping = true;
-    Promise.all([catalogService.releaseExpiredHolds(), customerCheckoutService.expireOverdue()])
+    Promise.all([catalogService.releaseExpiredHolds(), customerCheckoutService.expireOverdue(), sendDepartureReminders()])
       .catch((err: unknown) => logger.warn({ err }, 'Housekeeping sweep failed'))
       .finally(() => {
         sweeping = false;
