@@ -3,6 +3,7 @@ import { env } from '../../config/env';
 import { assertNotInMaintenance, runtimeSettings } from '../../shared/settings/runtime-settings';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
+import { auditActor } from '../../shared/types/actor';
 import { computeCommission, compareSeatLabels, decimalToNumber } from '../../shared/utils/money';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { zonedDayRange } from '../../shared/utils/timezone';
@@ -178,7 +179,9 @@ export class CatalogService {
     departureAt?: Date;
     basePrice?: number;
     isActive?: boolean;
-    actorAdminId: string;
+    actorAdminId?: string;
+    actorType?: string;
+    actorId?: string;
     requestId?: string;
   }) {
     const existing = await catalogRepository.findTripById(input.tripId);
@@ -197,7 +200,7 @@ export class CatalogService {
     });
 
     await auditService.record({
-      actorAdminId: input.actorAdminId,
+      ...auditActor(input),
       action: 'catalog.trip.updated',
       resourceType: 'trip',
       resourceId: trip.id,

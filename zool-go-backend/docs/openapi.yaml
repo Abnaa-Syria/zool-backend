@@ -918,7 +918,7 @@ paths:
   /carriers:
     post:
       tags: [Carriers (admin)]
-      summary: Create transport company (carriers.manage)
+      summary: 'Create a transport company; optional manager {displayName, phone} creates its first carrier portal account (carriers.manage)'
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -2859,6 +2859,449 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/auth/otp/request:
+    post:
+      tags: [Carrier Auth]
+      summary: 'Request a login code for a carrier employee phone'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/auth/otp/verify:
+    post:
+      tags: [Carrier Auth]
+      summary: 'Verify; web gets the refresh token as an HttpOnly cookie (mobile clients: body) and the employee profile'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/auth/refresh:
+    post:
+      tags: [Carrier Auth]
+      summary: 'Rotate the refresh token (cookie or body)'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/auth/logout:
+    post:
+      tags: [Carrier Auth]
+      summary: 'Revoke the session and clear the cookie'
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/auth/me:
+    get:
+      tags: [Carrier Auth]
+      summary: 'Current employee: role, permissions, company'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/dashboard:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Today: trips, live trips, seats sold, sales, active drivers, fleet by status, next trips'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/brokers:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Broker offices selling this carrier and their commission'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/staff:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company staff (carrier.staff)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Carrier Portal]
+      summary: 'Add an employee with permissions (carrier.staff)'
+      security: [{ carrierBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/staff/{id}:
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Change name, role, status or permissions; sessions are revoked on permission changes'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/vehicles:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company vehicles'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Carrier Portal]
+      summary: 'Add a vehicle with seat layout (carrier.fleet)'
+      security: [{ carrierBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/vehicles/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One company vehicle'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Update a vehicle (carrier.fleet)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/drivers:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company drivers'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Carrier Portal]
+      summary: 'Add a driver who logs into the driver app (carrier.fleet)'
+      security: [{ carrierBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/drivers/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One company driver'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Update or suspend a driver (carrier.fleet)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/routes:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company routes'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Carrier Portal]
+      summary: 'Create a route with stops (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/routes/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One company route'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Update a route (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/trips:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company trips with filters (date, status, route, vehicle, driver)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/trips/schedule:
+    post:
+      tags: [Carrier Portal]
+      summary: 'Schedule trips on a company route with a company vehicle/driver (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/trips/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Trip detail with seats and stops'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /carrier/trips/{id}/assignment:
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Change the vehicle or driver (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/trips/{id}/price:
+    patch:
+      tags: [Carrier Portal]
+      summary: 'Change the ticket price for new sales (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/trips/{id}/cancel:
+    post:
+      tags: [Carrier Portal]
+      summary: 'Cancel a trip: every booking refunded in full (carrier.schedule)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carrier/trips/{id}/manifest:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Passenger manifest with boarding status and cash'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /carrier/bookings:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Bookings on company trips (all channels)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/tracking/live:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Company trips boarding or on the road with latest GPS'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/tracking/trips/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One company trip live state + GPS trail'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /carrier/reports/statement:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Live statement for ?from&to (Sudan days): sales by channel, refunds, fee, commission, net (carrier.finance)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/reports/cash-by-driver:
+    get:
+      tags: [Carrier Portal]
+      summary: 'Cash collected per driver for ?from&to (carrier.finance)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/settlements:
+    get:
+      tags: [Carrier Portal]
+      summary: 'My settlement statements (carrier.finance)'
+      security: [{ carrierBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/settlements/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One settlement with per-trip lines (carrier.finance)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /carriers/{companyId}/staff:
+    get:
+      tags: [Carriers (admin)]
+      summary: 'Carrier portal accounts of a company (carriers.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Carriers (admin)]
+      summary: 'Create a carrier portal account (carriers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /carriers/{companyId}/staff/{employeeId}:
+    patch:
+      tags: [Carriers (admin)]
+      summary: 'Update a carrier portal account (carriers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }, { name: employeeId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/carrier-settlements:
+    get:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Settlement statements (companyId, status) (carriers.view)'
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Draft a statement for a carrier and a past period (no overlaps) (carriers.manage)'
+      security: [{ bearerAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '201': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/carrier-settlements/preview:
+    get:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Live statement for companyId, from, to without saving (carriers.view)'
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /admin/carrier-settlements/{id}:
+    get:
+      tags: [Carrier Settlements (admin)]
+      summary: 'One statement with per-trip lines'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/carrier-settlements/{id}/recalculate:
+    post:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Recompute a draft with current data and fee configuration'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/carrier-settlements/{id}/finalize:
+    post:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Freeze the statement'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /admin/carrier-settlements/{id}/mark-paid:
+    post:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Record the payment reference'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/carrier-settlements/{id}/cancel:
+    post:
+      tags: [Carrier Settlements (admin)]
+      summary: 'Cancel a draft or finalized statement'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     bearerAuth:

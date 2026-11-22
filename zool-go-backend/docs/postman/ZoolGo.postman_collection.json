@@ -372,6 +372,99 @@
               }
             }
           ]
+        },
+        {
+          "name": "Carrier",
+          "item": [
+            {
+              "name": "Carrier: request code",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const d = pm.response.json().data;",
+                      "pm.collectionVariables.set('challengeId', d.challengeId);",
+                      "pm.collectionVariables.set('devOtp', d.devOtp || '');"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/carrier/auth/otp/request",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "carrier",
+                    "auth",
+                    "otp",
+                    "request"
+                  ],
+                  "variable": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"{{carrierPhone}}\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Carrier: verify code (saves token)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const d = pm.response.json().data;",
+                      "pm.collectionVariables.set('carrierToken', d.accessToken);",
+                      "if (d.refreshToken) pm.collectionVariables.set('carrierRefreshToken', d.refreshToken);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Client-Platform",
+                    "value": "android"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/carrier/auth/otp/verify",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "carrier",
+                    "auth",
+                    "otp",
+                    "verify"
+                  ],
+                  "variable": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"{{carrierPhone}}\",\n  \"code\": \"{{devOtp}}\",\n  \"challengeId\": \"{{challengeId}}\"\n}"
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -2787,13 +2880,1663 @@
       ]
     },
     {
+      "name": "Carrier Auth",
+      "item": [
+        {
+          "name": "POST /carrier/auth/otp/request",
+          "request": {
+            "method": "POST",
+            "description": "Request a login code for a carrier employee phone",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/auth/otp/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "auth",
+                "otp",
+                "request"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/auth/otp/verify",
+          "request": {
+            "method": "POST",
+            "description": "Verify; web gets the refresh token as an HttpOnly cookie (mobile clients: body) and the employee profile",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/auth/otp/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "auth",
+                "otp",
+                "verify"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/auth/refresh",
+          "request": {
+            "method": "POST",
+            "description": "Rotate the refresh token (cookie or body)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "auth",
+                "refresh"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/auth/logout",
+          "request": {
+            "method": "POST",
+            "description": "Revoke the session and clear the cookie",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "auth",
+                "logout"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/auth/me",
+          "request": {
+            "method": "GET",
+            "description": "Current employee: role, permissions, company",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "auth",
+                "me"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carrier Portal",
+      "item": [
+        {
+          "name": "GET /carrier/dashboard",
+          "request": {
+            "method": "GET",
+            "description": "Today: trips, live trips, seats sold, sales, active drivers, fleet by status, next trips",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "dashboard"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/brokers",
+          "request": {
+            "method": "GET",
+            "description": "Broker offices selling this carrier and their commission",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/brokers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "brokers"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/staff",
+          "request": {
+            "method": "GET",
+            "description": "Company staff (carrier.staff)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/staff",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "staff"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/staff",
+          "request": {
+            "method": "POST",
+            "description": "Add an employee with permissions (carrier.staff)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/staff",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "staff"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/staff/{id}",
+          "request": {
+            "method": "PATCH",
+            "description": "Change name, role, status or permissions; sessions are revoked on permission changes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/staff/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/vehicles",
+          "request": {
+            "method": "GET",
+            "description": "Company vehicles",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "vehicles"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/vehicles",
+          "request": {
+            "method": "POST",
+            "description": "Add a vehicle with seat layout (carrier.fleet)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "vehicles"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/vehicles/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One company vehicle",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/vehicles/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "vehicles",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/vehicles/{id}",
+          "request": {
+            "method": "PATCH",
+            "description": "Update a vehicle (carrier.fleet)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/vehicles/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "vehicles",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/drivers",
+          "request": {
+            "method": "GET",
+            "description": "Company drivers",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "drivers"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/drivers",
+          "request": {
+            "method": "POST",
+            "description": "Add a driver who logs into the driver app (carrier.fleet)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "drivers"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/drivers/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One company driver",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/drivers/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "drivers",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/drivers/{id}",
+          "request": {
+            "method": "PATCH",
+            "description": "Update or suspend a driver (carrier.fleet)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/drivers/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "drivers",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/routes",
+          "request": {
+            "method": "GET",
+            "description": "Company routes",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "routes"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/routes",
+          "request": {
+            "method": "POST",
+            "description": "Create a route with stops (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "routes"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/routes/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One company route",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/routes/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "routes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/routes/{id}",
+          "request": {
+            "method": "PATCH",
+            "description": "Update a route (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/routes/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "routes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/trips",
+          "request": {
+            "method": "GET",
+            "description": "Company trips with filters (date, status, route, vehicle, driver)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/trips/schedule",
+          "request": {
+            "method": "POST",
+            "description": "Schedule trips on a company route with a company vehicle/driver (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                "schedule"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/trips/{id}",
+          "request": {
+            "method": "GET",
+            "description": "Trip detail with seats and stops",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/trips/{id}/assignment",
+          "request": {
+            "method": "PATCH",
+            "description": "Change the vehicle or driver (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/:id/assignment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                ":id",
+                "assignment"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /carrier/trips/{id}/price",
+          "request": {
+            "method": "PATCH",
+            "description": "Change the ticket price for new sales (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/:id/price",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                ":id",
+                "price"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /carrier/trips/{id}/cancel",
+          "request": {
+            "method": "POST",
+            "description": "Cancel a trip: every booking refunded in full (carrier.schedule)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/trips/{id}/manifest",
+          "request": {
+            "method": "GET",
+            "description": "Passenger manifest with boarding status and cash",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/trips/:id/manifest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "trips",
+                ":id",
+                "manifest"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/bookings",
+          "request": {
+            "method": "GET",
+            "description": "Bookings on company trips (all channels)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "bookings"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/tracking/live",
+          "request": {
+            "method": "GET",
+            "description": "Company trips boarding or on the road with latest GPS",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/tracking/live",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "tracking",
+                "live"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/tracking/trips/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One company trip live state + GPS trail",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/tracking/trips/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "tracking",
+                "trips",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/reports/statement",
+          "request": {
+            "method": "GET",
+            "description": "Live statement for ?from&to (Sudan days): sales by channel, refunds, fee, commission, net (carrier.finance)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/reports/statement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "reports",
+                "statement"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/reports/cash-by-driver",
+          "request": {
+            "method": "GET",
+            "description": "Cash collected per driver for ?from&to (carrier.finance)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/reports/cash-by-driver",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "reports",
+                "cash-by-driver"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/settlements",
+          "request": {
+            "method": "GET",
+            "description": "My settlement statements (carrier.finance)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "settlements"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/settlements/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One settlement with per-trip lines (carrier.finance)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/settlements/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "settlements",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carrier Settlements (admin)",
+      "item": [
+        {
+          "name": "GET /admin/carrier-settlements",
+          "request": {
+            "method": "GET",
+            "description": "Settlement statements (companyId, status) (carriers.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/carrier-settlements",
+          "request": {
+            "method": "POST",
+            "description": "Draft a statement for a carrier and a past period (no overlaps) (carriers.manage)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET /admin/carrier-settlements/preview",
+          "request": {
+            "method": "GET",
+            "description": "Live statement for companyId, from, to without saving (carriers.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/preview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                "preview"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/carrier-settlements/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One statement with per-trip lines",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/carrier-settlements/{id}/recalculate",
+          "request": {
+            "method": "POST",
+            "description": "Recompute a draft with current data and fee configuration",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/:id/recalculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                ":id",
+                "recalculate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/carrier-settlements/{id}/finalize",
+          "request": {
+            "method": "POST",
+            "description": "Freeze the statement",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/:id/finalize",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                ":id",
+                "finalize"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /admin/carrier-settlements/{id}/mark-paid",
+          "request": {
+            "method": "POST",
+            "description": "Record the payment reference",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/:id/mark-paid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                ":id",
+                "mark-paid"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST /admin/carrier-settlements/{id}/cancel",
+          "request": {
+            "method": "POST",
+            "description": "Cancel a draft or finalized statement",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/carrier-settlements/:id/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "carrier-settlements",
+                ":id",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Carriers (admin)",
       "item": [
         {
           "name": "POST /carriers",
           "request": {
             "method": "POST",
-            "description": "Create transport company (carriers.manage)",
+            "description": "Create a transport company; optional manager {displayName, phone} creates its first carrier portal account (carriers.manage)",
             "header": [
               {
                 "key": "Content-Type",
@@ -3013,6 +4756,144 @@
                   "type": "string"
                 }
               ]
+            }
+          }
+        },
+        {
+          "name": "GET /carriers/{companyId}/staff",
+          "request": {
+            "method": "GET",
+            "description": "Carrier portal accounts of a company (carriers.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carriers/:companyId/staff",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carriers",
+                ":companyId",
+                "staff"
+              ],
+              "variable": [
+                {
+                  "key": "companyId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /carriers/{companyId}/staff",
+          "request": {
+            "method": "POST",
+            "description": "Create a carrier portal account (carriers.manage)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carriers/:companyId/staff",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carriers",
+                ":companyId",
+                "staff"
+              ],
+              "variable": [
+                {
+                  "key": "companyId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH /carriers/{companyId}/staff/{employeeId}",
+          "request": {
+            "method": "PATCH",
+            "description": "Update a carrier portal account (carriers.manage)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/carriers/:companyId/staff/:employeeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carriers",
+                ":companyId",
+                "staff",
+                ":employeeId"
+              ],
+              "variable": [
+                {
+                  "key": "companyId",
+                  "value": ""
+                },
+                {
+                  "key": "employeeId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         }
@@ -9731,6 +11612,10 @@
       "value": "+249900000201"
     },
     {
+      "key": "carrierPhone",
+      "value": "+249900000401"
+    },
+    {
       "key": "adminToken",
       "value": ""
     },
@@ -9747,6 +11632,10 @@
       "value": ""
     },
     {
+      "key": "carrierToken",
+      "value": ""
+    },
+    {
       "key": "brokerRefreshToken",
       "value": ""
     },
@@ -9756,6 +11645,10 @@
     },
     {
       "key": "driverRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "carrierRefreshToken",
       "value": ""
     },
     {

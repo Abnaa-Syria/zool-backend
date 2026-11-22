@@ -13,6 +13,7 @@ const TOKEN_BY_SCHEME = {
   brokerBearerAuth: 'brokerToken',
   customerBearerAuth: 'customerToken',
   driverBearerAuth: 'driverToken',
+  carrierBearerAuth: 'carrierToken',
 };
 
 const mobileHeader = { key: 'X-Client-Platform', value: 'android' };
@@ -102,6 +103,7 @@ const collection = {
         login('Broker', '/broker/auth', 'brokerPhone', 'brokerToken', 'brokerRefreshToken'),
         login('Customer', '/customer/auth', 'customerPhone', 'customerToken', 'customerRefreshToken'),
         login('Driver', '/driver/auth', 'driverPhone', 'driverToken', 'driverRefreshToken'),
+        login('Carrier', '/carrier/auth', 'carrierPhone', 'carrierToken', 'carrierRefreshToken'),
       ],
     },
     ...[...folders.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([name, item]) => ({ name, item })),
@@ -112,7 +114,8 @@ const collection = {
     { key: 'brokerPhone', value: '+249900000101' },
     { key: 'customerPhone', value: '+249900000301' },
     { key: 'driverPhone', value: '+249900000201' },
-    ...['adminToken', 'brokerToken', 'customerToken', 'driverToken', 'brokerRefreshToken', 'customerRefreshToken', 'driverRefreshToken', 'challengeId', 'devOtp'].map((key) => ({ key, value: '' })),
+    { key: 'carrierPhone', value: '+249900000401' },
+    ...['adminToken', 'brokerToken', 'customerToken', 'driverToken', 'carrierToken', 'brokerRefreshToken', 'customerRefreshToken', 'driverRefreshToken', 'carrierRefreshToken', 'challengeId', 'devOtp'].map((key) => ({ key, value: '' })),
   ],
 };
 

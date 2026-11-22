@@ -11,6 +11,8 @@ export class AuditRepository {
     return client(tx).auditLog.create({
       data: {
         actorAdminId: input.actorAdminId ?? null,
+        actorType: input.actorType ?? null,
+        actorId: input.actorId ?? null,
         action: input.action,
         resourceType: input.resourceType,
         resourceId: input.resourceId ?? null,

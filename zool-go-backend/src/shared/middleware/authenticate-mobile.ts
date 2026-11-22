@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import { CustomerStatus, DriverStatus } from '@prisma/client';
+import { CarrierEmployeeStatus, CustomerStatus, DriverStatus } from '@prisma/client';
+import { carrierPermissions, type CarrierPermission } from '../constants/carrier-permissions';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../errors/app-error';
 import { verifyMobileAccessToken } from '../security/mobile-tokens';
@@ -45,3 +46,30 @@ export const authenticateDriver = asyncHandler(async (req: Request, _res: Respon
   req.driverAuth = { driverId: driver.id, companyId: driver.companyId, sessionId: payload.sid, authzVersion: payload.av };
   next();
 });
+
+/** Carrier portal staff (D-CARRIER-PORTAL-01). Sets `req.carrierAuth` scoped to one company. */
+export const authenticateCarrier = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
+  const payload = verifyMobileAccessToken('carrier', bearer(req));
+  await requireMatchingPrincipalAuthzVersion('carrier', payload.sub, payload.av);
+  const e = await getPrisma().carrierEmployee.findUnique({ where: { id: payload.sub } });
+  if (!e || e.status !== CarrierEmployeeStatus.ACTIVE) throw AppError.unauthorized('Carrier account is not active');
+  req.carrierAuth = {
+    employeeId: e.id,
+    companyId: e.companyId,
+    role: e.role,
+    permissions: carrierPermissions(e),
+    sessionId: payload.sid,
+    authzVersion: payload.av,
+  };
+  next();
+});
+
+export function requireCarrierPermission(permission: CarrierPermission) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    if (!req.carrierAuth?.permissions.includes(permission)) {
+      next(AppError.forbidden('Missing carrier permission', { permission }));
+      return;
+    }
+    next();
+  };
+}

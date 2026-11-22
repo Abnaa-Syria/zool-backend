@@ -1,4 +1,6 @@
 import {
+  CarrierEmployeeStatus,
+  CarrierOtpPurpose,
   CustomerOtpPurpose,
   CustomerStatus,
   DriverOtpPurpose,
@@ -231,5 +233,103 @@ export const driverAuthStore: MobileAuthStore = {
   async activeAuthzVersion(id) {
     const d = await getPrisma().driver.findUnique({ where: { id }, select: { status: true, authzVersion: true } });
     return d?.status === DriverStatus.ACTIVE ? d.authzVersion : null;
+  },
+};
+
+/** Carrier portal staff (D-CARRIER-PORTAL-01): created by the admin or the carrier manager. */
+export const carrierAuthStore: MobileAuthStore = {
+  principal: 'carrier',
+
+  async resolveForRequest(phone) {
+    const identity = await getPrisma().carrierIdentity.findUnique({
+      where: phoneKey(phone),
+      include: { employee: { select: { status: true } } },
+    });
+    return identity && identity.employee.status === CarrierEmployeeStatus.ACTIVE ? { principalId: identity.carrierEmployeeId } : null;
+  },
+
+  createChallenge(data) {
+    return getPrisma().carrierOtpChallenge.create({
+      data: {
+        carrierEmployeeId: data.principalId!,
+        identityType: IdentityType.PHONE,
+        identityValue: data.phone,
+        purpose: CarrierOtpPurpose.CARRIER_LOGIN,
+        codeHash: data.codeHash,
+        maxAttempts: data.maxAttempts,
+        expiresAt: data.expiresAt,
+        requestId: data.requestId ?? null,
+      },
+      select: { id: true },
+    });
+  },
+
+  findChallenge(id) {
+    return getPrisma().carrierOtpChallenge.findUnique({ where: { id } });
+  },
+
+  findLatestPending(phone) {
+    return getPrisma().carrierOtpChallenge.findFirst({
+      where: { identityValue: phone, purpose: CarrierOtpPurpose.CARRIER_LOGIN, status: OtpChallengeStatus.PENDING },
+      orderBy: { createdAt: 'desc' },
+    });
+  },
+
+  updateChallenge(id, data) {
+    return getPrisma().carrierOtpChallenge.update({ where: { id }, data });
+  },
+
+  async consumeChallenge(id, tx) {
+    const r = await tx.carrierOtpChallenge.updateMany({
+      where: { id, status: OtpChallengeStatus.PENDING },
+      data: { status: OtpChallengeStatus.CONSUMED, consumedAt: new Date() },
+    });
+    return r.count === 1;
+  },
+
+  async completeLogin(phone, tx) {
+    const identity = await tx.carrierIdentity.findUniqueOrThrow({ where: phoneKey(phone) });
+    await tx.carrierEmployee.update({ where: { id: identity.carrierEmployeeId }, data: { lastLoginAt: new Date() } });
+    return { principalId: identity.carrierEmployeeId, isNew: false };
+  },
+
+  createSession(data, tx) {
+    const { principalId, ...rest } = data;
+    return (tx ?? getPrisma()).carrierRefreshSession.create({ data: { carrierEmployeeId: principalId, ...rest }, select: { id: true } });
+  },
+
+  async findSessionByHash(tokenHash) {
+    const s = await getPrisma().carrierRefreshSession.findUnique({ where: { tokenHash } });
+    return s ? { ...s, principalId: s.carrierEmployeeId } : null;
+  },
+
+  rotateSession(id, replacedById, tx) {
+    return tx.carrierRefreshSession.update({
+      where: { id },
+      data: { revokedAt: new Date(), revokeReason: 'rotated', replacedById, lastUsedAt: new Date() },
+    });
+  },
+
+  revokeSession(id, reason) {
+    return getPrisma().carrierRefreshSession.update({ where: { id }, data: { revokedAt: new Date(), revokeReason: reason } });
+  },
+
+  revokeFamily(familyId, reason) {
+    return getPrisma().carrierRefreshSession.updateMany({
+      where: { familyId, revokedAt: null },
+      data: { revokedAt: new Date(), revokeReason: reason },
+    });
+  },
+
+  revokeAll(employeeId, reason) {
+    return getPrisma().carrierRefreshSession.updateMany({
+      where: { carrierEmployeeId: employeeId, revokedAt: null },
+      data: { revokedAt: new Date(), revokeReason: reason },
+    });
+  },
+
+  async activeAuthzVersion(id) {
+    const d = await getPrisma().carrierEmployee.findUnique({ where: { id }, select: { status: true, authzVersion: true } });
+    return d?.status === CarrierEmployeeStatus.ACTIVE ? d.authzVersion : null;
   },
 };

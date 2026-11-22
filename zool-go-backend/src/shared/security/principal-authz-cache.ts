@@ -6,7 +6,7 @@ import { ErrorCodes } from '../errors/error-codes';
  * authzVersion cache for the mobile principals (driver, customer). Same fail-closed contract as
  * the admin/broker caches: a token is valid only while its `av` claim equals the cached version.
  */
-export type MobilePrincipal = 'driver' | 'customer';
+export type MobilePrincipal = 'driver' | 'customer' | 'carrier';
 
 function versionKey(principal: MobilePrincipal, id: string): string {
   return redisKey(`${principal}:authz:version:${id}`);

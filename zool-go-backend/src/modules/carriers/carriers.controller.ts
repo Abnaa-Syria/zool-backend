@@ -8,6 +8,7 @@ export class CarriersController {
     const carrier = await carriersService.create({
       key: req.body.key as string,
       name: req.body.name as string,
+      ...(req.body.manager ? { manager: req.body.manager as { displayName: string; phone: string } } : {}),
       actorAdminId: req.auth!.adminId,
       requestId: req.requestId,
     });
@@ -56,6 +57,9 @@ export class CarriersController {
       legalName: req.body.legalName as string | null | undefined,
       logoUrl: req.body.logoUrl as string | null | undefined,
       cashEnabled: req.body.cashEnabled as boolean | undefined,
+      platformFeeType: req.body.platformFeeType,
+      platformFeeValue: req.body.platformFeeValue,
+      brokerCommissionBearer: req.body.brokerCommissionBearer,
       actorAdminId: req.auth!.adminId,
       requestId: req.requestId,
     });

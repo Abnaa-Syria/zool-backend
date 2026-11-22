@@ -1,3 +1,7 @@
+import type { CommissionBearer, PlatformFeeType } from '@prisma/client';
+import { normalizePhone } from '../../shared/utils/phone';
+import { carrierPortalRepository } from '../carrier-portal/carrier-portal.repository';
+import { carrierPortalService } from '../carrier-portal/carrier-portal.service';
 import { Prisma, TransportCompanyStatus, type TransportCompany } from '@prisma/client';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
@@ -31,6 +35,7 @@ function toDetailDto(company: TransportCompany & { _count: { brokerAssignments: 
     logoUrl: company.logoUrl,
     rating: { average: company.ratingAvgX100 / 100, count: company.ratingCount },
     cashEnabled: company.cashEnabled,
+    billing: { platformFeeType: company.platformFeeType, platformFeeValue: company.platformFeeValue, brokerCommissionBearer: company.brokerCommissionBearer },
     suspendedAt: company.suspendedAt?.toISOString() ?? null,
     assignmentCount: company._count.brokerAssignments,
     createdAt: company.createdAt.toISOString(),
@@ -38,9 +43,12 @@ function toDetailDto(company: TransportCompany & { _count: { brokerAssignments: 
 }
 
 export class CarriersService {
-  async create(input: { key: string; name: string; actorAdminId: string; requestId?: string }) {
+  async create(input: { key: string; name: string; manager?: { displayName: string; phone: string }; actorAdminId: string; requestId?: string }) {
     const existing = await carriersRepository.findByKey(input.key);
     if (existing) throw AppError.conflict('Transport company key already exists');
+    if (input.manager && (await carrierPortalRepository.findIdentityByPhone(normalizePhone(input.manager.phone)))) {
+      throw AppError.conflict('Phone identity already registered');
+    }
 
     try {
       const company = await carriersRepository.create({ key: input.key, name: input.name });
@@ -52,7 +60,16 @@ export class CarriersService {
         requestId: input.requestId,
         metadata: { key: company.key, name: company.name },
       });
-      return toDto(company);
+      const manager = input.manager
+        ? await carrierPortalService.createStaff({
+            companyId: company.id,
+            displayName: input.manager.displayName,
+            phone: input.manager.phone,
+            role: 'MANAGER',
+            actor: { actorAdminId: input.actorAdminId, ...(input.requestId ? { requestId: input.requestId } : {}) },
+          })
+        : null;
+      return { ...toDto(company), manager };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw AppError.conflict('Transport company key already exists');
@@ -98,10 +115,16 @@ export class CarriersService {
     legalName?: string | null;
     logoUrl?: string | null;
     cashEnabled?: boolean;
+    platformFeeType?: PlatformFeeType;
+    platformFeeValue?: number;
+    brokerCommissionBearer?: CommissionBearer;
     actorAdminId: string;
     requestId?: string;
   }) {
     const existing = await carriersRepository.findById(input.companyId);
+    const feeType = input.platformFeeType ?? existing?.platformFeeType;
+    const feeValue = input.platformFeeValue ?? existing?.platformFeeValue ?? 0;
+    if (feeType === 'PERCENT' && feeValue > 10_000) throw AppError.validation('A percentage fee is at most 10000 basis points (100%)', { field: 'platformFeeValue' });
     if (!existing) throw AppError.notFound('Transport company not found');
 
     const nextStatus = input.status !== undefined ? input.status : existing.status;
@@ -113,6 +136,9 @@ export class CarriersService {
       ...(input.legalName !== undefined ? { legalName: input.legalName } : {}),
       ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
       ...(input.cashEnabled !== undefined ? { cashEnabled: input.cashEnabled } : {}),
+      ...(input.platformFeeType !== undefined ? { platformFeeType: input.platformFeeType } : {}),
+      ...(input.platformFeeValue !== undefined ? { platformFeeValue: input.platformFeeValue } : {}),
+      ...(input.brokerCommissionBearer !== undefined ? { brokerCommissionBearer: input.brokerCommissionBearer } : {}),
     };
 
     if (!statusChanged && Object.keys(profile).length === 0) {

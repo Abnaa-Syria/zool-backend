@@ -83,6 +83,23 @@ export async function seedPhase2(prisma: PrismaClient): Promise<void> {
     data: { shortName: 'سودان إكسبريس', legalName: 'شركة سودان إكسبريس للنقل البري' },
   });
 
+  // D-CARRIER-PORTAL-01: demo carrier portal manager
+  const carrierPhone = normalizePhone('+249900000401');
+  if (!(await prisma.carrierIdentity.findUnique({ where: { type_valueNormalized: { type: IdentityType.PHONE, valueNormalized: carrierPhone } } }))) {
+    await prisma.carrierEmployee.create({
+      data: {
+        companyId: company.id,
+        displayName: 'مدير سودان إكسبريس',
+        role: 'MANAGER',
+        canManageFleet: true,
+        canManageSchedule: true,
+        canViewFinance: true,
+        canManageStaff: true,
+        identities: { create: { type: IdentityType.PHONE, valueNormalized: carrierPhone, isPrimary: true, verifiedAt: new Date() } },
+      },
+    });
+  }
+
   const layout = buildNumberedLayout({ rows: 7, womenOnlyLabels: ['11', '12'] });
   const vehicle = await prisma.vehicle.upsert({
     where: { plateNumber: 'خ ر ط 1234' },
@@ -236,6 +253,6 @@ export async function seedPhase2(prisma: PrismaClient): Promise<void> {
 
   // eslint-disable-next-line no-console
   console.log(
-    `Phase 2 seed: ${CITIES.length} cities, route KRT-PZU, driver +249900000201, customer +249900000301, trips for ${tomorrow}`,
+    `Phase 2 seed: ${CITIES.length} cities, route KRT-PZU, carrier manager +249900000401, driver +249900000201, customer +249900000301, trips for ${tomorrow}`,
   );
 }

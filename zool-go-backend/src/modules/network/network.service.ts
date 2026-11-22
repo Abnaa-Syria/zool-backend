@@ -2,6 +2,7 @@ import { DriverStatus, TransportCompanyStatus, TripStatus, VehicleStatus, type S
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
+import { auditActor, type Actor } from '../../shared/types/actor';
 import { ErrorCodes } from '../../shared/errors/error-codes';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { seatLayoutSchema } from '../../shared/utils/seat-layout';
@@ -12,7 +13,6 @@ import { notificationsService } from '../notifications';
 import { networkRepository, type RouteRow, type TripRow } from './network.repository';
 import type { CreateRouteInput, PatchAssignmentInput, PatchRouteInput, ScheduleTripsInput } from './network.validation';
 
-type Actor = { actorAdminId: string; requestId?: string };
 
 const conflict = (code: string, message: string, details?: unknown) =>
   new AppError({ statusCode: 409, code, message, details });
@@ -145,7 +145,7 @@ export class NetworkService {
         );
         await networkRepository.replaceRouteStops(route.id, stops, tx);
         await auditService.record(
-          { actorAdminId: input.actorAdminId, action: 'route.created', resourceType: 'route', resourceId: route.id, requestId: input.requestId, metadata: { code: input.code ?? null, stops: stops.length } },
+          { ...auditActor(input), action: 'route.created', resourceType: 'route', resourceId: route.id, requestId: input.requestId, metadata: { code: input.code ?? null, stops: stops.length } },
           tx,
         );
         return route.id;
@@ -183,7 +183,7 @@ export class NetworkService {
       );
       if (input.patch.stops !== undefined) await networkRepository.replaceRouteStops(input.routeId, stops, tx);
       await auditService.record(
-        { actorAdminId: input.actorAdminId, action: 'route.updated', resourceType: 'route', resourceId: input.routeId, requestId: input.requestId, metadata: { fields: Object.keys(input.patch) } },
+        { ...auditActor(input), action: 'route.updated', resourceType: 'route', resourceId: input.routeId, requestId: input.requestId, metadata: { fields: Object.keys(input.patch) } },
         tx,
       );
     });
@@ -286,7 +286,7 @@ export class NetworkService {
       }
       await auditService.record(
         {
-          actorAdminId: input.actorAdminId,
+          ...auditActor(input),
           action: 'trips.scheduled',
           resourceType: 'route',
           resourceId: route.id,
@@ -319,7 +319,7 @@ export class NetworkService {
         await networkRepository.updateTrip(trip.id, { status: TripStatus.CANCELLED, cancelledAt: new Date(), isActive: false }, tx);
         await networkRepository.releaseTripHolds(trip.id, tx);
         await auditService.record(
-          { actorAdminId: input.actorAdminId, action: 'trip.cancelled', resourceType: 'trip', resourceId: trip.id, requestId: input.requestId, metadata: { reason: input.reason } },
+          { ...auditActor(input), action: 'trip.cancelled', resourceType: 'trip', resourceId: trip.id, requestId: input.requestId, metadata: { reason: input.reason } },
           tx,
         );
       });
@@ -336,7 +336,7 @@ export class NetworkService {
           bookingId: b.id,
           reason: `trip_cancelled: ${input.reason}`,
           carrierCancelled: true,
-          actorAdminId: input.actorAdminId,
+          ...auditActor(input),
           requestId: input.requestId,
         });
         refunded.push({ bookingId: b.id, refundedAmountMinor: result.refundedAmountMinor });
@@ -416,7 +416,7 @@ export class NetworkService {
       );
       await auditService.record(
         {
-          actorAdminId: input.actorAdminId,
+          ...auditActor(input),
           action: 'trip.assignment_updated',
           resourceType: 'trip',
           resourceId: trip.id,

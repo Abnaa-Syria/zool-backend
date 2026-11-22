@@ -1,6 +1,9 @@
 model AuditLog {
   id           String   @id @default(cuid())
   actorAdminId String?  @map("actor_admin_id")
+  /// Non-admin actor (CARRIER_EMPLOYEE, BROKER_EMPLOYEE, CUSTOMER, DRIVER) — admins use actorAdminId
+  actorType    String?  @map("actor_type") @db.VarChar(32)
+  actorId      String?  @map("actor_id") @db.VarChar(64)
   action       String   @db.VarChar(96)
   resourceType String   @map("resource_type") @db.VarChar(64)
   resourceId   String?  @map("resource_id") @db.VarChar(64)
@@ -17,5 +20,6 @@ model AuditLog {
   @@index([resourceType, resourceId])
   @@index([action, createdAt])
   @@index([createdAt])
+  @@index([actorType, actorId, createdAt])
   @@map("audit_logs")
 }

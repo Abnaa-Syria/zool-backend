@@ -52,6 +52,8 @@ import { adminTrackingRoutes, customerLiveRoutes } from './modules/tracking';
 import { brokerBookingChangeRoutes, customerBookingChangeRoutes } from './modules/booking-changes';
 import { brokerNotificationRoutes, customerNotificationRoutes, driverNotificationRoutes } from './modules/notifications';
 import { adminRefundRoutes } from './modules/refunds';
+import { carrierAuthRoutes, carrierPortalRoutes } from './modules/carrier-portal';
+import { adminCarrierSettlementRoutes } from './modules/carrier-settlements';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -153,6 +155,10 @@ export function createApp() {
   app.use(`${prefix}/driver/notifications`, driverNotificationRoutes.feed);
   app.use(`${prefix}/driver/devices`, driverNotificationRoutes.devices);
 
+  // D-CARRIER-PORTAL-01 — transport company portal principal
+  app.use(`${prefix}/carrier/auth`, carrierAuthRoutes);
+  app.use(`${prefix}/carrier`, carrierPortalRoutes);
+
   // Stage 2 — admin principal
   app.use(`${prefix}/brokers`, brokersRoutes);
   app.use(`${prefix}/carriers`, carriersRoutes);
@@ -166,6 +172,7 @@ export function createApp() {
   app.use(`${prefix}/admin/settings`, adminSettingsRoutes);
   app.use(`${prefix}/admin/tracking`, adminTrackingRoutes);
   app.use(`${prefix}/admin/refunds`, adminRefundRoutes);
+  app.use(`${prefix}/admin/carrier-settlements`, adminCarrierSettlementRoutes);
   app.use(`${prefix}/admin/customers`, adminCustomersRoutes);
   app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
   app.use(`${prefix}/admin/content`, adminContentRoutes);

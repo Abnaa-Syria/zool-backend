@@ -72,6 +72,11 @@ export async function resetDatabase(): Promise<void> {
   await prisma.topUpIntent.deleteMany();
   await prisma.wallet.deleteMany();
   await prisma.brokerCarrierAssignment.deleteMany();
+  await prisma.carrierSettlement.deleteMany();
+  await prisma.carrierOtpChallenge.deleteMany();
+  await prisma.carrierRefreshSession.deleteMany();
+  await prisma.carrierIdentity.deleteMany();
+  await prisma.carrierEmployee.deleteMany();
   await prisma.transportCompany.deleteMany();
   await prisma.brokerOtpChallenge.deleteMany();
   await prisma.brokerRefreshSession.deleteMany();

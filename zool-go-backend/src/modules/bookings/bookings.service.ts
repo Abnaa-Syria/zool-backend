@@ -722,7 +722,10 @@ export class BookingsService {
   async cancelByAdmin(input: {
     bookingId: string;
     reason: string;
-    actorAdminId: string;
+    /** Admin, or (actorType/actorId) a carrier employee cancelling its own trip */
+    actorAdminId?: string;
+    actorType?: string;
+    actorId?: string | null;
     /** Trip cancelled by the carrier/admin (D-SUS-01): customer refunds are labelled CARRIER_CANCEL */
     carrierCancelled?: boolean;
     requestId?: string;
@@ -733,7 +736,7 @@ export class BookingsService {
       // Customer app booking: refund to the original payment method, never a fee (admin action).
       const result = await customerCancellationService.cancel({
         bookingId: booking.id,
-        actor: { type: 'ADMIN', adminId: input.actorAdminId },
+        actor: { type: 'ADMIN', adminId: input.actorAdminId, operator: input.actorType ? { type: input.actorType, id: input.actorId ?? null } : undefined },
         reason: input.reason,
         carrierCancelled: input.carrierCancelled ?? false,
         ...(input.requestId ? { requestId: input.requestId } : {}),
@@ -806,7 +809,9 @@ export class BookingsService {
 
         await auditService.record(
           {
-            actorAdminId: input.actorAdminId,
+            actorAdminId: input.actorAdminId ?? null,
+            actorType: input.actorType ?? null,
+            actorId: input.actorId ?? null,
             action: 'booking.cancelled.admin',
             resourceType: 'booking',
             resourceId: booking.id,

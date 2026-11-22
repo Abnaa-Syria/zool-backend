@@ -1,0 +1,163 @@
+/// D-CARRIER-PORTAL-01: staff of a transport company using the carrier web portal.
+enum CarrierEmployeeRole {
+  MANAGER
+  STAFF
+}
+
+enum CarrierEmployeeStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CarrierOtpPurpose {
+  CARRIER_LOGIN
+}
+
+/// D-REV-02: how the platform earns from a carrier (per ticket).
+enum PlatformFeeType {
+  NONE
+  /// value = basis points of the ticket price (500 = 5%)
+  PERCENT
+  /// value = minor units per ticket
+  FIXED
+}
+
+/// D-REV-02: who pays broker commissions in the carrier settlement.
+enum CommissionBearer {
+  CARRIER
+  PLATFORM
+}
+
+enum CarrierSettlementStatus {
+  DRAFT
+  FINALIZED
+  PAID
+  CANCELLED
+}
+
+model CarrierEmployee {
+  id                String                @id @default(cuid())
+  companyId         String                @map("company_id")
+  displayName       String                @map("display_name") @db.VarChar(160)
+  role              CarrierEmployeeRole   @default(STAFF)
+  status            CarrierEmployeeStatus @default(ACTIVE)
+  canManageFleet    Boolean               @default(false) @map("can_manage_fleet")
+  canManageSchedule Boolean               @default(false) @map("can_manage_schedule")
+  canViewFinance    Boolean               @default(false) @map("can_view_finance")
+  canManageStaff    Boolean               @default(false) @map("can_manage_staff")
+  authzVersion      Int                   @default(1) @map("authz_version")
+  lastLoginAt       DateTime?             @map("last_login_at")
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+
+  company         TransportCompany        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  identities      CarrierIdentity[]
+  refreshSessions CarrierRefreshSession[]
+  otpChallenges   CarrierOtpChallenge[]
+
+  @@index([companyId, status])
+  @@map("carrier_employees")
+}
+
+model CarrierIdentity {
+  id                String       @id @default(cuid())
+  carrierEmployeeId String       @map("carrier_employee_id")
+  type              IdentityType
+  valueNormalized   String       @map("value_normalized") @db.VarChar(191)
+  isPrimary         Boolean      @default(true) @map("is_primary")
+  verifiedAt        DateTime?    @map("verified_at")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  employee CarrierEmployee @relation(fields: [carrierEmployeeId], references: [id], onDelete: Cascade)
+
+  @@unique([type, valueNormalized])
+  @@index([carrierEmployeeId])
+  @@map("carrier_identities")
+}
+
+model CarrierRefreshSession {
+  id                String    @id @default(cuid())
+  carrierEmployeeId String    @map("carrier_employee_id")
+  tokenHash         String    @unique @map("token_hash") @db.Char(64)
+  familyId          String    @map("family_id") @db.VarChar(64)
+  replacedById      String?   @map("replaced_by_id")
+  platform          String?   @db.VarChar(16)
+  userAgent         String?   @map("user_agent") @db.VarChar(512)
+  ipAddress         String?   @map("ip_address") @db.VarChar(64)
+  expiresAt         DateTime  @map("expires_at")
+  revokedAt         DateTime? @map("revoked_at")
+  revokeReason      String?   @map("revoke_reason") @db.VarChar(120)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  lastUsedAt        DateTime? @map("last_used_at")
+
+  employee CarrierEmployee @relation(fields: [carrierEmployeeId], references: [id], onDelete: Cascade)
+
+  @@index([carrierEmployeeId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("carrier_refresh_sessions")
+}
+
+model CarrierOtpChallenge {
+  id                String             @id @default(cuid())
+  carrierEmployeeId String             @map("carrier_employee_id")
+  identityType      IdentityType       @map("identity_type")
+  identityValue     String             @map("identity_value") @db.VarChar(191)
+  purpose           CarrierOtpPurpose
+  codeHash          String             @map("code_hash") @db.VarChar(128)
+  status            OtpChallengeStatus @default(PENDING)
+  attemptCount      Int                @default(0) @map("attempt_count")
+  maxAttempts       Int                @map("max_attempts")
+  expiresAt         DateTime           @map("expires_at")
+  consumedAt        DateTime?          @map("consumed_at")
+  requestId         String?            @map("request_id") @db.VarChar(64)
+  createdAt         DateTime           @default(now()) @map("created_at")
+
+  employee CarrierEmployee @relation(fields: [carrierEmployeeId], references: [id], onDelete: Cascade)
+
+  @@index([carrierEmployeeId, purpose, status])
+  @@index([identityValue, purpose, status])
+  @@index([expiresAt])
+  @@map("carrier_otp_challenges")
+}
+
+/// D-REV-02: one settlement statement for a carrier over [periodFrom, periodTo) (trip departure).
+/// Figures are recomputed while DRAFT and frozen at FINALIZED. Periods never overlap (non-cancelled).
+model CarrierSettlement {
+  id                     String                  @id @default(cuid())
+  companyId              String                  @map("company_id")
+  periodFrom             DateTime                @map("period_from")
+  periodTo               DateTime                @map("period_to")
+  status                 CarrierSettlementStatus @default(DRAFT)
+  feeType                PlatformFeeType         @map("fee_type")
+  feeValue               Int                     @map("fee_value")
+  commissionBearer       CommissionBearer        @map("commission_bearer")
+  ticketsCount           Int                     @default(0) @map("tickets_count")
+  onlineSalesAmount      Int                     @default(0) @map("online_sales_amount")
+  brokerSalesAmount      Int                     @default(0) @map("broker_sales_amount")
+  cashSalesAmount        Int                     @default(0) @map("cash_sales_amount")
+  refundsAmount          Int                     @default(0) @map("refunds_amount")
+  /// Platform-wide coupons: the platform funds the discount, so it is paid to the carrier
+  platformDiscountAmount Int                     @default(0) @map("platform_discount_amount")
+  platformFeeAmount      Int                     @default(0) @map("platform_fee_amount")
+  brokerCommissionAmount Int                     @default(0) @map("broker_commission_amount")
+  /// Positive: platform pays the carrier. Negative: the carrier owes the platform.
+  netPayableAmount       Int                     @default(0) @map("net_payable_amount")
+  /// Per-trip breakdown snapshot
+  lines                  Json?
+  notes                  String?                 @db.VarChar(1000)
+  paymentReference       String?                 @map("payment_reference") @db.VarChar(191)
+  createdByAdminId       String?                 @map("created_by_admin_id")
+  finalizedAt            DateTime?               @map("finalized_at")
+  paidAt                 DateTime?               @map("paid_at")
+  cancelledAt            DateTime?               @map("cancelled_at")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
+
+  company TransportCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, periodFrom])
+  @@index([status, createdAt])
+  @@map("carrier_settlements")
+}

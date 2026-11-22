@@ -68,6 +68,8 @@ const envSchema = z
     UPLOAD_DIR: z.string().min(1).default('./uploads'),
     BROKER_REFRESH_COOKIE_NAME: z.string().min(1).default('zoolgo_broker_refresh'),
     BROKER_REFRESH_COOKIE_PATH: z.string().min(1).default('/api/v1/broker/auth'),
+    CARRIER_REFRESH_COOKIE_NAME: z.string().min(1).default('zoolgo_carrier_refresh'),
+    CARRIER_REFRESH_COOKIE_PATH: z.string().min(1).default('/api/v1/carrier/auth'),
     LOW_BALANCE_WARNING_THRESHOLD: z.coerce.number().int().nonnegative().default(20000),
 
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),

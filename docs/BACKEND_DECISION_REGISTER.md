@@ -215,6 +215,21 @@ Also:
 4. A payment that arrives after its checkout expired is recorded and queued as a full refund (`late-payment`).
 
 
+## D-CARRIER-PORTAL-01 — Transport company portal
+
+**Status:** **LOCKED (PO)** — 2026-11-22
+
+1. Transport companies get their own **web portal** (`zool-carrier-dashboard`, API `/api/v1/carrier/*`), with staff accounts (phone + OTP) and permissions (manager, operations, finance).
+2. **The company operates, the platform oversees:** the company manages its own fleet, drivers, routes, trip scheduling and prices; the admin dashboard keeps full visibility and can edit, cancel or suspend at any time. Every change is audited with the actor.
+3. The company sees its bookings, trip manifests, live tracking of its buses, sales by channel, cash collected by each driver, and its settlement statements.
+
+## D-REV-02 — Carrier settlement model (configurable)
+
+**Status:** **LOCKED as configurable; values OPEN (PO)** — 2026-11-22. Replaces the D-REV-01 "out of scope" posture.
+
+- Per carrier, set from the admin dashboard: **platform fee** (`NONE` | `PERCENT` basis points | `FIXED` minor units per ticket; default `NONE`) and **broker commission bearer** (`CARRIER` | `PLATFORM`; default `PLATFORM` = today's behaviour).
+- Periodic statement per carrier: tickets sold (online, broker wallet, cash) − refunds − platform fee − broker commissions (when the carrier bears them) − cash already collected by its drivers = **net payable** (positive: platform pays the carrier; negative: carrier owes the platform). Admin drafts, reviews, finalizes and records the payment reference; finalized statements are immutable.
+
 ## D-REV-01 — Platform take-rate and carrier settlement
 
 **Status:** **OUT OF SCOPE** for M1 (PDF)
@@ -401,6 +416,8 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 | D-RT-01 Round trip | LOCKED (PO) — v1 | No |
 | D-CHG-01 Modify booking | LOCKED (PO) — v1 | No |
 | D-REF-02 Customer cancellation/refunds | ENGINEERING DEFAULT (settings) | No |
+| D-CARRIER-PORTAL-01 Carrier web portal | LOCKED (PO) | No |
+| D-REV-02 Carrier settlement (configurable) | LOCKED (values OPEN) | No |
 | D-BROKER-CHANNEL-01 Broker web + mobile | LOCKED (PO) | No |
 
 ---

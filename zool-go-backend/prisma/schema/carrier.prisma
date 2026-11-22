@@ -18,6 +18,10 @@ model TransportCompany {
   /// D-CASH-01 per-carrier switch
   cashEnabled   Boolean                @default(true) @map("cash_enabled")
   suspendedAt   DateTime?              @map("suspended_at")
+  /// D-REV-02 settlement configuration (set by the admin)
+  platformFeeType        PlatformFeeType  @default(NONE) @map("platform_fee_type")
+  platformFeeValue       Int              @default(0) @map("platform_fee_value")
+  brokerCommissionBearer CommissionBearer @default(PLATFORM) @map("broker_commission_bearer")
   updatedAt     DateTime               @default(now()) @updatedAt @map("updated_at")
 
   brokerAssignments BrokerCarrierAssignment[]
@@ -27,6 +31,8 @@ model TransportCompany {
   drivers           Driver[]
   coupons           Coupon[]
   ratings           CarrierRating[]
+  employees         CarrierEmployee[]
+  settlements       CarrierSettlement[]
 
   @@index([status])
   @@map("transport_companies")

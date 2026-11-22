@@ -21,7 +21,10 @@ import { customerBookingsRepository, type CustomerBookingRow } from './customer-
 import { customerActions } from './customer-bookings.service';
 import { customerCheckoutService } from './customer-checkout.service';
 
-export type CancelActor = { type: 'CUSTOMER'; customerId: string } | { type: 'ADMIN'; adminId: string };
+/** ADMIN covers platform admins and carrier staff cancelling their own trips (`operator`). */
+export type CancelActor =
+  | { type: 'CUSTOMER'; customerId: string }
+  | { type: 'ADMIN'; adminId?: string; operator?: { type: string; id: string | null } };
 
 /**
  * Cancellation of direct (customer app) bookings.
@@ -64,6 +67,7 @@ export class CustomerCancellationService {
     const booking = (await customerBookingsRepository.findForCustomer(input.bookingId, customerId))!;
     const isAdmin = input.actor.type === 'ADMIN';
     const adminId = input.actor.type === 'ADMIN' ? input.actor.adminId : undefined;
+    const operator = input.actor.type === 'ADMIN' && input.actor.operator ? { actorType: input.actor.operator.type, actorId: input.actor.operator.id } : {};
 
     if (booking.status === BookingStatus.CANCELLED) return { booking: booking.id, status: booking.status, replayed: true, refund: null };
     if (booking.status !== BookingStatus.CONFIRMED && booking.status !== BookingStatus.PENDING_PAYMENT) {
@@ -80,7 +84,7 @@ export class CustomerCancellationService {
     if (booking.status === BookingStatus.PENDING_PAYMENT) {
       const intent = (await customerBookingsRepository.findIntents(booking)).find((i) => i.status === PaymentIntentStatus.PENDING);
       if (intent) await getPrisma().$transaction((tx) => customerCheckoutService.voidIntent(intent.id, 'CANCELLED', tx));
-      await auditService.record({ actorAdminId: adminId, action: 'customer.booking.cancelled', resourceType: 'booking', resourceId: booking.id, requestId: input.requestId, metadata: { unpaid: true } });
+      await auditService.record({ actorAdminId: adminId, ...operator, action: 'customer.booking.cancelled', resourceType: 'booking', resourceId: booking.id, requestId: input.requestId, metadata: { unpaid: true } });
       return { booking: booking.id, status: BookingStatus.CANCELLED, replayed: false, refund: null };
     }
 
@@ -120,6 +124,7 @@ export class CustomerCancellationService {
       await auditService.record(
         {
           actorAdminId: adminId,
+          ...operator,
           action: 'customer.booking.cancelled',
           resourceType: 'booking',
           resourceId: booking.id,

@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto';
 import { DriverStatus, IdentityType, Prisma, type ServiceClass, type VehicleStatus } from '@prisma/client';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
+import { auditActor, type Actor } from '../../shared/types/actor';
 import { setPrincipalAuthzVersion } from '../../shared/security/principal-authz-cache';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { normalizePhone } from '../../shared/utils/phone';
@@ -10,7 +11,6 @@ import { auditService } from '../audit/audit.service';
 import { fleetRepository, type DriverRow, type VehicleRow } from './fleet.repository';
 import type { CreateDriverInput, CreateVehicleInput, LayoutInput, PatchDriverInput, PatchVehicleInput } from './fleet.validation';
 
-type Actor = { actorAdminId: string; requestId?: string };
 
 const isUniqueViolation = (e: unknown) => e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002';
 
@@ -105,7 +105,7 @@ export class FleetService {
         await fleetRepository.replaceVehicleAmenities(created.id, amenities, tx);
         await auditService.record(
           {
-            actorAdminId: input.actorAdminId,
+            ...auditActor(input),
             action: 'vehicle.created',
             resourceType: 'vehicle',
             resourceId: created.id,
@@ -140,7 +140,7 @@ export class FleetService {
       if (amenityRows) await fleetRepository.replaceVehicleAmenities(input.vehicleId, amenityRows, tx);
       await auditService.record(
         {
-          actorAdminId: input.actorAdminId,
+          ...auditActor(input),
           action: 'vehicle.updated',
           resourceType: 'vehicle',
           resourceId: input.vehicleId,
@@ -194,7 +194,7 @@ export class FleetService {
         );
         await auditService.record(
           {
-            actorAdminId: input.actorAdminId,
+            ...auditActor(input),
             action: 'driver.created',
             resourceType: 'driver',
             resourceId: created.id,
@@ -246,7 +246,7 @@ export class FleetService {
       );
       await auditService.record(
         {
-          actorAdminId: input.actorAdminId,
+          ...auditActor(input),
           action: suspended ? 'driver.suspended' : 'driver.updated',
           resourceType: 'driver',
           resourceId: existing.id,

@@ -11,5 +11,6 @@ export const mobileOtpVerifySchema = z
   .strict();
 
 /** Mobile apps keep the refresh token in secure storage and send it in the body. */
-export const mobileRefreshSchema = z.object({ refreshToken: z.string().min(20).max(200) }).strict();
+/** Body token for mobile clients; web clients (carrier portal) send the HttpOnly cookie instead. */
+export const mobileRefreshSchema = z.object({ refreshToken: z.string().min(20).max(200).optional() }).strict();
 export const mobileLogoutSchema = z.object({ refreshToken: z.string().min(20).max(200).optional() }).strict();

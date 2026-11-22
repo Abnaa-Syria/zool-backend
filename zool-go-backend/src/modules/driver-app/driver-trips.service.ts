@@ -131,6 +131,11 @@ export class DriverTripsService {
 
   async manifest(driverId: string, tripId: string) {
     const trip = await this.trip(driverId, tripId);
+    return this.manifestOf(trip);
+  }
+
+  /** Passenger manifest of any trip (carrier portal / admin use the same view as the driver). */
+  async manifestOf(trip: { id: string; status: TripStatus }) {
     const entries = (await driverTripsRepository.manifest(trip.id))
       .filter((t) => t.status === TicketStatus.CONFIRMED)
       .map(manifestEntry)

@@ -30,6 +30,15 @@ export interface DriverAuthContext {
   authzVersion: number;
 }
 
+export interface CarrierAuthContext {
+  employeeId: string;
+  companyId: string;
+  role: 'MANAGER' | 'STAFF';
+  permissions: string[];
+  sessionId: string;
+  authzVersion: number;
+}
+
 declare global {
   namespace Express {
     interface Request {
@@ -38,6 +47,7 @@ declare global {
       brokerAuth?: BrokerAuthContext;
       customerAuth?: CustomerAuthContext;
       driverAuth?: DriverAuthContext;
+      carrierAuth?: CarrierAuthContext;
       rawBody?: Buffer;
     }
   }
