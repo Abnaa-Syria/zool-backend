@@ -54,6 +54,7 @@ import { brokerNotificationRoutes, customerNotificationRoutes, driverNotificatio
 import { adminRefundRoutes } from './modules/refunds';
 import { carrierAuthRoutes, carrierPortalRoutes } from './modules/carrier-portal';
 import { adminCarrierSettlementRoutes } from './modules/carrier-settlements';
+import { adminCrudRoutes, adminOrgDeleteRoutes } from './modules/admin-delete';
 import { settingsFreshness } from './shared/middleware/settings-freshness';
 
 export function createApp() {
@@ -173,6 +174,8 @@ export function createApp() {
   app.use(`${prefix}/admin/tracking`, adminTrackingRoutes);
   app.use(`${prefix}/admin/refunds`, adminRefundRoutes);
   app.use(`${prefix}/admin/carrier-settlements`, adminCarrierSettlementRoutes);
+  app.use(`${prefix}/admin`, adminCrudRoutes);
+  app.use(prefix, adminOrgDeleteRoutes);
   app.use(`${prefix}/admin/customers`, adminCustomersRoutes);
   app.use(`${prefix}/admin/coupons`, adminCouponsRoutes);
   app.use(`${prefix}/admin/content`, adminContentRoutes);

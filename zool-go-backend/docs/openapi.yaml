@@ -549,6 +549,15 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /brokers/{officeId}:
+    delete:
+      tags: [Brokers (admin)]
+      summary: 'Delete an office without bookings, wallet history or balance; otherwise suspend (brokers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Brokers (admin)]
       summary: Office detail with employees and carrier assignments (brokers.view)
@@ -601,6 +610,15 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
   /brokers/{officeId}/staff/{employeeId}:
+    delete:
+      tags: [Brokers (admin)]
+      summary: 'Delete a broker employee who never booked or topped up; otherwise suspend (brokers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: officeId, in: path, required: true, schema: { type: string } }, { name: employeeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Brokers (admin)]
       summary: Update office staff flags, name, or status (brokers.manage)
@@ -944,6 +962,15 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /carriers/{companyId}:
+    delete:
+      tags: [Carriers (admin)]
+      summary: 'Delete an empty carrier (with its portal staff); otherwise suspend (carriers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Carriers (admin)]
       summary: Carrier detail with assignmentCount (carriers.view). Persisted fields only.
@@ -1381,6 +1408,24 @@ paths:
         '409': { description: City code already exists }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/cities/{id}:
+    delete:
+      tags: [Geo (admin)]
+      summary: 'Delete an unused city; 409 ENTITY_IN_USE with usage when it has stations (geo.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Geo (admin)]
+      summary: 'One city (geo.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Reference data (admin)]
       summary: Update city; deactivate with isActive=false (geo.manage)
@@ -1441,6 +1486,24 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/stations/{id}:
+    delete:
+      tags: [Geo (admin)]
+      summary: 'Delete an unused station; 409 ENTITY_IN_USE when routes/trips use it (geo.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Geo (admin)]
+      summary: 'One station (geo.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Reference data (admin)]
       summary: Update station; deactivate with isActive=false (geo.manage)
@@ -1493,6 +1556,24 @@ paths:
         '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '409': { description: Amenity code already exists }
   /admin/amenities/{id}:
+    delete:
+      tags: [Geo (admin)]
+      summary: 'Delete an amenity no vehicle uses (geo.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Geo (admin)]
+      summary: 'One amenity (geo.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Reference data (admin)]
       summary: Update amenity (geo.manage)
@@ -1585,6 +1666,15 @@ paths:
         '409': { description: Plate number already registered }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/vehicles/{id}:
+    delete:
+      tags: [Fleet (admin)]
+      summary: 'Delete a vehicle without trips; otherwise retire it (fleet.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Fleet (admin)]
       summary: Vehicle detail incl. seat layout and amenities (fleet.view)
@@ -1653,6 +1743,15 @@ paths:
         '409': { description: Phone or driver code already registered }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/drivers/{id}:
+    delete:
+      tags: [Fleet (admin)]
+      summary: 'Delete a driver without trips/boardings/cash; otherwise suspend (fleet.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Fleet (admin)]
       summary: Driver detail (fleet.view)
@@ -1729,6 +1828,15 @@ paths:
         '409': { description: Route code already exists for this carrier }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/routes/{id}:
+    delete:
+      tags: [Network (admin)]
+      summary: 'Delete a route without trips; otherwise deactivate (catalog.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Network (admin)]
       summary: Route detail (catalog.view)
@@ -1945,6 +2053,15 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /admin/customers/{id}:
+    delete:
+      tags: [Customers (admin)]
+      summary: 'Delete a customer: personal data anonymised, bookings kept; 409 ACCOUNT_HAS_ACTIVE_BOOKINGS while a trip is ahead (customers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     get:
       tags: [Customers (admin)]
       summary: Customer detail with booking counts (customers.view)
@@ -2011,6 +2128,24 @@ paths:
         '409': { description: Coupon code already exists }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/coupons/{id}:
+    delete:
+      tags: [Coupons (admin)]
+      summary: 'Delete a coupon never redeemed; otherwise deactivate (coupons.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Coupons (admin)]
+      summary: 'One coupon (coupons.view)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Coupons (admin)]
       summary: Activate/deactivate, extend validity or change the redemption cap (coupons.manage)
@@ -2039,6 +2174,24 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /admin/content/{slug}:
+    delete:
+      tags: [Content (admin)]
+      summary: 'Delete a content page (content.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: slug, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Content (admin)]
+      summary: 'One content page (content.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: slug, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     put:
       tags: [Content (admin)]
       summary: Create or replace a content page, e.g. privacy (content.manage)
@@ -3214,6 +3367,15 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/ValidationError' }
   /carriers/{companyId}/staff/{employeeId}:
+    delete:
+      tags: [Carriers (admin)]
+      summary: 'Delete a carrier portal account (not the last active manager) (carriers.manage)'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: companyId, in: path, required: true, schema: { type: string } }, { name: employeeId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Carriers (admin)]
       summary: 'Update a carrier portal account (carriers.manage)'

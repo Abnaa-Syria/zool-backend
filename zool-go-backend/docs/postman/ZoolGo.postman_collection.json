@@ -2595,6 +2595,40 @@
           }
         },
         {
+          "name": "DELETE /brokers/{officeId}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete an office without bookings, wallet history or balance; otherwise suspend (brokers.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/brokers/:officeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brokers",
+                ":officeId"
+              ],
+              "variable": [
+                {
+                  "key": "officeId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "GET /brokers/{officeId}",
           "request": {
             "method": "GET",
@@ -2722,6 +2756,46 @@
                   "language": "json"
                 }
               }
+            }
+          }
+        },
+        {
+          "name": "DELETE /brokers/{officeId}/staff/{employeeId}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a broker employee who never booked or topped up; otherwise suspend (brokers.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/brokers/:officeId/staff/:employeeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "brokers",
+                ":officeId",
+                "staff",
+                ":employeeId"
+              ],
+              "variable": [
+                {
+                  "key": "officeId",
+                  "value": ""
+                },
+                {
+                  "key": "employeeId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
@@ -4226,6 +4300,35 @@
               ]
             }
           }
+        },
+        {
+          "name": "GET /carrier/amenities",
+          "request": {
+            "method": "GET",
+            "description": "Amenity catalog for vehicle forms",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/amenities",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "amenities"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
         }
       ]
     },
@@ -4629,6 +4732,40 @@
           }
         },
         {
+          "name": "DELETE /carriers/{companyId}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete an empty carrier (with its portal staff); otherwise suspend (carriers.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carriers/:companyId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carriers",
+                ":companyId"
+              ],
+              "variable": [
+                {
+                  "key": "companyId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "GET /carriers/{companyId}",
           "request": {
             "method": "GET",
@@ -4840,6 +4977,46 @@
                   "language": "json"
                 }
               }
+            }
+          }
+        },
+        {
+          "name": "DELETE /carriers/{companyId}/staff/{employeeId}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a carrier portal account (not the last active manager) (carriers.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carriers/:companyId/staff/:employeeId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carriers",
+                ":companyId",
+                "staff",
+                ":employeeId"
+              ],
+              "variable": [
+                {
+                  "key": "companyId",
+                  "value": ""
+                },
+                {
+                  "key": "employeeId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
@@ -5520,6 +5697,76 @@
           }
         },
         {
+          "name": "DELETE /admin/content/{slug}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a content page (content.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/content/:slug",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "content",
+                ":slug"
+              ],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/content/{slug}",
+          "request": {
+            "method": "GET",
+            "description": "One content page (content.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/content/:slug",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "content",
+                ":slug"
+              ],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "PUT /admin/content/{slug}",
           "request": {
             "method": "PUT",
@@ -5668,6 +5915,76 @@
                   "language": "json"
                 }
               }
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/coupons/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a coupon never redeemed; otherwise deactivate (coupons.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/coupons/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "coupons",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/coupons/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One coupon (coupons.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/coupons/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "coupons",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
@@ -6961,6 +7278,41 @@
           }
         },
         {
+          "name": "DELETE /admin/customers/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a customer: personal data anonymised, bookings kept; 409 ACCOUNT_HAS_ACTIVE_BOOKINGS while a trip is ahead (customers.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/customers/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "customers",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "GET /admin/customers/{id}",
           "request": {
             "method": "GET",
@@ -7888,6 +8240,41 @@
           }
         },
         {
+          "name": "DELETE /admin/vehicles/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a vehicle without trips; otherwise retire it (fleet.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/vehicles/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "vehicles",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "GET /admin/vehicles/{id}",
           "request": {
             "method": "GET",
@@ -8076,6 +8463,41 @@
           }
         },
         {
+          "name": "DELETE /admin/drivers/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a driver without trips/boardings/cash; otherwise suspend (fleet.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/drivers/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "drivers",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "GET /admin/drivers/{id}",
           "request": {
             "method": "GET",
@@ -8156,6 +8578,221 @@
                   "language": "json"
                 }
               }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Geo (admin)",
+      "item": [
+        {
+          "name": "DELETE /admin/cities/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete an unused city; 409 ENTITY_IN_USE with usage when it has stations (geo.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/cities/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "cities",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/cities/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One city (geo.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/cities/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "cities",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/stations/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete an unused station; 409 ENTITY_IN_USE when routes/trips use it (geo.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "stations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/stations/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One station (geo.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "stations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/amenities/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete an amenity no vehicle uses (geo.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/amenities/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "amenities",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/amenities/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One amenity (geo.view)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/amenities/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "amenities",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         }
@@ -8581,6 +9218,41 @@
                   "language": "json"
                 }
               }
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/routes/{id}",
+          "request": {
+            "method": "DELETE",
+            "description": "Delete a route without trips; otherwise deactivate (catalog.manage)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/routes/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "routes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
