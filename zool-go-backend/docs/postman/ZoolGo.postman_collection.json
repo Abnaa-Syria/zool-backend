@@ -3272,6 +3272,41 @@
           }
         },
         {
+          "name": "GET /carrier/staff/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One employee (carrier.staff)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/staff/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "PATCH /carrier/staff/{id}",
           "request": {
             "method": "PATCH",
@@ -4317,6 +4352,41 @@
                 "amenities"
               ],
               "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{carrierToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /carrier/bookings/{id}",
+          "request": {
+            "method": "GET",
+            "description": "One booking on a company trip (passengers, tickets, payment, refunds)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carrier/bookings/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carrier",
+                "bookings",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
             },
             "auth": {
               "type": "bearer",

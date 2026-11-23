@@ -19,6 +19,7 @@ export const bookingInclude = {
   tickets: { include: { tripSeat: true } },
   commissionAccrual: true,
   changesFrom: { where: { kind: 'TRIP' }, select: { newBookingId: true } },
+  refunds: { orderBy: { createdAt: 'desc' }, select: { id: true, amount: true, status: true, reason: true, createdAt: true, processedAt: true } },
   changedFrom: { select: { bookingId: true } },
 } satisfies Prisma.BookingInclude;
 

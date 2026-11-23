@@ -66,6 +66,8 @@ export function toBookingDto(booking: BookingRow) {
     /** D-CHG-01: set on a booking created by a trip change */
     replacesBookingId: booking.changedFrom?.bookingId ?? null,
     changeCount: booking.changeCount,
+    /** Customer refunds to the original payment method (broker refunds go to the wallet ledger) */
+    refunds: booking.refunds.map((r) => ({ id: r.id, amountMinor: r.amount, status: r.status, reason: r.reason, createdAt: r.createdAt.toISOString(), processedAt: r.processedAt?.toISOString() ?? null })),
     groupId: booking.groupId,
     leg: booking.leg,
     tickets,

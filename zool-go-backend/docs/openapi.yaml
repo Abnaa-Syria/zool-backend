@@ -3086,6 +3086,15 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '422': { $ref: '#/components/responses/ValidationError' }
   /carrier/staff/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One employee (carrier.staff)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Carrier Portal]
       summary: 'Change name, role, status or permissions; sessions are revoked on permission changes'
@@ -3472,6 +3481,16 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /carrier/bookings/{id}:
+    get:
+      tags: [Carrier Portal]
+      summary: 'One booking on a company trip (passengers, tickets, payment, refunds)'
+      security: [{ carrierBearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     bearerAuth:

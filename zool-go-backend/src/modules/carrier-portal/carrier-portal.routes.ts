@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { BookingStatus, TripStatus } from '@prisma/client';
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
+import { AppError } from '../../shared/errors/app-error';
 import { successResponse } from '../../shared/http/success-response';
 import { asyncHandler } from '../../shared/middleware/async-handler';
 import { authenticateCarrier, requireCarrierPermission } from '../../shared/middleware/authenticate-mobile';
@@ -51,6 +52,7 @@ const tripsQuery = paginationQuerySchema.extend({
 const priceSchema = z.object({ basePriceMinor: z.number().int().positive().max(1_000_000_000) }).strict();
 const bookingsQuery = paginationQuerySchema.extend({
   status: z.enum(['CONFIRMED', 'CANCELLED', 'PENDING_PAYMENT', 'CHANGED', 'EXPIRED']).optional(),
+  officeId: z.string().max(64).optional(),
   from: z.string().max(32).optional(),
   to: z.string().max(32).optional(),
   q: z.string().trim().max(64).optional(),
@@ -187,6 +189,18 @@ class CarrierPortalController {
     const r = await bookingsService.listAdmin({ ...(req.query as { status?: BookingStatus }), companyId: scope(req).companyId });
     return ok(req, res, 'Bookings', r.items, 200, r.meta);
   }
+  async booking(req: Request, res: Response) {
+    const b = await bookingsService.getAdminById(req.params.id!);
+    const trip = await getPrisma().trip.findUnique({ where: { id: b.trip.id }, select: { companyId: true } });
+    if (trip?.companyId !== scope(req).companyId) throw AppError.notFound('Booking not found');
+    return ok(req, res, 'Booking', b);
+  }
+  async staffMember(req: Request, res: Response) {
+    const all = await carrierPortalService.listStaff(scope(req).companyId);
+    const e = all.find((x) => x.id === req.params.id);
+    if (!e) throw AppError.notFound('Employee not found');
+    return ok(req, res, 'Employee', e);
+  }
   async live(req: Request, res: Response) {
     const all = await trackingService.activeTrips();
     const mine = all.filter((t) => t.carrier.id === scope(req).companyId);
@@ -258,6 +272,7 @@ carrierPortalRoutes.get('/brokers', h(c.brokers));
 carrierPortalRoutes.get('/amenities', h(c.amenities));
 
 carrierPortalRoutes.get('/staff', staff, h(c.listStaff));
+carrierPortalRoutes.get('/staff/:id', staff, validate({ params: idParams }), h(c.staffMember));
 carrierPortalRoutes.post('/staff', staff, validate({ body: createStaffSchema }), h(c.createStaff));
 carrierPortalRoutes.patch('/staff/:id', staff, validate({ params: idParams, body: patchStaffSchema }), h(c.updateStaff));
 
@@ -284,6 +299,7 @@ carrierPortalRoutes.post('/trips/:id/cancel', sched, validate({ params: idParams
 carrierPortalRoutes.get('/trips/:id/manifest', validate({ params: idParams }), h(c.manifest));
 
 carrierPortalRoutes.get('/bookings', validate({ query: bookingsQuery }), h(c.bookings));
+carrierPortalRoutes.get('/bookings/:id', validate({ params: idParams }), h(c.booking));
 carrierPortalRoutes.get('/tracking/live', h(c.live));
 carrierPortalRoutes.get('/tracking/trips/:id', validate({ params: idParams }), h(c.trackTrip));
 
