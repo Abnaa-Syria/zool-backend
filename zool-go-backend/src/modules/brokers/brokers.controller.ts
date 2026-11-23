@@ -84,6 +84,7 @@ export class BrokersController {
   async updatePolicy(req: Request, res: Response): Promise<Response> {
     const office = await brokersService.updatePolicy({
       officeId: req.params.officeId!,
+      name: req.body.name as string | undefined,
       settlementPeriod: req.body.settlementPeriod as SettlementPeriod | undefined,
       minTopUpMinorOverride: req.body.minTopUpMinorOverride as number | null | undefined,
       exposureCeilingOverride: req.body.exposureCeilingOverride as number | null | undefined,

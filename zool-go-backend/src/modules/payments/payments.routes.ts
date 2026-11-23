@@ -105,6 +105,13 @@ adminTopUpRoutes.post(
 );
 
 adminTopUpRoutes.get(
+  '/top-ups/:intentId',
+  requireAnyPermission('wallets.topups.view', 'wallets.topups.review'),
+  validate({ params: intentIdParamsSchema }),
+  asyncHandler((req, res) => paymentsController.getAdmin(req, res)),
+);
+
+adminTopUpRoutes.get(
   '/top-ups/:intentId/evidence',
   requirePermission('wallets.topups.evidence.view'),
   validate({ params: intentIdParamsSchema }),

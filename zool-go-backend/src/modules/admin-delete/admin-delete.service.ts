@@ -41,7 +41,7 @@ const ALTERNATIVE: Record<DeletableEntity, string> = {
   carrier: 'Suspend the carrier (status=SUSPENDED)',
   brokerOffice: 'Suspend the office (status=SUSPENDED)',
   brokerEmployee: 'Suspend the employee (status=SUSPENDED)',
-  carrierEmployee: 'Suspend the employee (status=SUSPENDED)',
+  carrierEmployee: 'Suspend the employee (status=SUSPENDED); the last active manager needs another manager first',
 };
 
 async function usage(entity: DeletableEntity, id: string): Promise<Usage | null> {

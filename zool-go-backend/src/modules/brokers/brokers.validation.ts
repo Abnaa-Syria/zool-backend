@@ -57,6 +57,7 @@ export const updateOfficeStatusSchema = z.object({
 
 export const updateOfficePolicySchema = z
   .object({
+    name: z.string().trim().min(2).max(160).optional(),
     settlementPeriod: z.enum(['WEEKLY', 'MONTHLY']).optional(),
     minTopUpMinorOverride: z.number().int().positive().nullable().optional(),
     exposureCeilingOverride: z.number().int().positive().nullable().optional(),

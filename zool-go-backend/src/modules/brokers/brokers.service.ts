@@ -211,6 +211,7 @@ export class BrokersService {
 
   async updatePolicy(input: {
     officeId: string;
+    name?: string;
     settlementPeriod?: SettlementPeriod;
     minTopUpMinorOverride?: number | null;
     exposureCeilingOverride?: number | null;
@@ -229,6 +230,7 @@ export class BrokersService {
       await brokersRepository.updateOfficePolicy(
         input.officeId,
         {
+          ...(input.name !== undefined ? { name: input.name } : {}),
           ...(input.settlementPeriod !== undefined ? { settlementPeriod: input.settlementPeriod } : {}),
           ...(input.minTopUpMinorOverride !== undefined
             ? { minTopUpMinorOverride: input.minTopUpMinorOverride }

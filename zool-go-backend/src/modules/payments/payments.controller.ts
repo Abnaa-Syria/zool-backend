@@ -108,6 +108,11 @@ export class PaymentsController {
     return successResponse(res, { message: 'Top-up retrieved', data, requestId: req.requestId });
   }
 
+  async getAdmin(req: Request, res: Response): Promise<Response> {
+    const data = await paymentsService.getAdmin(req.params.intentId!);
+    return successResponse(res, { message: 'Top-up retrieved', data, requestId: req.requestId });
+  }
+
   async listAdmin(req: Request, res: Response): Promise<Response> {
     const result = await paymentsService.listAdmin(
       req.query as {

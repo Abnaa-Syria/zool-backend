@@ -490,6 +490,14 @@ export class PaymentsService {
     return this.listAdmin({ ...query, officeId });
   }
 
+  /** Admin: one top-up request with its office (any status). */
+  async getAdmin(intentId: string) {
+    const intent = await paymentsRepository.findById(intentId);
+    if (!intent) throw AppError.notFound('Top-up intent not found');
+    const wallet = await getPrisma().wallet.findUnique({ where: { id: intent.walletId }, select: { brokerOffice: { select: { id: true, code: true, name: true } } } });
+    return { ...toDto(intent), office: wallet?.brokerOffice ?? null };
+  }
+
   async getForOffice(officeId: string, intentId: string) {
     const intent = await paymentsRepository.findByIdForOffice(intentId, officeId);
     if (!intent) throw AppError.notFound('Top-up intent not found');

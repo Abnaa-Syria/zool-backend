@@ -25,6 +25,8 @@ export const listAdminsQuerySchema = z.object({
   /** Name, employee code or phone */
   q: z.string().trim().min(1).max(120).optional(),
   status: z.enum(['ACTIVE', 'SUSPENDED']).optional(),
+  /** Members of one role */
+  roleId: z.string().min(1).max(64).optional(),
 });
 
 export const updateAdminProfileSchema = z

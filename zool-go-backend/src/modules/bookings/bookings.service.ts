@@ -137,6 +137,8 @@ function confirmedAtFilter(query: { from?: string; to?: string }): Prisma.DateTi
 
 
 export type AdminBookingFilters = {
+  /** D-RT-01: both legs of a round trip */
+  groupId?: string;
   officeId?: string;
   customerId?: string;
   companyId?: string;
@@ -152,6 +154,7 @@ export function adminBookingsWhere(query: AdminBookingFilters): Prisma.BookingWh
   const confirmedAt = confirmedAtFilter(query);
   const q = query.q?.trim();
   return {
+    ...(query.groupId ? { groupId: query.groupId } : {}),
     ...(query.officeId ? { officeId: query.officeId } : {}),
     ...(query.customerId ? { customerId: query.customerId } : {}),
     ...(query.employeeId ? { employeeId: query.employeeId } : {}),
@@ -530,6 +533,7 @@ export class BookingsService {
       status?: BookingStatus;
       tab?: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
       q?: string;
+      groupId?: string;
       from?: string;
       to?: string;
     },
@@ -551,6 +555,7 @@ export class BookingsService {
 
     const where: Prisma.BookingWhereInput = {
       officeId: actor.officeId,
+      ...(query.groupId ? { groupId: query.groupId } : {}),
       ...(employeeFilter ? { employeeId: employeeFilter } : {}),
       ...(query.companyId ? { trip: { companyId: query.companyId } } : {}),
       ...(query.status ? { status: query.status } : {}),

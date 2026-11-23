@@ -37,9 +37,9 @@ function toDto(admin: NonNullable<Awaited<ReturnType<typeof adminsRepository.fin
 }
 
 export class AdminsService {
-  async list(query: { page?: number; pageSize?: number; q?: string; status?: 'ACTIVE' | 'SUSPENDED' }) {
+  async list(query: { page?: number; pageSize?: number; q?: string; status?: 'ACTIVE' | 'SUSPENDED'; roleId?: string }) {
     const { page, pageSize, skip, take } = parsePagination(query);
-    const [items, total] = await adminsRepository.list({ skip, take, q: query.q?.trim(), status: query.status });
+    const [items, total] = await adminsRepository.list({ skip, take, q: query.q?.trim(), status: query.status, ...(query.roleId ? { roleId: query.roleId } : {}) });
     return {
       items: items.map(toDto),
       meta: paginationMeta(page, pageSize, total),

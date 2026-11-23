@@ -161,6 +161,7 @@ export class BrokersRepository {
   updateOfficePolicy(
     id: string,
     data: {
+      name?: string;
       settlementPeriod?: SettlementPeriod;
       minTopUpMinorOverride?: number | null;
       exposureCeilingOverride?: number | null;

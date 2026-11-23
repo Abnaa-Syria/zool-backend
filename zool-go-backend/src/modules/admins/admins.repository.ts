@@ -14,9 +14,10 @@ const adminInclude = {
 } satisfies Prisma.AdminUserInclude;
 
 export class AdminsRepository {
-  list(params: { skip: number; take: number; q?: string; status?: 'ACTIVE' | 'SUSPENDED' }) {
+  list(params: { skip: number; take: number; q?: string; status?: 'ACTIVE' | 'SUSPENDED'; roleId?: string }) {
     const where: Prisma.AdminUserWhereInput = {
       ...(params.status ? { status: params.status } : {}),
+      ...(params.roleId ? { userRoles: { some: { roleId: params.roleId } } } : {}),
       ...(params.q
         ? {
             OR: [

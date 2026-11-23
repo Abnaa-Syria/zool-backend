@@ -12028,6 +12028,47 @@
       ]
     },
     {
+      "name": "Top-ups (admin)",
+      "item": [
+        {
+          "name": "GET /admin/wallets/top-ups/{intentId}",
+          "request": {
+            "method": "GET",
+            "description": "One top-up request with its office, evidence flag and review note",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/wallets/top-ups/:intentId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "wallets",
+                "top-ups",
+                ":intentId"
+              ],
+              "variable": [
+                {
+                  "key": "intentId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Wallets (admin)",
       "item": [
         {

@@ -3491,6 +3491,16 @@ paths:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /admin/wallets/top-ups/{intentId}:
+    get:
+      tags: [Top-ups (admin)]
+      summary: 'One top-up request with its office, evidence flag and review note'
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: intentId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     bearerAuth:
