@@ -120,6 +120,7 @@ describe('Driver app: trip lifecycle, QR boarding, cash, GPS and live tracking',
     const before = await request(app).get(`/api/v1/driver/trips/${trip}`).set(auth(driver));
     const stopEntry = before.body.data.stops.find((s: { kind: string }) => s.kind === 'STOP');
     expect(stopEntry).toMatchObject({ id: stopId, arrivedAt: null, departedAt: null });
+    expect(before.body.data.seatsTotal).toBeGreaterThan(0);
     await request(app).post(`/api/v1/driver/trips/${trip}/stops/${stopId}`).set(auth(driver)).send({ event: 'ARRIVED' });
     const afterStop = await request(app).get(`/api/v1/driver/trips/${trip}`).set(auth(driver));
     expect(afterStop.body.data.stops.find((s: { id?: string }) => s.id === stopId).arrivedAt).toEqual(expect.any(String));

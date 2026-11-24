@@ -20,6 +20,7 @@ import { compareSeatLabels, splitFare } from '../../shared/utils/money';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { zonedDayRange, calendarDateInZone } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
+import { catalogRepository } from '../catalog/catalog.repository';
 import { toTripDetailView } from '../catalog/trip-view';
 import { notificationsService } from '../notifications/notifications.service';
 import { trackingService } from '../tracking/tracking.service';
@@ -74,10 +75,11 @@ export class DriverTripsService {
   }
 
   private async card(trip: DriverTripRow) {
-    const tickets = await driverTripsRepository.manifest(trip.id);
+    const [tickets, seatCounts] = await Promise.all([driverTripsRepository.manifest(trip.id), catalogRepository.seatCountsByTrip([trip.id])]);
     const live = tickets.filter((t) => t.status === TicketStatus.CONFIRMED);
     return {
-      ...toTripDetailView(trip, undefined),
+      // Seat counts give the bus capacity («18 / 25 مقعد») on the driver cards.
+      ...toTripDetailView(trip, seatCounts.get(trip.id)),
       vehicle: trip.vehicle ? { id: trip.vehicle.id, plateNumber: trip.vehicle.plateNumber, model: trip.vehicle.model } : null,
       counts: {
         booked: live.length,
