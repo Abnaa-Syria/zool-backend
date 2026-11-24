@@ -116,7 +116,13 @@ describe('Driver app: trip lifecycle, QR boarding, cash, GPS and live tracking',
     expect(live.body.data).toMatchObject({ status: 'IN_PROGRESS', position: { lat: 16, lng: 33.5, speedKmh: 90 }, nextStop: { city: { code: 'SHD' } } });
     expect(live.body.data.remainingKm).toBeGreaterThan(300);
     const stopId = live.body.data.timeline[1].stopId as string;
+    // The driver app marks stops from the trip detail, so STOP entries expose their id + actual times.
+    const before = await request(app).get(`/api/v1/driver/trips/${trip}`).set(auth(driver));
+    const stopEntry = before.body.data.stops.find((s: { kind: string }) => s.kind === 'STOP');
+    expect(stopEntry).toMatchObject({ id: stopId, arrivedAt: null, departedAt: null });
     await request(app).post(`/api/v1/driver/trips/${trip}/stops/${stopId}`).set(auth(driver)).send({ event: 'ARRIVED' });
+    const afterStop = await request(app).get(`/api/v1/driver/trips/${trip}`).set(auth(driver));
+    expect(afterStop.body.data.stops.find((s: { id?: string }) => s.id === stopId).arrivedAt).toEqual(expect.any(String));
     const live2 = await request(app).get(`/api/v1/customer/bookings/${cash.id}/live`).set(auth(customer));
     expect(live2.body.data.nextStop.city.code).toBe('PZU');
 

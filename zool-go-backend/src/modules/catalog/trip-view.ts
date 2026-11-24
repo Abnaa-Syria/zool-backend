@@ -97,11 +97,15 @@ export function toTripDetailView(t: TripViewRow, counts: SeatCounts | undefined)
     stops: [
       { sequence: 0, kind: 'ORIGIN' as const, ...origin, scheduledAt: t.departureAt.toISOString() },
       ...t.stops.map((s) => ({
+        /** Intermediate stop id (driver «وصلت المحطة»: POST /driver/trips/:id/stops/:stopId). */
+        id: s.id,
         sequence: s.sequence,
         kind: 'STOP' as const,
         station: { id: s.station.id, nameAr: s.station.nameAr, nameEn: s.station.nameEn },
         city: s.station.city,
         scheduledAt: (s.scheduledArrivalAt ?? s.scheduledDepartureAt)?.toISOString() ?? null,
+        arrivedAt: s.actualArrivalAt?.toISOString() ?? null,
+        departedAt: s.actualDepartureAt?.toISOString() ?? null,
       })),
       { sequence: t.stops.length + 1, kind: 'DESTINATION' as const, ...destination, scheduledAt: t.arrivalAt?.toISOString() ?? null },
     ],
