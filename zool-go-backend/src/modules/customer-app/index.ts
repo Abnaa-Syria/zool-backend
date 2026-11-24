@@ -1,6 +1,7 @@
 export {
   customerAuthRoutes,
   customerBookingRoutes,
+  customerFavoriteRoutes,
   customerHoldRoutes,
   customerMeRoutes,
   customerPaymentRoutes,

@@ -251,6 +251,25 @@ export async function seedPhase2(prisma: PrismaClient): Promise<void> {
     update: {},
   });
 
+  // --- D-PROMO-01 demo banner (marketing edits or stops it from the admin dashboard)
+  const now = new Date();
+  await prisma.coupon.upsert({
+    where: { code: 'ZOOL20' },
+    create: {
+      code: 'ZOOL20',
+      discountType: 'PERCENT',
+      value: 2000,
+      maxDiscountAmount: 1_000_000,
+      validFrom: now,
+      validTo: new Date(now.getTime() + 365 * 86_400_000),
+      perCustomerLimit: 1,
+      showInApp: true,
+      promoTitleAr: 'خصم 20% على أول رحلة',
+      promoSortOrder: 10,
+    },
+    update: {},
+  });
+
   // eslint-disable-next-line no-console
   console.log(
     `Phase 2 seed: ${CITIES.length} cities, route KRT-PZU, carrier manager +249900000401, driver +249900000201, customer +249900000301, trips for ${tomorrow}`,

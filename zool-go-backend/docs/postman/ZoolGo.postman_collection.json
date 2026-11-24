@@ -7286,6 +7286,155 @@
               ]
             }
           }
+        },
+        {
+          "name": "GET /customer/trips/suggested",
+          "request": {
+            "method": "GET",
+            "description": "Home «رحلات مقترحة لك»: up to 10 upcoming trips (7 days, seats free) on recently searched routes, then any route; each card has isFavorite",
+            "header": [
+              {
+                "key": "X-Client-Platform",
+                "value": "android"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/trips/suggested",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customer",
+                "trips",
+                "suggested"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /customer/favorites",
+          "request": {
+            "method": "GET",
+            "description": "Saved (favourite) trips, newest first, with bookable flag",
+            "header": [
+              {
+                "key": "X-Client-Platform",
+                "value": "android"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/favorites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customer",
+                "favorites"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /customer/favorites/{tripId}",
+          "request": {
+            "method": "POST",
+            "description": "Save a trip to favourites (idempotent)",
+            "header": [
+              {
+                "key": "X-Client-Platform",
+                "value": "android"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/favorites/:tripId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customer",
+                "favorites",
+                ":tripId"
+              ],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /customer/favorites/{tripId}",
+          "request": {
+            "method": "DELETE",
+            "description": "Remove a trip from favourites",
+            "header": [
+              {
+                "key": "X-Client-Platform",
+                "value": "android"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/favorites/:tripId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customer",
+                "favorites",
+                ":tripId"
+              ],
+              "variable": [
+                {
+                  "key": "tripId",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
         }
       ]
     },
@@ -11301,6 +11450,28 @@
               "path": [
                 "public",
                 "cities"
+              ],
+              "variable": []
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "GET /public/promotions",
+          "request": {
+            "method": "GET",
+            "description": "D-PROMO-01 promo banners: active coupons marked showInApp (code, titleAr, subtitleAr, imageUrl, discount, carrier, validTo)",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/promotions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "promotions"
               ],
               "variable": []
             },

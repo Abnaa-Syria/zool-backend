@@ -470,6 +470,17 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 
 ---
 
+## D-PROMO-01 — Customer home: promo banners, suggested trips, favourites
+
+**Status:** **LOCKED** — 2026-11-24 (from the Figma customer Home 3074:2225)
+
+- **Promo banners are coupons.** Any coupon can be marked «يظهر في التطبيق» (`showInApp`) with a banner title, short text, optional image URL and sort order, from the admin dashboard (coupon create / edit). `GET /public/promotions` returns the active, valid, not-exhausted ones (higher `promoSortOrder` first). Tapping a banner in the app copies the code and pre-fills it at checkout; the discount itself is the normal coupon logic.
+- **Suggested trips:** `GET /customer/trips/suggested` — up to 10 sellable trips in the next 7 days with free seats, on the customer's last searched routes first, then any route.
+- **Favourites (the heart):** `GET /customer/favorites`, `POST|DELETE /customer/favorites/:tripId` (idempotent). Cards carry `isFavorite`; favourites carry `bookable`.
+- Popular destination photos come from the city `imageUrl` (admin → المدن).
+
+---
+
 ## Highest-impact handoff question (resolved)
 
 **Former question (top-up confirmation authority):** resolved **LOCKED (PDF)** to automatic credit after verified payment confirmation.

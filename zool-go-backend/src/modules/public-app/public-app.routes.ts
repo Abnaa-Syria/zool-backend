@@ -5,6 +5,7 @@ import { RateLimitError } from '../../shared/errors/app-error';
 import { successResponse } from '../../shared/http/success-response';
 import { asyncHandler } from '../../shared/middleware/async-handler';
 import { validate } from '../../shared/middleware/validate';
+import { couponsService } from '../coupons/coupons.service';
 import { publicAppService } from './public-app.service';
 
 const citiesQuerySchema = z.object({ q: z.string().trim().max(60).optional() });
@@ -17,6 +18,11 @@ class PublicAppController {
   async cities(req: Request, res: Response): Promise<Response> {
     const data = await publicAppService.cities(req.query.q as string | undefined);
     return successResponse(res, { message: 'Cities retrieved', data, requestId: req.requestId });
+  }
+
+  async promotions(req: Request, res: Response): Promise<Response> {
+    const data = await couponsService.promotions();
+    return successResponse(res, { message: 'Promotions retrieved', data, requestId: req.requestId });
   }
 
   async popular(req: Request, res: Response): Promise<Response> {
@@ -41,3 +47,4 @@ publicAppRoutes.use(
 publicAppRoutes.get('/app-config', asyncHandler((req, res) => controller.appConfig(req, res)));
 publicAppRoutes.get('/cities', validate({ query: citiesQuerySchema }), asyncHandler((req, res) => controller.cities(req, res)));
 publicAppRoutes.get('/destinations/popular', asyncHandler((req, res) => controller.popular(req, res)));
+publicAppRoutes.get('/promotions', asyncHandler((req, res) => controller.promotions(req, res)));

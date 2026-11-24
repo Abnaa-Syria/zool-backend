@@ -75,6 +75,12 @@ model Coupon {
   perCustomerLimit  Int                @default(1) @map("per_customer_limit")
   redeemedCount     Int                @default(0) @map("redeemed_count")
   isActive          Boolean            @default(true) @map("is_active")
+  /// D-PROMO-01: shown as a promo banner on the customer app home while valid
+  showInApp         Boolean            @default(false) @map("show_in_app")
+  promoTitleAr      String?            @map("promo_title_ar") @db.VarChar(120)
+  promoSubtitleAr   String?            @map("promo_subtitle_ar") @db.VarChar(200)
+  promoImageUrl     String?            @map("promo_image_url") @db.VarChar(500)
+  promoSortOrder    Int                @default(0) @map("promo_sort_order")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
 

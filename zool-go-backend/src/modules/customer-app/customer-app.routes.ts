@@ -52,6 +52,7 @@ export const customerTripRoutes = Router();
 customerTripRoutes.use(authenticateCustomer);
 customerTripRoutes.get('/', validate({ query: tripSearchQuerySchema }), asyncHandler((req, res) => customerTripsController.search(req, res)));
 customerTripRoutes.get('/filters', validate({ query: tripSearchBaseSchema }), asyncHandler((req, res) => customerTripsController.filters(req, res)));
+customerTripRoutes.get('/suggested', asyncHandler((req, res) => customerTripsController.suggested(req, res)));
 customerTripRoutes.get('/:tripId', validate({ params: tripIdParamsSchema }), asyncHandler((req, res) => customerTripsController.detail(req, res)));
 customerTripRoutes.get('/:tripId/seats', validate({ params: tripIdParamsSchema }), asyncHandler((req, res) => customerTripsController.seats(req, res)));
 customerTripRoutes.post(
@@ -70,6 +71,13 @@ export const customerRecentSearchRoutes = Router();
 customerRecentSearchRoutes.use(authenticateCustomer);
 customerRecentSearchRoutes.get('/', asyncHandler((req, res) => customerTripsController.recentSearches(req, res)));
 customerRecentSearchRoutes.delete('/', asyncHandler((req, res) => customerTripsController.clearRecentSearches(req, res)));
+
+/** Mounted at `${API_PREFIX}/customer/favorites` — saved trips (home suggestions heart). */
+export const customerFavoriteRoutes = Router();
+customerFavoriteRoutes.use(authenticateCustomer);
+customerFavoriteRoutes.get('/', asyncHandler((req, res) => customerTripsController.favorites(req, res)));
+customerFavoriteRoutes.post('/:tripId', validate({ params: tripIdParamsSchema }), asyncHandler((req, res) => customerTripsController.addFavorite(req, res)));
+customerFavoriteRoutes.delete('/:tripId', validate({ params: tripIdParamsSchema }), asyncHandler((req, res) => customerTripsController.removeFavorite(req, res)));
 
 /** Mounted at `${API_PREFIX}/customer/bookings`. */
 export const customerBookingRoutes = Router();

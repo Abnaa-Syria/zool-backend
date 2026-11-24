@@ -44,6 +44,7 @@ import {
   customerMeRoutes,
   customerPaymentRoutes,
   customerRecentSearchRoutes,
+  customerFavoriteRoutes,
   customerTicketRoutes,
   customerTripRoutes,
 } from './modules/customer-app';
@@ -140,6 +141,7 @@ export function createApp() {
   app.use(`${prefix}/customer/trips`, customerTripRoutes);
   app.use(`${prefix}/customer/holds`, customerHoldRoutes);
   app.use(`${prefix}/customer/recent-searches`, customerRecentSearchRoutes);
+  app.use(`${prefix}/customer/favorites`, customerFavoriteRoutes);
   app.use(`${prefix}/customer/bookings`, customerBookingRoutes);
   app.use(`${prefix}/customer/bookings`, customerBookingChangeRoutes);
   app.use(`${prefix}/customer/bookings`, customerLiveRoutes);

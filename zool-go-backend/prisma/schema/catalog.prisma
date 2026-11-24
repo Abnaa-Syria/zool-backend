@@ -41,6 +41,7 @@ model Trip {
   boardingScans      BoardingScan[]
   cashCollections    CashCollection[]
   positions          VehiclePosition[]
+  favoritedBy        CustomerFavoriteTrip[]
 
   @@index([companyId, departureAt])
   @@index([isActive, departureAt])

@@ -32,6 +32,49 @@ export const customerTripsRepository = {
     });
   },
 
+  /** Sellable trips of the given city pairs (or any route) within a window, soonest first. */
+  listUpcoming(params: { pairs?: Array<{ fromCityId: string; toCityId: string }>; until: Date; take: number; excludeIds?: string[] }) {
+    return getPrisma().trip.findMany({
+      where: sellableTripWhere({
+        departureAt: { gt: new Date(), lt: params.until },
+        ...(params.excludeIds?.length ? { id: { notIn: params.excludeIds } } : {}),
+        ...(params.pairs
+          ? { OR: params.pairs.map((p) => ({ originStation: { cityId: p.fromCityId }, destinationStation: { cityId: p.toCityId } })) }
+          : {}),
+      }),
+      include: tripViewInclude,
+      orderBy: [{ departureAt: 'asc' }, { id: 'asc' }],
+      take: params.take,
+    });
+  },
+
+  favoriteTripIds(customerId: string, tripIds: string[]) {
+    return getPrisma()
+      .customerFavoriteTrip.findMany({ where: { customerId, tripId: { in: tripIds } }, select: { tripId: true } })
+      .then((rows) => new Set(rows.map((r) => r.tripId)));
+  },
+
+  listFavorites(customerId: string, take: number) {
+    return getPrisma().customerFavoriteTrip.findMany({
+      where: { customerId },
+      include: { trip: { include: tripViewInclude } },
+      orderBy: { createdAt: 'desc' },
+      take,
+    });
+  },
+
+  addFavorite(customerId: string, tripId: string) {
+    return getPrisma().customerFavoriteTrip.upsert({
+      where: { customerId_tripId: { customerId, tripId } },
+      create: { customerId, tripId },
+      update: {},
+    });
+  },
+
+  removeFavorite(customerId: string, tripId: string) {
+    return getPrisma().customerFavoriteTrip.deleteMany({ where: { customerId, tripId } });
+  },
+
   findSellableTrip(tripId: string, tx?: PrismaTx) {
     return (tx ?? getPrisma()).trip.findFirst({ where: sellableTripWhere({ id: tripId }), include: tripViewInclude });
   },

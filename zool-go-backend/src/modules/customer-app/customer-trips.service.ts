@@ -232,6 +232,56 @@ export class CustomerTripsService {
     }));
   }
 
+  /**
+   * Home «رحلات مقترحة لك»: upcoming trips (next 7 days, seats free) on the routes the customer
+   * searched recently, then the soonest trips of any route. Each card says if it is a favourite.
+   */
+  async suggested(customerId: string, limit = 10) {
+    await catalogService.releaseExpiredHolds();
+    const until = new Date(Date.now() + 7 * 86_400_000);
+    const recent = await customerTripsRepository.listRecentSearches(customerId, 5);
+    const pairs = recent.map((r) => ({ fromCityId: r.fromCity.id, toCityId: r.toCity.id }));
+    const first = pairs.length ? await customerTripsRepository.listUpcoming({ pairs, until, take: limit * 3 }) : [];
+    const rest =
+      first.length < limit * 3
+        ? await customerTripsRepository.listUpcoming({ until, take: limit * 3, excludeIds: first.map((t) => t.id) })
+        : [];
+    const trips = [...first, ...rest];
+    const counts = await catalogRepository.seatCountsByTrip(trips.map((t) => t.id));
+    const withSeats = trips.filter((t) => (counts.get(t.id)?.FREE ?? 0) > 0).slice(0, limit);
+    return this.cards(customerId, withSeats, counts);
+  }
+
+  /** The customer's saved trips (newest first); departed or unsellable ones are marked. */
+  async favorites(customerId: string) {
+    const rows = await customerTripsRepository.listFavorites(customerId, 50);
+    const counts = await catalogRepository.seatCountsByTrip(rows.map((r) => r.tripId));
+    const now = Date.now();
+    return rows.map((r) => ({
+      ...toTripCardView(r.trip, counts.get(r.tripId)),
+      isFavorite: true,
+      bookable: r.trip.departureAt.getTime() > now && (counts.get(r.tripId)?.FREE ?? 0) > 0,
+      favoritedAt: r.createdAt.toISOString(),
+    }));
+  }
+
+  async addFavorite(customerId: string, tripId: string) {
+    const trip = await customerTripsRepository.findTripView(tripId);
+    if (!trip) throw AppError.notFound('Trip not found');
+    await customerTripsRepository.addFavorite(customerId, tripId);
+    return { tripId, isFavorite: true };
+  }
+
+  async removeFavorite(customerId: string, tripId: string) {
+    await customerTripsRepository.removeFavorite(customerId, tripId);
+    return { tripId, isFavorite: false };
+  }
+
+  private async cards(customerId: string, trips: TripViewRow[], counts: Awaited<ReturnType<typeof catalogRepository.seatCountsByTrip>>) {
+    const favorites = await customerTripsRepository.favoriteTripIds(customerId, trips.map((t) => t.id));
+    return trips.map((t) => ({ ...toTripCardView(t, counts.get(t.id)), isFavorite: favorites.has(t.id) }));
+  }
+
   async clearRecentSearches(customerId: string) {
     await customerTripsRepository.deleteRecentSearches(customerId);
     return { cleared: true };

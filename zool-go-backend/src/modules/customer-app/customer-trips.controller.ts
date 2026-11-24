@@ -38,6 +38,26 @@ class CustomerTripsController {
     return successResponse(res, { message: 'Recent searches retrieved', data, requestId: req.requestId });
   }
 
+  async suggested(req: Request, res: Response): Promise<Response> {
+    const data = await customerTripsService.suggested(req.customerAuth!.customerId);
+    return successResponse(res, { message: 'Suggested trips retrieved', data, requestId: req.requestId });
+  }
+
+  async favorites(req: Request, res: Response): Promise<Response> {
+    const data = await customerTripsService.favorites(req.customerAuth!.customerId);
+    return successResponse(res, { message: 'Favourite trips retrieved', data, requestId: req.requestId });
+  }
+
+  async addFavorite(req: Request, res: Response): Promise<Response> {
+    const data = await customerTripsService.addFavorite(req.customerAuth!.customerId, req.params.tripId!);
+    return successResponse(res, { statusCode: 201, message: 'Trip saved to favourites', data, requestId: req.requestId });
+  }
+
+  async removeFavorite(req: Request, res: Response): Promise<Response> {
+    const data = await customerTripsService.removeFavorite(req.customerAuth!.customerId, req.params.tripId!);
+    return successResponse(res, { message: 'Trip removed from favourites', data, requestId: req.requestId });
+  }
+
   async clearRecentSearches(req: Request, res: Response): Promise<Response> {
     const data = await customerTripsService.clearRecentSearches(req.customerAuth!.customerId);
     return successResponse(res, { message: 'Recent searches cleared', data, requestId: req.requestId });

@@ -20,6 +20,11 @@ export function toCouponDto(c: Coupon) {
     perCustomerLimit: c.perCustomerLimit,
     redeemedCount: c.redeemedCount,
     isActive: c.isActive,
+    showInApp: c.showInApp,
+    promoTitleAr: c.promoTitleAr,
+    promoSubtitleAr: c.promoSubtitleAr,
+    promoImageUrl: c.promoImageUrl,
+    promoSortOrder: c.promoSortOrder,
     createdAt: c.createdAt.toISOString(),
   };
 }
@@ -48,6 +53,15 @@ type CouponInput = {
   validTo: Date;
   maxRedemptions?: number;
   perCustomerLimit?: number;
+} & PromoFields;
+
+/** D-PROMO-01 banner fields (admin-managed). */
+export type PromoFields = {
+  showInApp?: boolean;
+  promoTitleAr?: string | null;
+  promoSubtitleAr?: string | null;
+  promoImageUrl?: string | null;
+  promoSortOrder?: number;
 };
 
 export class CouponsService {
@@ -81,6 +95,11 @@ export class CouponsService {
         validTo: input.validTo,
         maxRedemptions: input.maxRedemptions ?? null,
         perCustomerLimit: input.perCustomerLimit ?? 1,
+        showInApp: input.showInApp ?? false,
+        promoTitleAr: input.promoTitleAr ?? null,
+        promoSubtitleAr: input.promoSubtitleAr ?? null,
+        promoImageUrl: input.promoImageUrl ?? null,
+        promoSortOrder: input.promoSortOrder ?? 0,
       });
       await auditService.record({
         actorAdminId: input.actorAdminId,
@@ -101,7 +120,7 @@ export class CouponsService {
 
   async update(input: {
     couponId: string;
-    patch: { isActive?: boolean; validTo?: Date; maxRedemptions?: number | null };
+    patch: { isActive?: boolean; validTo?: Date; maxRedemptions?: number | null } & PromoFields;
     actorAdminId: string;
     requestId?: string;
   }) {
@@ -123,6 +142,30 @@ export class CouponsService {
       metadata: { fields: Object.keys(input.patch) },
     });
     return toCouponDto(coupon);
+  }
+
+  /**
+   * D-PROMO-01: active coupons marked «show in app», as home banners (newest sort order first
+   * by promoSortOrder, then the soonest to expire). Exhausted coupons are left out.
+   */
+  async promotions() {
+    const now = new Date();
+    const rows = await couponsRepository.listPromotions(now);
+    return rows
+      .filter((c) => c.maxRedemptions === null || c.redeemedCount < c.maxRedemptions)
+      .map((c) => ({
+        couponId: c.id,
+        code: c.code,
+        titleAr: c.promoTitleAr ?? (c.discountType === 'PERCENT' ? `خصم ${c.value / 100}%` : `خصم ${c.value / 100} ج.س`),
+        subtitleAr: c.promoSubtitleAr,
+        imageUrl: c.promoImageUrl,
+        discountType: c.discountType,
+        value: c.value,
+        maxDiscountAmountMinor: c.maxDiscountAmount,
+        minSubtotalAmountMinor: c.minSubtotalAmount,
+        carrier: c.company ? { id: c.company.id, name: c.company.name } : null,
+        validTo: c.validTo.toISOString(),
+      }));
   }
 }
 

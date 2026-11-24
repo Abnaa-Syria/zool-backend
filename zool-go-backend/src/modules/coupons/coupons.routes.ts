@@ -13,6 +13,14 @@ const listSchema = paginationQuerySchema.extend({
   isActive: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
 });
 const idSchema = z.object({ id: z.string().min(1).max(64) });
+/** D-PROMO-01 banner fields, shared by create and patch. */
+const promoFields = {
+  showInApp: z.boolean().optional(),
+  promoTitleAr: z.string().trim().min(2).max(120).nullable().optional(),
+  promoSubtitleAr: z.string().trim().max(200).nullable().optional(),
+  promoImageUrl: z.string().trim().url().max(500).nullable().optional(),
+  promoSortOrder: z.number().int().min(-1000).max(1000).optional(),
+};
 const createSchema = z
   .object({
     code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{3,32}$/),
@@ -26,6 +34,7 @@ const createSchema = z
     validTo: z.coerce.date(),
     maxRedemptions: z.number().int().positive().optional(),
     perCustomerLimit: z.number().int().min(1).max(100).optional(),
+    ...promoFields,
   })
   .strict();
 const patchSchema = z
@@ -33,6 +42,7 @@ const patchSchema = z
     isActive: z.boolean().optional(),
     validTo: z.coerce.date().optional(),
     maxRedemptions: z.number().int().positive().nullable().optional(),
+    ...promoFields,
   })
   .strict()
   .refine((v) => Object.keys(v).length > 0, { message: 'At least one field is required' });

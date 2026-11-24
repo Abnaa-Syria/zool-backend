@@ -2373,6 +2373,13 @@ paths:
       summary: 'Active cities with their active stations (?q= search)'
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+  /public/promotions:
+    get:
+      tags: [Public]
+      summary: 'D-PROMO-01 promo banners: active coupons marked showInApp (code, titleAr, subtitleAr, imageUrl, discount, carrier, validTo)'
+      security: []
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
   /public/destinations/popular:
     get:
       tags: [Public]
@@ -2449,6 +2456,40 @@ paths:
       tags: [Customer Trips]
       summary: 'Clear recent searches'
       security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/trips/suggested:
+    get:
+      tags: [Customer Trips]
+      summary: 'Home «رحلات مقترحة لك»: up to 10 upcoming trips (7 days, seats free) on recently searched routes, then any route; each card has isFavorite'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/favorites:
+    get:
+      tags: [Customer Trips]
+      summary: 'Saved (favourite) trips, newest first, with bookable flag'
+      security: [{ customerBearerAuth: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /customer/favorites/{tripId}:
+    post:
+      tags: [Customer Trips]
+      summary: 'Save a trip to favourites (idempotent)'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Customer Trips]
+      summary: 'Remove a trip from favourites'
+      security: [{ customerBearerAuth: [] }]
+      parameters: [{ name: tripId, in: path, required: true, schema: { type: string } }]
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessEnvelope' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }

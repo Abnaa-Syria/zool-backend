@@ -22,6 +22,15 @@ export class CouponsRepository {
     return getPrisma().coupon.create({ data });
   }
 
+  listPromotions(now: Date) {
+    return getPrisma().coupon.findMany({
+      where: { showInApp: true, isActive: true, validFrom: { lte: now }, validTo: { gt: now } },
+      include: { company: { select: { id: true, name: true } } },
+      orderBy: [{ promoSortOrder: 'desc' }, { validTo: 'asc' }],
+      take: 10,
+    });
+  }
+
   update(id: string, data: Prisma.CouponUpdateInput) {
     return getPrisma().coupon.update({ where: { id }, data });
   }
