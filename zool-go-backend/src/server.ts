@@ -33,7 +33,7 @@ async function main() {
   }, 30_000);
   sweeper.unref();
 
-  // Dev/staging: keep demo trips available for app developers (DEMO_SCHEDULE_DAYS > 0).
+  // Dev/staging: keep the demo world (D-DEMO-01) rolling for app testers (DEMO_SCHEDULE_DAYS > 0).
   let demo: NodeJS.Timeout | null = null;
   if (config.DEMO_SCHEDULE_DAYS > 0) {
     const refresh = () =>

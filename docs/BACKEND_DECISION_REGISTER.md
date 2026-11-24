@@ -481,6 +481,18 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 
 ---
 
+## D-DEMO-01 — Demo world for app testing (development / staging only)
+
+**Status:** **LOCKED** — 2026-11-24 (PO: testers could not try boarding because every demo trip left at 07:00)
+
+- `src/dev/demo-schedule.ts` keeps a test world: 4 carriers (سودان إكسبريس, النيل للنقل, الشرق السريع, البراق — the last one online-only), 11 buses with one driver each (`+249900000201` … `+249900000211`), carrier managers `+249900000401` … `404`, and 10 out-and-back lines from Khartoum.
+- Every bus shuttles on its line around the clock: first departure ~45 min from now, 1 h turnaround, no departures 00:00–05:00 Sudan time, up to 7 days ahead. So every demo driver always has a trip inside the boarding window.
+- Trips that should have left more than 2 h ago, never started and sold nothing are cancelled (they would block the bus).
+- Trips in the next 30 h without bookings get 30–55 % of their seats booked by demo customers (`+249900000310` …), part online (mock payment) and part cash, through the normal hold / checkout services.
+- Runs on `npm run db:demo` and hourly in the server when `DEMO_SCHEDULE_DAYS > 0`. Never enabled in production.
+
+---
+
 ## Highest-impact handoff question (resolved)
 
 **Former question (top-up confirmation authority):** resolved **LOCKED (PDF)** to automatic credit after verified payment confirmation.

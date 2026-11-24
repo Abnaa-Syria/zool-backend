@@ -1,4 +1,4 @@
-/** `npm run db:demo [days]` — schedule the demo carrier for the next N days (default 14). Run `npm run db:seed` first. */
+/** `npm run db:demo [days]` — build/refresh the demo world (carriers, buses, drivers, rolling trips, demo passengers; up to 7 days). Run `npm run db:seed` first. */
 import 'dotenv/config';
 import { loadEnv } from '../src/config/env';
 import { connectPrisma, disconnectPrisma } from '../src/infrastructure/database/prisma';
@@ -9,7 +9,7 @@ async function main() {
   loadEnv();
   await connectPrisma();
   await connectRedis();
-  const days = Number(process.argv[2] ?? 14);
+  const days = Number(process.argv[2] ?? 7);
   const created = await ensureDemoSchedule(days);
   console.log(`Demo schedule: ${created} trips created for the next ${days} days`);
   await disconnectPrisma();
