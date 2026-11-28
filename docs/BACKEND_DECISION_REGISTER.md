@@ -494,6 +494,17 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 
 ---
 
+## D-PUSH-01 — Push notifications (FCM)
+
+**Status:** **LOCKED** — 2026-11-28 (PO created Firebase project `zoolgo-568d8`; Android first, iOS later with the Apple setup)
+
+- The in-app feed stays the source of truth; push is a best-effort copy through the `PushProvider` port: `PUSH_PROVIDER=log` (dev/tests) or `fcm` (`FcmPushProvider`, firebase-admin HTTP v1, service-account JSON at `FCM_SERVICE_ACCOUNT_FILE`, kept outside the repo and app folder). Dead tokens reported by FCM are deleted.
+- Apps register `POST /{customer|driver|broker}/devices` after sign-in and delete the FCM token on sign-out. Android channel `zoolgo_default`, small icon `ic_stat_zoolgo`.
+- Drivers now get `TRIP_ASSIGNED` (new trips / reassignment), `TRIP_UNASSIGNED` and `TRIP_CANCELLED`.
+- Demo-world traffic (`ensureDemoSchedule`) runs under `withoutPush`: feeds are filled, testers' phones are not pushed.
+
+---
+
 ## Highest-impact handoff question (resolved)
 
 **Former question (top-up confirmation authority):** resolved **LOCKED (PDF)** to automatic credit after verified payment confirmation.

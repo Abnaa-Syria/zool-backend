@@ -1,4 +1,4 @@
-import { DriverStatus, TransportCompanyStatus, TripStatus, VehicleStatus, type ServiceClass } from '@prisma/client';
+import { DriverStatus, PrincipalType, TransportCompanyStatus, TripStatus, VehicleStatus, type ServiceClass } from '@prisma/client';
 import { env } from '../../config/env';
 import { getPrisma } from '../../infrastructure/database/prisma';
 import { AppError } from '../../shared/errors/app-error';
@@ -6,7 +6,7 @@ import { auditActor, type Actor } from '../../shared/types/actor';
 import { ErrorCodes } from '../../shared/errors/error-codes';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { seatLayoutSchema } from '../../shared/utils/seat-layout';
-import { calendarDateInZone } from '../../shared/utils/timezone';
+import { calendarDateInZone, formatPlatformDateTime } from '../../shared/utils/timezone';
 import { auditService } from '../audit/audit.service';
 import { bookingsService } from '../bookings';
 import { notificationsService } from '../notifications';
@@ -80,6 +80,8 @@ export function toScheduledTripDto(t: TripRow) {
     seats: t.seats,
   };
 }
+
+const when = (d: Date) => formatPlatformDateTime(d, env().PLATFORM_TIMEZONE);
 
 export class NetworkService {
   // ---------------- Routes
@@ -225,7 +227,8 @@ export class NetworkService {
   }
 
   /** Creates structured trips from a route: stations, stops with times, seats from the vehicle layout. */
-  async scheduleTrips(input: ScheduleTripsInput & Actor) {
+  /** `silent`: no driver notice (the demo world schedules around the clock). */
+  async scheduleTrips(input: ScheduleTripsInput & Actor & { silent?: boolean }) {
     const route = await networkRepository.findRouteById(input.routeId);
     if (!route) throw AppError.notFound('Route not found');
     if (!route.isActive) throw AppError.validation('Route is inactive', { field: 'routeId' });
@@ -298,6 +301,15 @@ export class NetworkService {
     });
 
     const trips = await Promise.all(tripIds.map((id) => networkRepository.findTripById(id)));
+    if (driver && !input.silent) {
+      const first = trips[0]!;
+      await notificationsService.notify([{ type: PrincipalType.DRIVER, id: driver.id }], {
+        type: 'TRIP_ASSIGNED',
+        title: tripIds.length === 1 ? 'رحلة جديدة في جدولك' : `${tripIds.length} رحلات جديدة في جدولك`,
+        body: `${first.origin} ← ${first.destination} · ${when(first.departureAt)}`,
+        data: { tripId: first.id },
+      });
+    }
     return trips.map((t) => toScheduledTripDto(t!));
   }
 
@@ -348,6 +360,15 @@ export class NetworkService {
           message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
+    }
+
+    if (trip.driver && trip.status !== TripStatus.CANCELLED) {
+      await notificationsService.notify([{ type: PrincipalType.DRIVER, id: trip.driver.id }], {
+        type: 'TRIP_CANCELLED',
+        title: 'أُلغيت رحلة من جدولك',
+        body: `${trip.origin} ← ${trip.destination} · ${when(trip.departureAt)}`,
+        data: { tripId: trip.id },
+      });
     }
 
     for (const officeId of officesNotified) {
@@ -426,6 +447,17 @@ export class NetworkService {
         tx,
       );
     });
+    const before = trip.driver?.id ?? null;
+    const after = input.patch.driverId === undefined ? before : (driver?.id ?? null);
+    if (after !== before) {
+      const text = `${trip.origin} ← ${trip.destination} · ${when(trip.departureAt)}`;
+      if (after) {
+        await notificationsService.notify([{ type: PrincipalType.DRIVER, id: after }], { type: 'TRIP_ASSIGNED', title: 'رحلة جديدة في جدولك', body: text, data: { tripId: trip.id } });
+      }
+      if (before) {
+        await notificationsService.notify([{ type: PrincipalType.DRIVER, id: before }], { type: 'TRIP_UNASSIGNED', title: 'أُسندت رحلتك لسائق آخر', body: text, data: { tripId: trip.id } });
+      }
+    }
     return this.getTrip(trip.id);
   }
 }

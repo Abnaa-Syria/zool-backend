@@ -58,6 +58,10 @@ const envSchema = z
     DEFAULT_SETTLEMENT_PERIOD: z.enum(['WEEKLY', 'MONTHLY']).default('MONTHLY'),
     SEAT_HOLD_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     PAYMENT_PROVIDER: z.enum(['mock']).default('mock'),
+    /** Push: `log` (dev/tests) or `fcm` (Firebase Cloud Messaging HTTP v1). */
+    PUSH_PROVIDER: z.enum(['log', 'fcm']).default('log'),
+    /** Path to the Firebase service-account JSON (kept outside the repo and the app folder). */
+    FCM_SERVICE_ACCOUNT_FILE: z.string().optional(),
     /** Staging only: allow the mock provider's confirm endpoints while NODE_ENV=production. */
     PAYMENT_MOCK_IN_PRODUCTION: booleanFromString.default(false),
     /** Dev/staging: keep the demo carrier scheduled this many days ahead (0 = off). */
@@ -75,6 +79,9 @@ const envSchema = z
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   })
   .superRefine((data, ctx) => {
+    if (data.PUSH_PROVIDER === 'fcm' && !data.FCM_SERVICE_ACCOUNT_FILE) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['FCM_SERVICE_ACCOUNT_FILE'], message: 'Required when PUSH_PROVIDER=fcm' });
+    }
     for (const entry of data.OTP_FIXED_CODES.split(',').map((s) => s.trim()).filter(Boolean)) {
       const [phone, code] = entry.split(':');
       if (!phone || !/^\+\d{6,15}\*?$/.test(phone) || !code || !new RegExp(`^\\d{${data.OTP_LENGTH}}$`).test(code)) {

@@ -4,6 +4,7 @@ import type { Express } from 'express';
 import { getPrisma } from '../src/infrastructure/database/prisma';
 import { bootTestApp, shutdownTestApp, resetDatabase, seedCatalogAndSuperAdmin, loginWithOtp } from './helpers/app';
 import { loginCustomer, loginDriver } from './helpers/mobile';
+import { getPushProvider, notificationsService, withoutPush, type LogPushProvider } from '../src/modules/notifications';
 import { seedNetwork } from './helpers/network';
 
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
@@ -48,6 +49,27 @@ describe('Driver app: trip lifecycle, QR boarding, cash, GPS and live tracking',
     if (paymentMethod === 'ONLINE') await request(app).post(`/api/v1/customer/payments/${res.body.data.payment.intentId}/mock-confirm`).set(auth(customer));
     return (await request(app).get(`/api/v1/customer/bookings/${res.body.data.bookings[0].id}`).set(auth(customer))).body.data;
   }
+
+  it('tells the driver about trips assigned to them and cancelled; demo traffic does not push', async () => {
+    const feed = async () => (await request(app).get('/api/v1/driver/notifications').set(auth(driver))).body.data as Array<{ type: string; data: { tripId?: string } }>;
+    expect(await feed()).toEqual([expect.objectContaining({ type: 'TRIP_ASSIGNED', data: expect.objectContaining({ tripId: trip }) })]);
+
+    await request(app).post('/api/v1/driver/devices').set(auth(driver)).send({ platform: 'ANDROID', pushToken: 'fcm-token-driver-00001' });
+    const push = getPushProvider() as LogPushProvider;
+    const before = push.sent.length;
+    const cancel = await request(app).post(`/api/v1/admin/trips/${trip}/cancel`).set(auth(adminToken)).send({ reason: 'Bus breakdown' });
+    expect(cancel.status).toBe(200);
+    await new Promise((r) => setTimeout(r, 50));
+    expect((await feed())[0]).toMatchObject({ type: 'TRIP_CANCELLED', data: { tripId: trip } });
+    expect(push.sent.slice(before).map((m) => [m.token, m.data?.type])).toEqual([['fcm-token-driver-00001', 'TRIP_CANCELLED']]);
+
+    const driverId = (await getPrisma().trip.findUniqueOrThrow({ where: { id: trip } })).driverId!;
+    const quiet = push.sent.length;
+    await withoutPush(() => notificationsService.notify([{ type: 'DRIVER', id: driverId }], { type: 'PROMO', title: 't', body: 'b' }));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(push.sent.length).toBe(quiet);
+    expect((await feed())[0]).toMatchObject({ type: 'PROMO' });
+  });
 
   it('drops a trip nobody started from «القادمة» 12 hours after departure', async () => {
     const upcoming = async () => (await request(app).get('/api/v1/driver/trips?tab=UPCOMING').set(auth(driver))).body.data.map((t: { id: string }) => t.id);

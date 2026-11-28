@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { logger } from '../../infrastructure/observability/logger';
 
 export interface PushMessage {
@@ -13,7 +14,7 @@ export interface PushResult {
   invalidTokens: string[];
 }
 
-/** Port for push delivery (FCM is plugged in at phase 7; until then the log provider is used). */
+/** Port for push delivery: `LogPushProvider` in dev/tests, `FcmPushProvider` when PUSH_PROVIDER=fcm. */
 export interface PushProvider {
   readonly name: string;
   send(messages: PushMessage[]): Promise<PushResult>;
@@ -39,4 +40,15 @@ export function getPushProvider(): PushProvider {
 
 export function setPushProvider(next: PushProvider): void {
   provider = next;
+}
+
+const muted = new AsyncLocalStorage<true>();
+
+/** Runs `fn` with push delivery off for everything it notifies (feed rows are still written). */
+export function withoutPush<T>(fn: () => Promise<T>): Promise<T> {
+  return muted.run(true, fn);
+}
+
+export function isPushMuted(): boolean {
+  return muted.getStore() === true;
 }

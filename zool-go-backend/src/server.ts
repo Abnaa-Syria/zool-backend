@@ -6,6 +6,7 @@ import { logger } from './infrastructure/observability/logger';
 import { ensureDemoSchedule } from './dev/demo-schedule';
 import { catalogService } from './modules/catalog/catalog.service';
 import { customerCheckoutService, sendDepartureReminders } from './modules/customer-app';
+import { FcmPushProvider, setPushProvider } from './modules/notifications';
 
 async function main() {
   loadEnv();
@@ -13,6 +14,7 @@ async function main() {
 
   await connectPrisma();
   await connectRedis();
+  if (config.PUSH_PROVIDER === 'fcm') setPushProvider(new FcmPushProvider(config.FCM_SERVICE_ACCOUNT_FILE!));
 
   const app = createApp();
   const server = app.listen(config.PORT, () => {

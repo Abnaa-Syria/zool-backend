@@ -7,6 +7,7 @@ import { customerCheckoutService } from '../modules/customer-app/customer-checko
 import { customerTripsService } from '../modules/customer-app/customer-trips.service';
 import { driverTripsService } from '../modules/driver-app/driver-trips.service';
 import { networkService } from '../modules/network/network.service';
+import { withoutPush } from '../modules/notifications';
 import { setPrincipalAuthzVersion } from '../shared/security/principal-authz-cache';
 import { runtimeSettings } from '../shared/settings/runtime-settings';
 import { normalizePhone } from '../shared/utils/phone';
@@ -328,6 +329,7 @@ async function scheduleBus(bus: { vehicleId: string; driverId: string }, out: { 
         departures: [new Date(cursor)],
         basePrice: priceMinor,
         actorAdminId: adminId,
+        silent: true,
       });
       busy.push({ from: cursor, to: end, routeId: route.id });
       lastRoute = route.id;
@@ -482,7 +484,12 @@ async function simulateMissedTrips(companyIds: string[]): Promise<number> {
  * Builds/refreshes the demo world. Returns how many trips were created. `days` is the scheduling
  * horizon (capped at 7 days of rolling trips; the hourly refresh keeps it moving).
  */
-export async function ensureDemoSchedule(days = 7): Promise<number> {
+/** Demo traffic fills the in-app feeds but never pushes to testers' phones. */
+export function ensureDemoSchedule(days = 7): Promise<number> {
+  return withoutPush(() => refreshDemoWorld(days));
+}
+
+async function refreshDemoWorld(days: number): Promise<number> {
   const prisma = getPrisma();
   await runtimeSettings.reload();
   const admin = await prisma.adminUser.findFirst({ where: { isBootstrap: true }, select: { id: true } });

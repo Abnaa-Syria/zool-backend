@@ -79,3 +79,10 @@ export function isIanaTimeZone(value: string): boolean {
     return false;
   }
 }
+
+/** Short Arabic date-time in the platform zone for notification text, e.g. «28 نوفمبر، 15:00». */
+export function formatPlatformDateTime(date: Date, timeZone: string): string {
+  const day = new Intl.DateTimeFormat('ar-SD-u-nu-latn', { timeZone, day: 'numeric', month: 'long' }).format(date);
+  const time = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
+  return `${day}، ${time}`;
+}

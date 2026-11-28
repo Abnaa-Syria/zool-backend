@@ -4,7 +4,7 @@ import { logger } from '../../infrastructure/observability/logger';
 import { AppError } from '../../shared/errors/app-error';
 import { paginationMeta, parsePagination } from '../../shared/utils/pagination';
 import { notificationsRepository } from './notifications.repository';
-import { getPushProvider } from './push-provider';
+import { getPushProvider, isPushMuted } from './push-provider';
 
 export type NotificationType =
   | 'TICKET_ISSUED'
@@ -15,6 +15,8 @@ export type NotificationType =
   | 'TRIP_CANCELLED'
   | 'BOOKING_REFUNDED'
   | 'RATE_TRIP'
+  | 'TRIP_ASSIGNED'
+  | 'TRIP_UNASSIGNED'
   | 'PROMO';
 
 export type NotificationPayload = {
@@ -44,7 +46,7 @@ export class NotificationsService {
         data: (payload.data ?? undefined) as Prisma.InputJsonValue | undefined,
       })),
     });
-    setImmediate(() => void this.push(recipients, payload));
+    if (!isPushMuted()) setImmediate(() => void this.push(recipients, payload));
     return result.count;
   }
 
