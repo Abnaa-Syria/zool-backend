@@ -44,6 +44,7 @@ export const SYSTEM_SETTINGS = [
   { key: 'support.whatsapp', type: 'string', maxLength: 32, description: 'Support WhatsApp number shown in the apps', defaultValue: () => '' },
   { key: 'support.email', type: 'string', maxLength: 191, description: 'Support email shown in the apps', defaultValue: () => '' },
   { key: 'maps.maptilerKey', type: 'string', maxLength: 64, description: 'MapTiler API key for map tiles in the apps and dashboards (empty = OpenStreetMap)', defaultValue: (e) => e.MAPTILER_KEY ?? '' },
+  { key: 'maps.maptilerMapId', type: 'string', maxLength: 64, description: 'MapTiler map (style) id, e.g. streets-v2 or the id of a customised Arabic map', defaultValue: () => 'streets-v2' },
   { key: 'app.customer.minVersion', type: 'string', maxLength: 16, description: 'Oldest customer app version allowed (forces update)', defaultValue: () => '1.0.0' },
   { key: 'app.driver.minVersion', type: 'string', maxLength: 16, description: 'Oldest driver app version allowed (forces update)', defaultValue: () => '1.0.0' },
   { key: 'app.broker.minVersion', type: 'string', maxLength: 16, description: 'Oldest broker app version allowed (forces update)', defaultValue: () => '1.0.0' },

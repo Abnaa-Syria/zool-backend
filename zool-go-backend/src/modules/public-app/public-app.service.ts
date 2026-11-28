@@ -6,13 +6,13 @@ const num = (d: { toString(): string } | null) => (d === null ? null : Number(d.
 
 /** No-login data every app needs at start-up (splash, pickers, home). */
 /**
- * Raster tiles for flutter_map / Leaflet. With a MapTiler key: MapTiler «Streets» (local-language
- * labels, so Arabic in Sudan); otherwise the OpenStreetMap community server (fine for testing only).
+ * Raster tiles for flutter_map / Leaflet. With a MapTiler key: the MapTiler map `mapId` (default
+ * «Streets»; raster tiles keep the style's label language, so Arabic needs a customised map); otherwise the OpenStreetMap community server (fine for testing only).
  * `tileUrlRetina` is for high-density screens (phones).
  */
-function mapTiles(key: string) {
+function mapTiles(key: string, mapId: string) {
   if (key) {
-    const base = `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}`;
+    const base = `https://api.maptiler.com/maps/${encodeURIComponent(mapId)}/256/{z}/{x}/{y}`;
     const k = encodeURIComponent(key);
     return {
       provider: 'maptiler',
@@ -52,7 +52,7 @@ export class PublicAppService {
       /** Live tracking is polled (API_CONVENTIONS §12) */
       liveTrackingPollSeconds: 15,
       holdTtlSeconds: runtimeSettings.number('booking.seatHoldTtlSeconds'),
-      maps: mapTiles(String(runtimeSettings.get('maps.maptilerKey') ?? '').trim()),
+      maps: mapTiles(String(runtimeSettings.get('maps.maptilerKey') ?? '').trim(), String(runtimeSettings.get('maps.maptilerMapId') ?? '').trim() || 'streets-v2'),
     };
   }
 
