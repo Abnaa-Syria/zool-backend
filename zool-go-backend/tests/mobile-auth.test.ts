@@ -162,6 +162,12 @@ describe('Customer, driver and broker-mobile authentication', () => {
     await request(app).patch('/api/v1/admin/settings').set(auth(adminToken)).send({ values: { 'support.phone': '+249900000999' } });
     expect((await request(app).get('/api/v1/public/app-config')).body.data.support.phone).toBe('+249900000999');
 
+    // Map tiles: OpenStreetMap until a MapTiler key is set in the settings.
+    expect(config.body.data.maps).toMatchObject({ provider: 'osm' });
+    await request(app).patch('/api/v1/admin/settings').set(auth(adminToken)).send({ values: { 'maps.maptilerKey': 'test-key-123' } });
+    const maps = (await request(app).get('/api/v1/public/app-config')).body.data.maps;
+    expect(maps).toMatchObject({ provider: 'maptiler', tileUrlRetina: 'https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}@2x.png?key=test-key-123' });
+
     const city = await request(app).post('/api/v1/admin/cities').set(auth(adminToken)).send({ code: 'KRT', nameAr: 'الخرطوم', nameEn: 'Khartoum', isPopular: true });
     expect(city.status).toBe(201);
     await request(app).post('/api/v1/admin/stations').set(auth(adminToken)).send({ cityId: city.body.data.id, nameAr: 'الميناء البري', nameEn: 'Land Port' });

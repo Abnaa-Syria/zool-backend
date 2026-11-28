@@ -59,6 +59,8 @@ const envSchema = z
     SEAT_HOLD_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     PAYMENT_PROVIDER: z.enum(['mock']).default('mock'),
     /** Push: `log` (dev/tests) or `fcm` (Firebase Cloud Messaging HTTP v1). */
+    /** Default for the `maps.maptilerKey` setting (public browser/app key). */
+    MAPTILER_KEY: z.string().optional(),
     PUSH_PROVIDER: z.enum(['log', 'fcm']).default('log'),
     /** Path to the Firebase service-account JSON (kept outside the repo and the app folder). */
     FCM_SERVICE_ACCOUNT_FILE: z.string().optional(),
