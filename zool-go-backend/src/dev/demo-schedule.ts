@@ -5,6 +5,7 @@ import { getPrisma } from '../infrastructure/database/prisma';
 import { logger } from '../infrastructure/observability/logger';
 import { customerCheckoutService } from '../modules/customer-app/customer-checkout.service';
 import { customerTripsService } from '../modules/customer-app/customer-trips.service';
+import { driverTripsService } from '../modules/driver-app/driver-trips.service';
 import { networkService } from '../modules/network/network.service';
 import { setPrincipalAuthzVersion } from '../shared/security/principal-authz-cache';
 import { runtimeSettings } from '../shared/settings/runtime-settings';
@@ -413,6 +414,69 @@ async function seedPassengers(companyIds: string[]): Promise<number> {
   return bookings;
 }
 
+const SIMULATE_TRIPS_PER_RUN = 40;
+const LEFTOVER_AFTER = 6 * HOUR;
+
+/** Boards one ticket, collecting the cash fare when the booking is pay-on-board. */
+async function boardDemoTicket(driverId: string, tripId: string, ticketNumber: string) {
+  try {
+    await driverTripsService.board(driverId, tripId, { ticketNumber, method: 'MANUAL' });
+  } catch (err) {
+    const cash = (err as { details?: { cashToCollectMinor?: number } }).details?.cashToCollectMinor;
+    if (!cash) throw err;
+    await driverTripsService.board(driverId, tripId, { ticketNumber, method: 'MANUAL', cashCollectedMinor: cash });
+  }
+}
+
+/**
+ * Plays the driver for demo trips nobody ran, so they do not sit in «القادمة» forever and the
+ * completed tab, reports and settlements have history: trips that sold seats and should have
+ * arrived by now are boarded (every cash passenger, ~90% of the online ones — cash no-shows would
+ * cost the demo customers their cash eligibility), departed and completed through the real driver
+ * service. Trips a tester left BOARDING / IN_PROGRESS are completed 6 h after their arrival time.
+ */
+async function simulateMissedTrips(companyIds: string[]): Promise<number> {
+  const prisma = getPrisma();
+  const now = Date.now();
+  const trips = await prisma.trip.findMany({
+    where: {
+      companyId: { in: companyIds },
+      driverId: { not: null },
+      OR: [
+        { status: TripStatus.SCHEDULED, arrivalAt: { lt: new Date(now) } },
+        { status: { in: [TripStatus.BOARDING, TripStatus.IN_PROGRESS] }, arrivalAt: { lt: new Date(now - LEFTOVER_AFTER) } },
+      ],
+    },
+    orderBy: { departureAt: 'asc' },
+    take: SIMULATE_TRIPS_PER_RUN,
+    select: { id: true, driverId: true, status: true, departureAt: true, arrivalAt: true },
+  });
+
+  let done = 0;
+  for (const trip of trips) {
+    const driverId = trip.driverId!;
+    try {
+      if (trip.status === TripStatus.SCHEDULED) {
+        await driverTripsService.setStatus(driverId, trip.id, TripStatus.BOARDING);
+        const manifest = await driverTripsService.manifestOf({ id: trip.id, status: TripStatus.BOARDING });
+        for (const p of manifest.passengers) {
+          if (p.boardingStatus !== 'PENDING') continue;
+          if (p.cashToCollectMinor === 0 && Math.random() < 0.1) continue; // an online no-show now and then
+          await boardDemoTicket(driverId, trip.id, p.ticketNumber).catch((err) => logger.debug({ err, trip: trip.id }, 'Demo boarding skipped'));
+        }
+      }
+      if (trip.status !== TripStatus.IN_PROGRESS) await driverTripsService.setStatus(driverId, trip.id, TripStatus.IN_PROGRESS);
+      await driverTripsService.setStatus(driverId, trip.id, TripStatus.COMPLETED);
+      // Real-looking timestamps instead of "just now".
+      await prisma.trip.update({ where: { id: trip.id }, data: { startedAt: trip.departureAt, completedAt: trip.arrivalAt ?? trip.departureAt } });
+      done += 1;
+    } catch (err) {
+      logger.warn({ err, trip: trip.id }, 'Demo trip simulation failed');
+    }
+  }
+  return done;
+}
+
 /**
  * Builds/refreshes the demo world. Returns how many trips were created. `days` is the scheduling
  * horizon (capped at 7 days of rolling trips; the hourly refresh keeps it moving).
@@ -455,7 +519,8 @@ export async function ensureDemoSchedule(days = 7): Promise<number> {
     where: { companyId: { in: companyIds }, status: TripStatus.SCHEDULED, departureAt: { lt: new Date(now - 2 * HOUR) }, bookings: { none: {} } },
     data: { status: TripStatus.CANCELLED },
   });
+  const completed = await simulateMissedTrips(companyIds);
   const booked = await seedPassengers(companyIds);
-  logger.info({ created, cancelledStale: stale.count, demoBookings: booked }, 'Demo world refreshed');
+  logger.info({ created, cancelledStale: stale.count, simulatedTrips: completed, demoBookings: booked }, 'Demo world refreshed');
   return created;
 }

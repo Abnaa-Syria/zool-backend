@@ -489,6 +489,7 @@ A settlement is a persisted period record. Creating a **DRAFT** **reserves** mat
 - Every bus shuttles on its line around the clock: first departure ~45 min from now, 1 h turnaround, no departures 00:00–05:00 Sudan time, up to 7 days ahead. So every demo driver always has a trip inside the boarding window.
 - Trips that should have left more than 2 h ago, never started and sold nothing are cancelled (they would block the bus).
 - Trips in the next 30 h without bookings get 30–55 % of their seats booked by demo customers (`+249900000310` …), part online (mock payment) and part cash, through the normal hold / checkout services.
+- 2026-11-28: demo trips that sold seats but nobody ran are played through the real driver service once their arrival time passes (boarding — every cash passenger, ~90 % of the online ones — departure, completion; timestamps set to the scheduled times), up to 40 per run. Trips a tester left BOARDING / IN_PROGRESS are completed 6 h after arrival. This fills the completed tabs, reports and settlements.
 - Runs on `npm run db:demo` and hourly in the server when `DEMO_SCHEDULE_DAYS > 0`. Never enabled in production.
 
 ---

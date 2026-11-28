@@ -27,6 +27,9 @@ import { trackingService } from '../tracking/tracking.service';
 import { driverTripsRepository, type DriverTripRow, type ManifestTicketRow } from './driver-trips.repository';
 
 
+/** How long a never-started SCHEDULED trip stays in the driver's «القادمة» tab after departure. */
+const UPCOMING_GRACE_MS = 12 * 60 * 60_000;
+
 const TRANSITIONS: Record<TripStatus, TripStatus[]> = {
   SCHEDULED: [TripStatus.BOARDING, TripStatus.IN_PROGRESS],
   BOARDING: [TripStatus.IN_PROGRESS],
@@ -118,7 +121,8 @@ export class DriverTripsService {
     const { page, pageSize, skip, take } = parsePagination(query);
     const where: Prisma.TripWhereInput =
       tab === 'UPCOMING'
-        ? { driverId, status: TripStatus.SCHEDULED }
+        ? // A trip nobody started stays listed for a while (a late start), then drops off.
+          { driverId, status: TripStatus.SCHEDULED, departureAt: { gte: new Date(Date.now() - UPCOMING_GRACE_MS) } }
         : tab === 'CURRENT'
           ? { driverId, status: { in: [TripStatus.BOARDING, TripStatus.IN_PROGRESS] } }
           : { driverId, status: { in: [TripStatus.COMPLETED, TripStatus.CANCELLED] } };

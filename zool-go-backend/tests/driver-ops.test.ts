@@ -49,6 +49,14 @@ describe('Driver app: trip lifecycle, QR boarding, cash, GPS and live tracking',
     return (await request(app).get(`/api/v1/customer/bookings/${res.body.data.bookings[0].id}`).set(auth(customer))).body.data;
   }
 
+  it('drops a trip nobody started from «القادمة» 12 hours after departure', async () => {
+    const upcoming = async () => (await request(app).get('/api/v1/driver/trips?tab=UPCOMING').set(auth(driver))).body.data.map((t: { id: string }) => t.id);
+    await getPrisma().trip.update({ where: { id: trip }, data: { departureAt: new Date(Date.now() - 3 * 3600_000) } });
+    expect(await upcoming()).toEqual([trip]); // a late start is still possible
+    await getPrisma().trip.update({ where: { id: trip }, data: { departureAt: new Date(Date.now() - 13 * 3600_000) } });
+    expect(await upcoming()).toEqual([]);
+  });
+
   it('runs a full trip: boarding, scans, cash collection, no-shows, GPS, completion', async () => {
     const cash = await book(['1', '2'], 'CASH_ON_BOARD', 'drv-cash-0001');
     const paid = await book(['3'], 'ONLINE', 'drv-paid-0001');
