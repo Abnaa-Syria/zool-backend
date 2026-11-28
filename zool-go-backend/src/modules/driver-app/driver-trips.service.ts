@@ -193,12 +193,18 @@ export class DriverTripsService {
       }
       if (status === TripStatus.COMPLETED) {
         const tickets = await driverTripsRepository.manifest(trip.id, tx);
-        const customers = [...new Set(tickets.filter((t) => t.boardingStatus === BoardingStatus.BOARDED && t.booking.customerId).map((t) => t.booking.customerId!))];
-        await notificationsService.notify(
-          customers.map((id) => ({ type: PrincipalType.CUSTOMER, id })),
-          { type: 'RATE_TRIP', title: 'وصلت بالسلامة', body: 'كيف كانت رحلتك؟ قيّم شركة النقل.', data: { tripId: trip.id } },
-          tx,
-        );
+        // One notice per customer, pointing at their booking so the app opens it (and its rating).
+        const bookingOf = new Map<string, string>();
+        for (const t of tickets) {
+          if (t.boardingStatus === BoardingStatus.BOARDED && t.booking.customerId && !bookingOf.has(t.booking.customerId)) bookingOf.set(t.booking.customerId, t.booking.id);
+        }
+        for (const [customerId, bookingId] of bookingOf) {
+          await notificationsService.notify(
+            [{ type: PrincipalType.CUSTOMER, id: customerId }],
+            { type: 'RATE_TRIP', title: 'وصلت بالسلامة', body: 'كيف كانت رحلتك؟ قيّم شركة النقل.', data: { tripId: trip.id, bookingId } },
+            tx,
+          );
+        }
       }
       await auditService.record({ action: 'trip.status_changed', resourceType: 'trip', resourceId: trip.id, requestId, metadata: { driverId, from: trip.status, to: status } }, tx);
     });

@@ -66,7 +66,7 @@ async function seedStage2() {
     where: { code: 'ZG-BRK-1' },
     create: {
       code: 'ZG-BRK-1',
-      name: 'ZoolGo Demo Broker Office',
+      name: 'مكتب زول قو - الخرطوم',
       status: BrokerOfficeStatus.ACTIVE,
       settlementPeriod: SettlementPeriod.MONTHLY,
     },
@@ -85,7 +85,7 @@ async function seedStage2() {
   await ensureBrokerEmployee({
     officeId: office.id,
     phone: managerPhone,
-    displayName: 'Demo Broker Manager',
+    displayName: 'محمد عبد الله',
     role: BrokerEmployeeRole.MANAGER,
     canBook: true,
     canTopUp: true,
@@ -96,7 +96,7 @@ async function seedStage2() {
   await ensureBrokerEmployee({
     officeId: office.id,
     phone: clerkPhone,
-    displayName: 'Demo Broker Clerk',
+    displayName: 'سارة أحمد',
     role: BrokerEmployeeRole.CLERK,
     canBook: true,
     canTopUp: false,

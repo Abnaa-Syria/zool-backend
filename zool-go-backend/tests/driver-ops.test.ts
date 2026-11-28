@@ -145,6 +145,7 @@ describe('Driver app: trip lifecycle, QR boarding, cash, GPS and live tracking',
     expect((await request(app).get('/api/v1/customer/bookings?tab=PAST').set(auth(customer))).body.data.length).toBe(3);
     const rate = await getPrisma().notification.findMany({ where: { recipientId: customerId, type: 'RATE_TRIP' } });
     expect(rate).toHaveLength(1);
+    expect([cash.id, paid.id]).toContain((rate[0]!.data as { bookingId?: string }).bookingId);
   });
 
   it('keeps drivers to their own trips', async () => {

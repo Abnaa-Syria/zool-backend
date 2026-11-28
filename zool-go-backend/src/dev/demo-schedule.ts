@@ -76,7 +76,7 @@ const bus = (plate: string, model: string, cls: ServiceClass, driver: BusDef['dr
 export const DEMO_CARRIERS: CarrierDef[] = [
   {
     key: 'sudan_express',
-    name: 'Sudan Express',
+    name: 'سودان إكسبريس',
     shortName: 'سودان إكسبريس',
     legalName: 'شركة سودان إكسبريس للنقل البري',
     cashEnabled: true,
@@ -99,7 +99,7 @@ export const DEMO_CARRIERS: CarrierDef[] = [
   },
   {
     key: 'nile_transport',
-    name: 'Nile Transport',
+    name: 'النيل للنقل',
     shortName: 'النيل للنقل',
     legalName: 'شركة النيل للنقل والسياحة',
     cashEnabled: true,
@@ -120,7 +120,7 @@ export const DEMO_CARRIERS: CarrierDef[] = [
   },
   {
     key: 'east_express',
-    name: 'East Express',
+    name: 'الشرق السريع',
     shortName: 'الشرق السريع',
     legalName: 'شركة الشرق السريع للنقل',
     cashEnabled: true,
@@ -143,7 +143,7 @@ export const DEMO_CARRIERS: CarrierDef[] = [
   },
   {
     key: 'alburaq',
-    name: 'Al Buraq',
+    name: 'البراق',
     shortName: 'البراق',
     legalName: 'شركة البراق للنقل البري',
     // Online-only carrier: lets testers see «الدفع نقدًا غير متاح».
@@ -188,6 +188,7 @@ const DEMO_CUSTOMERS: Array<{ name: string; gender: 'MALE' | 'FEMALE' }> = [
   { name: 'ندى كمال الدين', gender: 'FEMALE' },
 ];
 
+const DEMO_OFFICE_NAME = 'مكتب زول قو - الخرطوم';
 const MIN = 60_000;
 const HOUR = 60 * MIN;
 const TURNAROUND = HOUR;
@@ -204,7 +205,7 @@ async function ensureCarrier(def: CarrierDef) {
   const company = await prisma.transportCompany.upsert({
     where: { key: def.key },
     create: { key: def.key, name: def.name, shortName: def.shortName, legalName: def.legalName, cashEnabled: def.cashEnabled },
-    update: { shortName: def.shortName, legalName: def.legalName, cashEnabled: def.cashEnabled },
+    update: { name: def.name, shortName: def.shortName, legalName: def.legalName, cashEnabled: def.cashEnabled },
   });
   const phone = normalizePhone(def.manager.phone);
   if (!(await prisma.carrierIdentity.findUnique({ where: { type_valueNormalized: { type: IdentityType.PHONE, valueNormalized: phone } } }))) {
@@ -513,6 +514,11 @@ export async function ensureDemoSchedule(days = 7): Promise<number> {
       }
     }
   }
+
+  // The seeded demo office and its staff carry Arabic names on screens shown to the client.
+  await prisma.brokerOffice.updateMany({ where: { code: 'ZG-BRK-1', name: 'ZoolGo Demo Broker Office' }, data: { name: DEMO_OFFICE_NAME } });
+  await prisma.brokerEmployee.updateMany({ where: { displayName: 'Demo Broker Manager' }, data: { displayName: 'محمد عبد الله' } });
+  await prisma.brokerEmployee.updateMany({ where: { displayName: 'Demo Broker Clerk' }, data: { displayName: 'سارة أحمد' } });
 
   // Trips that should have left hours ago, never started and sold nothing: free their bus.
   const stale = await prisma.trip.updateMany({
